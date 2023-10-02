@@ -1,6 +1,5 @@
+import 'package:bachat_gat/common/routes.dart';
 import 'package:flutter/material.dart';
-
-import 'features/home/home.dart';
 
 class AppRoot extends StatelessWidget {
   const AppRoot({super.key});
@@ -10,10 +9,9 @@ class AppRoot extends StatelessWidget {
     return MaterialApp(
       title: 'Saving Group',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(
-          useMaterial3: true
-      ),
-      home: const Home(),
+      theme: ThemeData.dark(useMaterial3: true),
+      initialRoute: Routes.rGroups,
+      routes: Routes.getRoutes(),
     );
   }
 }
