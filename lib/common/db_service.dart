@@ -79,6 +79,11 @@ class DbService {
     bankName text,
     accountNo text,
     ifscCode text,
+    installmentDate number,
+    installmentAmt number,
+    loanInterestPer number,
+    loanPenaltyAmt number,
+    installmentPenaltyAmt number,
     sysCreated datetime,
     sysUpdated datetime
     );

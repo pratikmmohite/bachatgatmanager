@@ -2,6 +2,7 @@ import 'package:bachat_gat/features/groups/dao/groups_dao.dart';
 import 'package:bachat_gat/features/groups/models/group_members.dart';
 import 'package:flutter/material.dart';
 
+import '../../../common/widgets/widgets.dart';
 import '../models/group.dart';
 
 class MemberAddPage extends StatefulWidget {
@@ -34,87 +35,6 @@ class _MemberAddPageState extends State<MemberAddPage> {
     dao = GroupsDao();
   }
 
-  Widget buildTextField(
-      {required String label,
-      required String field,
-      required String value,
-      int? maxLines,
-      TextInputType? keyboardType,
-      ValueChanged<String>? onChange}) {
-    return TextFormField(
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      onChanged: onChange,
-      initialValue: value,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: "Enter $label",
-        filled: true,
-      ),
-    );
-  }
-
-  Widget buildSpace({double width = 0, double height = 10}) {
-    return SizedBox(
-      width: width,
-      height: height,
-    );
-  }
-
-  Widget buildDateRangeField(
-      {required String label,
-      required String field,
-      required DateTime sdt,
-      required DateTime edt,
-      required ValueChanged<DateTimeRange> onChange}) {
-    var dt = DateTimeRange(start: sdt, end: edt);
-    return TextFormField(
-      readOnly: true,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: "Enter $label",
-        filled: true,
-      ),
-      initialValue: dt.toString(),
-      onTap: () async {
-        DateTimeRange? selectedDate = await showDateRangePicker(
-            context: context,
-            initialDateRange: dt,
-            firstDate: DateTime(2000),
-            lastDate: DateTime(2099));
-        if (selectedDate != null) {
-          onChange(selectedDate);
-        }
-      },
-    );
-  }
-
-  Widget buildDateField(
-      {required String label,
-      required String field,
-      required DateTime value,
-      required ValueChanged<DateTime> onChange}) {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: value.toString(),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        filled: true,
-      ),
-      readOnly: true,
-      onTap: () async {
-        DateTime? selectedDate = await showDatePicker(
-            context: context,
-            initialDate: value,
-            firstDate: DateTime(2000),
-            lastDate: DateTime(2099));
-        if (selectedDate != null) {
-          onChange(selectedDate);
-        }
-      },
-    );
-  }
-
   void closePage() {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
@@ -134,14 +54,14 @@ class _MemberAddPageState extends State<MemberAddPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildTextField(
+              CustomTextField(
                   label: "Member Name",
                   field: "name",
                   value: _groupMember.name,
                   onChange: (value) {
                     _groupMember.name = value;
                   }),
-              buildTextField(
+              CustomTextField(
                 label: "Mobile No",
                 field: "mobileNo",
                 value: _groupMember.mobileNo ?? "",
@@ -154,7 +74,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
                 children: [
                   TableRow(
                     children: [
-                      buildTextField(
+                      CustomTextField(
                         label: "Aadhar No",
                         field: "aadharNo",
                         value: _groupMember.aadharNo ?? "",
@@ -163,7 +83,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
                         },
                         keyboardType: TextInputType.number,
                       ),
-                      buildTextField(
+                      CustomTextField(
                         label: "Pan No",
                         field: "panNo",
                         value: _groupMember.panNo ?? "",
@@ -175,7 +95,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
                   ),
                 ],
               ),
-              buildDateField(
+              CustomDateField(
                 label: "Joining Date",
                 field: "joiningDate",
                 value: _groupMember.joiningDate,
