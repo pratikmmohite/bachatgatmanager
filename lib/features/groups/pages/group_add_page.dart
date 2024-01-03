@@ -60,7 +60,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                       group.name = value;
                     }),
                 CustomDateRange(
-                  label: "Start Date - End Date",
+                  label: "Start Date-End Date",
                   field: "sdt_edt",
                   sdt: group.sdt,
                   edt: group.edt,
