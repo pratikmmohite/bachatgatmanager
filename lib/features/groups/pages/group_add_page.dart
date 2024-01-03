@@ -43,89 +43,92 @@ class _GroupAddPageState extends State<GroupAddPage> {
       appBar: AppBar(title: const Text("Add Saving Group")),
       body: Container(
         padding: const EdgeInsets.all(10),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomTextField(
-                  label: "Group Name",
-                  field: "name",
-                  value: group.name,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomTextField(
+                    label: "Group Name",
+                    field: "name",
+                    isRequired: true,
+                    value: group.name,
+                    onChange: (value) {
+                      group.name = value;
+                    }),
+                CustomDateRange(
+                  label: "Start Date - End Date",
+                  field: "sdt_edt",
+                  sdt: group.sdt,
+                  edt: group.edt,
                   onChange: (value) {
-                    group.name = value;
-                  }),
-              CustomDateRange(
-                label: "Start Date - End Date",
-                field: "sdt_edt",
-                sdt: group.sdt,
-                edt: group.edt,
-                onChange: (value) {
-                  setState(() {
-                    group.sdt = value.start;
-                    group.edt = value.end;
-                  });
-                },
-              ),
-              CustomTextField(
-                label: "Address",
-                field: "address",
-                value: group.address ?? "",
-                onChange: (value) {
-                  group.address = value;
-                },
-                maxLines: 3,
-                keyboardType: TextInputType.multiline,
-              ),
-              Table(
-                children: [
-                  TableRow(
-                    children: [
-                      CustomTextField(
-                        label: "Bank Name",
-                        field: "bankName",
-                        value: group.bankName ?? "",
-                        onChange: (value) {
-                          group.bankName = value;
-                        },
-                      ),
-                      CustomTextField(
-                        label: "Account No",
-                        field: "accountNo",
-                        value: group.accountNo ?? "",
-                        onChange: (value) {
-                          group.accountNo = value;
-                        },
-                      ),
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      CustomTextField(
-                        label: "IFSC Code",
-                        field: "ifscCode",
-                        value: group.ifscCode ?? "",
-                        onChange: (value) {
-                          group.ifscCode = value;
-                        },
-                      ),
-                      CustomDateField(
-                        label: "Account Opening Date",
-                        field: "accountOpeningDate",
-                        value: group.accountOpeningDate,
-                        onChange: (value) {
-                          setState(() {
-                            group.accountOpeningDate = value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+                    setState(() {
+                      group.sdt = value.start;
+                      group.edt = value.end;
+                    });
+                  },
+                ),
+                CustomTextField(
+                  label: "Address",
+                  field: "address",
+                  value: group.address ?? "",
+                  onChange: (value) {
+                    group.address = value;
+                  },
+                  maxLines: 3,
+                  keyboardType: TextInputType.multiline,
+                ),
+                Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        CustomTextField(
+                          label: "Bank Name",
+                          field: "bankName",
+                          value: group.bankName ?? "",
+                          onChange: (value) {
+                            group.bankName = value;
+                          },
+                        ),
+                        CustomTextField(
+                          label: "Account No",
+                          field: "accountNo",
+                          value: group.accountNo ?? "",
+                          onChange: (value) {
+                            group.accountNo = value;
+                          },
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        CustomTextField(
+                          label: "IFSC Code",
+                          field: "ifscCode",
+                          value: group.ifscCode ?? "",
+                          onChange: (value) {
+                            group.ifscCode = value;
+                          },
+                        ),
+                        CustomDateField(
+                          label: "Account Opening Date",
+                          field: "accountOpeningDate",
+                          value: group.accountOpeningDate,
+                          onChange: (value) {
+                            setState(() {
+                              group.accountOpeningDate = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

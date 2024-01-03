@@ -15,16 +15,23 @@ Group _$GroupFromJson(Map<String, dynamic> json) => Group(
       bankName: json['bankName'] as String?,
       accountNo: json['accountNo'] as String?,
       ifscCode: json['ifscCode'] as String?,
+      installmentAmt: (json['installmentAmt'] as num?)?.toDouble() ?? 0,
+      loanPenaltyAmt: (json['loanPenaltyAmt'] as num?)?.toDouble() ?? 0,
+      loanInterestPer: (json['loanInterestPer'] as num?)?.toDouble() ?? 0,
+      installmentPenaltyAmt:
+          (json['installmentPenaltyAmt'] as num?)?.toDouble() ?? 0,
     )
       ..id = json['id'] as String
       ..sysCreated = DateTime.parse(json['sysCreated'] as String)
-      ..sysUpdated = DateTime.parse(json['sysUpdated'] as String);
+      ..sysUpdated = DateTime.parse(json['sysUpdated'] as String)
+      ..installmentDate = json['installmentDate'] as int;
 
 Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
       'id': instance.id,
       'sysCreated': instance.sysCreated.toIso8601String(),
       'sysUpdated': instance.sysUpdated.toIso8601String(),
       'name': instance.name,
+      'installmentDate': instance.installmentDate,
       'sdt': instance.sdt.toIso8601String(),
       'edt': instance.edt.toIso8601String(),
       'accountOpeningDate': instance.accountOpeningDate.toIso8601String(),
@@ -32,4 +39,8 @@ Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
       'bankName': instance.bankName,
       'accountNo': instance.accountNo,
       'ifscCode': instance.ifscCode,
+      'installmentAmt': instance.installmentAmt,
+      'loanInterestPer': instance.loanInterestPer,
+      'loanPenaltyAmt': instance.loanPenaltyAmt,
+      'installmentPenaltyAmt': instance.installmentPenaltyAmt,
     };

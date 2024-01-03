@@ -100,7 +100,39 @@ class DbService {
     openingBalance number,
     sysCreated datetime,
     sysUpdated datetime,
-     FOREIGN KEY(groupId) REFERENCES groups(ID)
+    FOREIGN KEY(groupId) REFERENCES groups(ID)
+    );
+  ''',
+      '''
+    CREATE TABLE transactions (
+    id text primary key,
+    memberId text,
+    groupId text,
+    trxType text,
+    month number,
+    year number,
+    cr number,
+    dr number,
+    sourceType text,
+    sourceId text,
+    sysCreated datetime,
+    sysUpdated datetime,
+    FOREIGN KEY(groupId) REFERENCES groups(id),
+    FOREIGN KEY(memberId) REFERENCES members(id)
+    );
+  ''',
+      '''
+    CREATE TABLE loans (
+    id text primary key,
+    memberId text,
+    groupId text,
+    loanAmount number,
+    interestPercentage number,
+    status text,
+    sysCreated datetime,
+    sysUpdated datetime,
+    FOREIGN KEY(groupId) REFERENCES groups(id),
+    FOREIGN KEY(memberId) REFERENCES members(id)
     );
   ''',
     ];

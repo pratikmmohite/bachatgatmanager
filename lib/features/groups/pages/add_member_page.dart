@@ -47,65 +47,68 @@ class _MemberAddPageState extends State<MemberAddPage> {
       appBar: AppBar(title: const Text("Add Saving Group")),
       body: Container(
         padding: const EdgeInsets.all(10),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomTextField(
-                  label: "Member Name",
-                  field: "name",
-                  value: _groupMember.name,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomTextField(
+                    label: "Member Name",
+                    field: "name",
+                    value: _groupMember.name,
+                    isRequired: true,
+                    onChange: (value) {
+                      _groupMember.name = value;
+                    }),
+                CustomTextField(
+                  label: "Mobile No",
+                  field: "mobileNo",
+                  value: _groupMember.mobileNo ?? "",
                   onChange: (value) {
-                    _groupMember.name = value;
-                  }),
-              CustomTextField(
-                label: "Mobile No",
-                field: "mobileNo",
-                value: _groupMember.mobileNo ?? "",
-                onChange: (value) {
-                  _groupMember.mobileNo = value;
-                },
-                keyboardType: TextInputType.phone,
-              ),
-              Table(
-                children: [
-                  TableRow(
-                    children: [
-                      CustomTextField(
-                        label: "Aadhar No",
-                        field: "aadharNo",
-                        value: _groupMember.aadharNo ?? "",
-                        onChange: (value) {
-                          _groupMember.aadharNo = value;
-                        },
-                        keyboardType: TextInputType.number,
-                      ),
-                      CustomTextField(
-                        label: "Pan No",
-                        field: "panNo",
-                        value: _groupMember.panNo ?? "",
-                        onChange: (value) {
-                          _groupMember.panNo = value;
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              CustomDateField(
-                label: "Joining Date",
-                field: "joiningDate",
-                value: _groupMember.joiningDate,
-                onChange: (value) {
-                  setState(() {
-                    _groupMember.joiningDate = value;
-                  });
-                },
-              ),
-            ],
+                    _groupMember.mobileNo = value;
+                  },
+                  keyboardType: TextInputType.phone,
+                ),
+                Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        CustomTextField(
+                          label: "Aadhar No",
+                          field: "aadharNo",
+                          value: _groupMember.aadharNo ?? "",
+                          onChange: (value) {
+                            _groupMember.aadharNo = value;
+                          },
+                          keyboardType: TextInputType.number,
+                        ),
+                        CustomTextField(
+                          label: "Pan No",
+                          field: "panNo",
+                          value: _groupMember.panNo ?? "",
+                          onChange: (value) {
+                            _groupMember.panNo = value;
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                CustomDateField(
+                  label: "Joining Date",
+                  field: "joiningDate",
+                  value: _groupMember.joiningDate,
+                  onChange: (value) {
+                    setState(() {
+                      _groupMember.joiningDate = value;
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

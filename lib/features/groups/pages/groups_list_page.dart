@@ -9,10 +9,10 @@ class GroupsListPage extends StatefulWidget {
   const GroupsListPage({super.key});
 
   @override
-  State<GroupsListPage> createState() => _GroupsListPageState();
+  State<GroupsListPage> createState() => GroupsListPageState();
 }
 
-class _GroupsListPageState extends State<GroupsListPage> {
+class GroupsListPageState extends State<GroupsListPage> {
   bool isLoading = false;
   List<Group> groups = [];
   late GroupsDao groupDao;
@@ -110,7 +110,16 @@ class _GroupsListPageState extends State<GroupsListPage> {
                   ),
                 ],
               ),
-              onTap: () {},
+              onTap: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ct) => MembersList(
+                      group,
+                      key: ValueKey(group.id),
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },

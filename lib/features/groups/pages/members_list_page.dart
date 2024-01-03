@@ -69,18 +69,27 @@ class _MembersListState extends State<MembersList> {
                   member.name,
                 ),
                 subtitle: Text(member.mobileNo),
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ct) => MemberAddPage(
-                        _group,
-                        groupMember: member,
-                        key: ValueKey(member.id),
-                      ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ct) => MemberAddPage(
+                              _group,
+                              groupMember: member,
+                              key: ValueKey(member.id),
+                            ),
+                          ),
+                        );
+                        await getMembers();
+                      },
                     ),
-                  );
-                  await getMembers();
-                },
+                  ],
+                ),
+                onTap: () {},
               ),
             );
           },

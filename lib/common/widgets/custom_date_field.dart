@@ -19,7 +19,7 @@ class CustomDateField extends StatelessWidget {
     return TextField(
       decoration: InputDecoration(
         labelText: label,
-        hintText: value.toString(),
+        hintText: value.toString().split(" ")[0],
         floatingLabelBehavior: FloatingLabelBehavior.always,
         filled: true,
       ),

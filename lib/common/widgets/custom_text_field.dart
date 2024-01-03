@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   int? maxLines;
   TextInputType? keyboardType;
   ValueChanged<String>? onChange;
+  bool isRequired;
 
   CustomTextField(
       {super.key,
@@ -15,7 +16,8 @@ class CustomTextField extends StatelessWidget {
       required this.value,
       this.maxLines,
       this.keyboardType,
-      this.onChange});
+      this.onChange,
+      this.isRequired = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,14 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       onChanged: onChange,
       initialValue: value,
+      validator: isRequired
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return 'Required*';
+              }
+              return null;
+            }
+          : null,
       decoration: InputDecoration(
         labelText: label,
         hintText: "Enter $label",

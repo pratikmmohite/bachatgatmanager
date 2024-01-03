@@ -11,17 +11,29 @@ class GroupsScreen extends StatefulWidget {
 }
 
 class _GroupsScreenState extends State<GroupsScreen> {
+  final groupKey = GlobalKey<GroupsListPageState>();
+
+  Future<void> refreshGroupList() async {
+    await groupKey.currentState?.getGroups();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Saving Groups"),
       ),
-      body: const GroupsListPage(),
+      body: GroupsListPage(
+        key: groupKey,
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (ct) => const GroupAddPage(),),);
+        onPressed: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (ct) => const GroupAddPage(),
+            ),
+          );
+          await refreshGroupList();
         },
         child: const Icon(Icons.add),
       ),
