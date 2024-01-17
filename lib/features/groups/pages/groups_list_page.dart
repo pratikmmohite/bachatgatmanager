@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../dao/groups_dao.dart';
 import '../models/group.dart';
+import 'group_actions.dart';
 
 class GroupsListPage extends StatefulWidget {
   const GroupsListPage({super.key});
@@ -113,9 +114,9 @@ class GroupsListPageState extends State<GroupsListPage> {
               onTap: () async {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (ct) => MembersList(
-                      group,
+                    builder: (ct) => GroupActions(
                       key: ValueKey(group.id),
+                      group: group,
                     ),
                   ),
                 );
