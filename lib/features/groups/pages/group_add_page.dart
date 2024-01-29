@@ -59,17 +59,26 @@ class _GroupAddPageState extends State<GroupAddPage> {
                     onChange: (value) {
                       group.name = value;
                     }),
-                CustomDateRange(
-                  label: "Start Date-End Date",
+                CustomDateField(
+                  label: "Start Date",
                   field: "sdt_edt",
-                  sdt: group.sdt,
-                  edt: group.edt,
+                  value: group.sdt,
                   onChange: (value) {
                     setState(() {
-                      group.sdt = value.start;
-                      group.edt = value.end;
+                      group.sdt = value;
+                      group.edt =
+                          DateTime(value.year + 1, value.month, value.day);
                     });
                   },
+                ),
+                CustomTextField(
+                  key: Key("edt_dt_${group.edt.toString()}"),
+                  label: "End Date",
+                  field: "end_dt",
+                  value: group.edt.toString().split(" ")[0],
+                  onChange: (value) {},
+                  readOnly: true,
+                  keyboardType: TextInputType.none,
                 ),
                 CustomTextField(
                   label: "Address",

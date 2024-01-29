@@ -14,9 +14,14 @@ class CustomDateRange extends StatelessWidget {
       required this.edt,
       required this.onChange});
 
+  String formatDt(DateTime dt) {
+    return dt.toString().split(" ")[0];
+  }
+
   @override
   Widget build(BuildContext context) {
     var dt = DateTimeRange(start: sdt, end: edt);
+    var dtStr = "${formatDt(dt.start)} - ${formatDt(dt.end)}";
     return TextFormField(
       readOnly: true,
       decoration: InputDecoration(
@@ -24,7 +29,7 @@ class CustomDateRange extends StatelessWidget {
         hintText: "Enter $label",
         filled: true,
       ),
-      initialValue: dt.toString(),
+      initialValue: dtStr,
       onTap: () async {
         DateTimeRange? selectedDate = await showDateRangePicker(
             context: context,
