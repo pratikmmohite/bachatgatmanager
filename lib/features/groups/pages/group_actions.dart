@@ -57,9 +57,6 @@ class _GroupActionsState extends State<GroupActions>
       if (i % 11 == 0) {
         sYear++;
       }
-      if (dt.year >= sYear && month >= dt.month) {
-        break;
-      }
     }
     var initialIndex = tabMonths.indexOf(currentDtStr);
     initialIndex = initialIndex >= 0 ? initialIndex : 0;
