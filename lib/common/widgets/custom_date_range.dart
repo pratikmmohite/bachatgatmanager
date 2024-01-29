@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomDateRange extends StatelessWidget {
+class CustomDateRange extends StatefulWidget {
   String label;
   String field;
   DateTime sdt;
@@ -14,19 +14,24 @@ class CustomDateRange extends StatelessWidget {
       required this.edt,
       required this.onChange});
 
+  @override
+  State<CustomDateRange> createState() => _CustomDateRangeState();
+}
+
+class _CustomDateRangeState extends State<CustomDateRange> {
   String formatDt(DateTime dt) {
     return dt.toString().split(" ")[0];
   }
 
   @override
   Widget build(BuildContext context) {
-    var dt = DateTimeRange(start: sdt, end: edt);
+    var dt = DateTimeRange(start: widget.sdt, end: widget.edt);
     var dtStr = "${formatDt(dt.start)} - ${formatDt(dt.end)}";
     return TextFormField(
       readOnly: true,
       decoration: InputDecoration(
-        labelText: label,
-        hintText: "Enter $label",
+        labelText: widget.label,
+        hintText: "Enter ${widget.label}",
         filled: true,
       ),
       initialValue: dtStr,
@@ -37,7 +42,7 @@ class CustomDateRange extends StatelessWidget {
             firstDate: DateTime(2000),
             lastDate: DateTime(2099));
         if (selectedDate != null) {
-          onChange(selectedDate);
+          widget.onChange(selectedDate);
         }
       },
     );
