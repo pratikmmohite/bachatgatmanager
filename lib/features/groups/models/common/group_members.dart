@@ -13,14 +13,14 @@ class GroupMember extends ComFields {
   DateTime joiningDate = DateTime(2022, 01, 01);
   String? aadharNo = "";
   String? panNo = "";
-  double openingBalance = 0;
+  double balance = 0;
 
   GroupMember({
     required this.name,
     required this.mobileNo,
     required this.groupId,
     required this.joiningDate,
-    this.openingBalance = 0,
+    this.balance = 0,
     this.aadharNo,
     this.panNo,
   });
@@ -32,7 +32,7 @@ class GroupMember extends ComFields {
     mobileNo = "";
     aadharNo = "";
     panNo = "";
-    openingBalance = 0;
+    balance = 0;
   }
 
   factory GroupMember.fromJson(Map<String, dynamic> json) =>

@@ -1,5 +1,8 @@
 {
+  "license": "Pratik-Mohite",
+  "private": true,
   "scripts": {
-    "build": "dart run build_runner build"
+    "build": "dart run build_runner build -d",
+    "run": "flutter pub get && flutter run"
   }
 }

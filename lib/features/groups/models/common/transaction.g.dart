@@ -10,17 +10,20 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
       memberId: json['memberId'] as String,
       groupId: json['groupId'] as String,
       trxType: json['trxType'] as String,
-      month: json['month'] as int,
-      year: json['year'] as int,
-      cr: json['cr'] as int,
-      dr: json['dr'] as int,
-      trxDate: DateTime.parse(json['trxDate'] as String),
+      trxPeriod: json['trxPeriod'] as String,
+      cr: (json['cr'] as num).toDouble(),
+      dr: (json['dr'] as num).toDouble(),
+      sourceId: json['sourceId'] as String,
+      sourceType: json['sourceType'] as String,
+      addedBy: json['addedBy'] as String,
+      note: json['note'] as String? ?? "",
+      trxDt: json['trxDt'] == null
+          ? null
+          : DateTime.parse(json['trxDt'] as String),
     )
       ..id = json['id'] as String
       ..sysCreated = DateTime.parse(json['sysCreated'] as String)
-      ..sysUpdated = DateTime.parse(json['sysUpdated'] as String)
-      ..sourceType = json['sourceType'] as String
-      ..sourceId = json['sourceId'] as String;
+      ..sysUpdated = DateTime.parse(json['sysUpdated'] as String);
 
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
@@ -30,11 +33,12 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
       'memberId': instance.memberId,
       'groupId': instance.groupId,
       'trxType': instance.trxType,
-      'month': instance.month,
-      'year': instance.year,
+      'trxDt': instance.trxDt.toIso8601String(),
+      'trxPeriod': instance.trxPeriod,
       'cr': instance.cr,
       'dr': instance.dr,
       'sourceType': instance.sourceType,
       'sourceId': instance.sourceId,
-      'trxDate': instance.trxDate.toIso8601String(),
+      'addedBy': instance.addedBy,
+      'note': instance.note,
     };

@@ -11,7 +11,7 @@ GroupMember _$GroupMemberFromJson(Map<String, dynamic> json) => GroupMember(
       mobileNo: json['mobileNo'] as String,
       groupId: json['groupId'] as String,
       joiningDate: DateTime.parse(json['joiningDate'] as String),
-      openingBalance: (json['openingBalance'] as num?)?.toDouble() ?? 0,
+      balance: (json['balance'] as num?)?.toDouble() ?? 0,
       aadharNo: json['aadharNo'] as String?,
       panNo: json['panNo'] as String?,
     )
@@ -30,5 +30,5 @@ Map<String, dynamic> _$GroupMemberToJson(GroupMember instance) =>
       'joiningDate': instance.joiningDate.toIso8601String(),
       'aadharNo': instance.aadharNo,
       'panNo': instance.panNo,
-      'openingBalance': instance.openingBalance,
+      'balance': instance.balance,
     };

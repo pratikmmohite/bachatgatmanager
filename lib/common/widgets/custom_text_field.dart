@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
-  String label;
-  String field;
-  String value;
-  int? maxLines;
-  TextInputType? keyboardType;
-  ValueChanged<String>? onChange;
-  bool isRequired;
-  bool readOnly;
+  final String label;
+  final String field;
+  final String value;
+  final int? maxLines;
+  final TextInputType? keyboardType;
+  final ValueChanged<String>? onChange;
+  final bool isRequired;
+  final bool readOnly;
+  final Widget? suffix;
+  final Widget? prefix;
 
-  CustomTextField(
-      {super.key,
-      required this.label,
-      required this.field,
-      required this.value,
-      this.maxLines,
-      this.keyboardType,
-      this.onChange,
-      this.isRequired = false,
-      this.readOnly = false});
+  const CustomTextField({
+    super.key,
+    required this.label,
+    required this.field,
+    required this.value,
+    this.maxLines,
+    this.keyboardType,
+    this.onChange,
+    this.suffix,
+    this.prefix,
+    this.isRequired = false,
+    this.readOnly = false,
+  });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -46,6 +51,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         labelText: widget.label,
         hintText: "Enter ${widget.label}",
         filled: true,
+        prefix: widget.prefix,
+        suffix: widget.suffix,
       ),
     );
   }

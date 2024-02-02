@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'com_fields.dart';
+import './com_fields.dart';
 
 part 'group.g.dart';
 
@@ -16,10 +16,9 @@ class Group extends ComFields {
   String? accountNo;
   String? ifscCode;
 
-  double installmentAmt = 0;
-  double loanInterestPer = 0;
-  double loanPenaltyAmt = 0;
-  double installmentPenaltyAmt = 0;
+  double installmentAmtPerMonth = 0;
+  double loanInterestPercentPerMonth = 0;
+  double lateFeePerDay = 0;
 
   Group(
       {required this.name,
@@ -30,10 +29,9 @@ class Group extends ComFields {
       this.bankName,
       this.accountNo,
       this.ifscCode,
-      this.installmentAmt = 0,
-      this.loanPenaltyAmt = 0,
-      this.loanInterestPer = 0,
-      this.installmentPenaltyAmt = 0})
+      this.installmentAmtPerMonth = 0,
+      this.loanInterestPercentPerMonth = 0,
+      this.lateFeePerDay = 0})
       : super();
 
   Group.withDefault() {
@@ -42,10 +40,9 @@ class Group extends ComFields {
     sdt = DateTime(dt.year, dt.month, 1);
     edt = DateTime(dt.year + 1, dt.month, 0);
     accountOpeningDate = sdt;
-    installmentPenaltyAmt = 0;
-    installmentAmt = 100;
-    loanInterestPer = 0;
-    loanPenaltyAmt = 0;
+    lateFeePerDay = 0;
+    installmentAmtPerMonth = 100;
+    loanInterestPercentPerMonth = 0;
   }
   factory Group.fromJson(Map<String, dynamic> json) => _$GroupFromJson(json);
 

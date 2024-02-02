@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/models_index.dart';
+import 'month_member_list.dart';
 
 class GroupActions extends StatefulWidget {
   final Group group;
@@ -65,8 +66,9 @@ class _GroupActionsState extends State<GroupActions>
   }
 
   Widget buildTabContent(String month) {
-    return Center(
-      child: Text(month),
+    return MonthMemberList(
+      trxPeriod: month,
+      group: group,
     );
   }
 

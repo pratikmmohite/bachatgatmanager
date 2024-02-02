@@ -1,9 +1,8 @@
 import 'package:bachat_gat/features/groups/dao/groups_dao.dart';
-import 'package:bachat_gat/features/groups/models/group_members.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common/widgets/widgets.dart';
-import '../models/group.dart';
+import '../models/models_index.dart';
 
 class MemberAddPage extends StatefulWidget {
   final Group group;

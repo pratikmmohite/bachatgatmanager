@@ -9,8 +9,12 @@ part of 'loan.dart';
 Loan _$LoanFromJson(Map<String, dynamic> json) => Loan(
       memberId: json['memberId'] as String,
       groupId: json['groupId'] as String,
-      loanAmount: json['loanAmount'] as String,
-      interestPercentage: json['interestPercentage'] as String,
+      loanAmount: (json['loanAmount'] as num).toDouble(),
+      interestPercentage: (json['interestPercentage'] as num).toDouble(),
+      remainingLoanAmount: (json['remainingLoanAmount'] as num).toDouble(),
+      remainingInterestAmount:
+          (json['remainingInterestAmount'] as num).toDouble(),
+      note: json['note'] as String,
       status: json['status'] as String,
       loanDate: DateTime.parse(json['loanDate'] as String),
     )
@@ -28,4 +32,7 @@ Map<String, dynamic> _$LoanToJson(Loan instance) => <String, dynamic>{
       'interestPercentage': instance.interestPercentage,
       'status': instance.status,
       'loanDate': instance.loanDate.toIso8601String(),
+      'note': instance.note,
+      'remainingLoanAmount': instance.remainingLoanAmount,
+      'remainingInterestAmount': instance.remainingInterestAmount,
     };

@@ -70,69 +70,74 @@ class DbService {
     List<String> tables = [
       '''
     CREATE TABLE groups (
-    id text primary key,
-    name text,
-    sdt datetime,
-    edt datetime,
-    accountOpeningDate datetime,
-    address text,
-    bankName text,
-    accountNo text,
-    ifscCode text,
-    installmentDate number,
-    installmentAmt number,
-    loanInterestPer number,
-    loanPenaltyAmt number,
-    installmentPenaltyAmt number,
-    sysCreated datetime,
-    sysUpdated datetime
+      id text primary key,
+      name text,
+      sdt datetime,
+      edt datetime,
+      accountOpeningDate datetime,
+      address text,
+      bankName text,
+      accountNo text,
+      ifscCode text,
+      installmentDate number,
+      installmentAmtPerMonth number,
+      loanInterestPercentPerMonth number,
+      lateFeePerDay number,
+      sysCreated datetime,
+      sysUpdated datetime
     );
   ''',
       '''
     CREATE TABLE members (
-    id text primary key,
-    name text,
-    mobileNo text,
-    joiningDate datetime,
-    groupId text,
-    aadharNo text,
-    panNo text,
-    openingBalance number,
-    sysCreated datetime,
-    sysUpdated datetime,
-    FOREIGN KEY(groupId) REFERENCES groups(ID)
+      id text primary key,
+      name text,
+      mobileNo text,
+      joiningDate datetime,
+      groupId text,
+      aadharNo text,
+      panNo text,
+      balance number,
+      active_loan number,
+      sysCreated datetime,
+      sysUpdated datetime,
+      FOREIGN KEY(groupId) REFERENCES groups(ID)
     );
   ''',
       '''
-    CREATE TABLE transactions (
-    id text primary key,
-    memberId text,
-    groupId text,
-    trxType text,
-    month number,
-    year number,
-    cr number,
-    dr number,
-    sourceType text,
-    sourceId text,
-    sysCreated datetime,
-    sysUpdated datetime,
-    FOREIGN KEY(groupId) REFERENCES groups(id),
-    FOREIGN KEY(memberId) REFERENCES members(id)
-    );
+    create table transactions (
+        id text primary key,
+        groupId text,
+        memberId text,
+        trxPeriod text,
+        trxDt datetime,
+        trxType text,
+        cr number,
+        dr number,
+        sourceType text,
+        sourceId text,
+        addedBy text,
+        note text,
+        sysCreated datetime,
+        sysUpdated datetime,
+        FOREIGN KEY(groupId) REFERENCES groups(id),
+        FOREIGN KEY(memberId) REFERENCES members(id)
+    )
   ''',
       '''
     CREATE TABLE loans (
-    id text primary key,
-    memberId text,
-    groupId text,
-    loanAmount number,
-    interestPercentage number,
-    status text,
-    sysCreated datetime,
-    sysUpdated datetime,
-    FOREIGN KEY(groupId) REFERENCES groups(id),
-    FOREIGN KEY(memberId) REFERENCES members(id)
+      id text primary key,
+      memberId text,
+      groupId text,
+      loanAmount number,
+      interestPercentage number,
+      remainingLoanAmount number,
+      remainingInterestAmount number,
+      note text,
+      status text,
+      sysCreated datetime,
+      sysUpdated datetime,
+      FOREIGN KEY(groupId) REFERENCES groups(id),
+      FOREIGN KEY(memberId) REFERENCES members(id)
     );
   ''',
     ];

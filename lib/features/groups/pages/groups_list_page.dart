@@ -3,7 +3,7 @@ import 'package:bachat_gat/features/groups/pages/members_list_page.dart';
 import 'package:flutter/material.dart';
 
 import '../dao/groups_dao.dart';
-import '../models/group.dart';
+import '../models/models_index.dart';
 import 'group_actions.dart';
 
 class GroupsListPage extends StatefulWidget {

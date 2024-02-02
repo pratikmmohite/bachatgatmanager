@@ -9,7 +9,7 @@ class ComFields {
   late DateTime sysCreated;
   late DateTime sysUpdated;
   ComFields() {
-    id = Utils.getUUID();
+    id = AppUtils.getUUID();
     sysCreated = sysUpdated = DateTime.now();
   }
   factory ComFields.fromJson(Map<String, dynamic> json) =>

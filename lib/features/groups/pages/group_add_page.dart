@@ -2,7 +2,7 @@ import 'package:bachat_gat/features/groups/dao/groups_dao.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common/widgets/widgets.dart';
-import '../models/group.dart';
+import '../models/models_index.dart';
 
 class GroupAddPage extends StatefulWidget {
   final Group? group;
@@ -132,6 +132,52 @@ class _GroupAddPageState extends State<GroupAddPage> {
                             });
                           },
                         ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const Text("Group Settings"),
+                Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        CustomTextField(
+                          label: "Installment Amount",
+                          field: "installmentAmt",
+                          value:
+                              "${(group.installmentAmtPerMonth ?? 0).toInt()}",
+                          onChange: (value) {
+                            group.installmentAmtPerMonth =
+                                double.tryParse(value) ?? 0;
+                          },
+                        ),
+                        CustomTextField(
+                          label: "Loan Interest",
+                          field: "loanInterestPer",
+                          suffix: const Icon(Icons.percent),
+                          value:
+                              "${(group.loanInterestPercentPerMonth ?? 0).toInt()}",
+                          onChange: (value) {
+                            group.loanInterestPercentPerMonth =
+                                double.tryParse(value) ?? 0;
+                          },
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        CustomTextField(
+                          label: "Late Fee",
+                          field: "loanInterestPer",
+                          suffix: const Icon(Icons.percent),
+                          prefix: const Icon(Icons.currency_rupee),
+                          value: "${(group.lateFeePerDay ?? 0).toInt()}",
+                          onChange: (value) {
+                            group.lateFeePerDay = double.tryParse(value) ?? 0;
+                          },
+                        ),
+                        CustomSpace(),
                       ],
                     ),
                   ],
