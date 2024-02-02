@@ -34,6 +34,22 @@ class Transaction extends ComFields {
     this.trxDt = trxDt ?? DateTime.now();
   }
 
+  Transaction.withDefault({
+    required this.memberId,
+    required this.groupId,
+    required this.trxType,
+    required this.trxPeriod,
+    this.cr = 0,
+    this.dr = 0,
+    this.sourceId = "User",
+    this.sourceType = "Admin",
+    this.addedBy = "Admin",
+    this.note = "",
+    DateTime? trxDt,
+  }) {
+    this.trxDt = trxDt ?? DateTime.now();
+  }
+
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 

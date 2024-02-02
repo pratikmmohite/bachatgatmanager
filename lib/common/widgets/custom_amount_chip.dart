@@ -16,9 +16,16 @@ class CustomAmountChip extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
         ),
-        Text("₹.$amount"),
+        Text(
+          "₹$amount",
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.green,
+          ),
+        ),
       ],
     );
   }

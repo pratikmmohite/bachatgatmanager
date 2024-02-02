@@ -58,6 +58,11 @@ class GroupsDao {
     return row;
   }
 
+  Future<int> addLoan(Loan loan) async {
+    var row = await dbService.insert(loanTableName, loan.toJson());
+    return row;
+  }
+
   Future<int> deleteGroupMember(GroupMember member) async {
     var row = await dbService
         .delete(memberTableName, where: "id = ?", whereArgs: [member.id]);
@@ -73,73 +78,71 @@ class GroupsDao {
   Future<List<Loan>> getMemberLoans(MemberLoanFilter filter) async {
     String selectClause = "select * "
         "from $loanTableName ";
+    List<Object?> pars = [
+      filter.memberId,
+      filter.groupId,
+    ];
     String whereClause = "where memberId = ? "
         "and groupId = ? ";
     if (filter.status.isNotEmpty) {
       whereClause += "and status = ? ";
+      pars.add(filter.status);
     }
     String query = selectClause + whereClause;
-    var rows = await dbService.read(
-      query,
-      [
-        filter.memberId,
-        filter.groupId,
-        filter.status,
-      ],
-    );
+    var rows = await dbService.read(query, pars);
     var loans = rows.map((e) => Loan.fromJson(e)).toList();
     return loans;
   }
 
   Future<List<GroupMemberDetails>> getGroupMembersWithBalance(
       MemberBalanceFilter filter) async {
-    String paidInstallmentAmount = "(select ifnull(sum(t.cr), 0) "
-        "from $transactionTableName t "
-        "where t.groupId = m.groupId "
-        "and t.memberId = m.id "
-        "and t.trxPeriod = ? "
-        "and t.trxType = '${AppConstants.ttShare}' "
-        ") as paidShareAmount ";
     String balanceAmount = "(select ifnull(sum(t.cr-t.dr), 0) "
         "from $transactionTableName t "
         "where t.groupId = m.groupId "
         "and t.memberId = m.id "
         ") as balance ";
-    String paidLoanAmount = "(select ifnull(sum(t.cr), 0) "
-        "from $transactionTableName t "
-        "where t.groupId = m.groupId "
-        "and t.memberId = m.id "
-        "and t.trxPeriod = ? "
-        "and t.trxType = '${AppConstants.ttLoan}' "
-        ") as paidLoanAmount ";
-    String paidPenaltyAmount = "(select ifnull(sum(t.cr), 0) "
-        "from $transactionTableName t "
-        "where t.groupId = m.groupId "
-        "and t.memberId = m.id "
-        "and t.trxPeriod = ? "
-        "and t.trxType = '${AppConstants.ttLateFee}' "
-        ") as paidLateFee ";
 
-    String pendingLoanAmount = "(select iif(sum(l.remainingLoanAmount)) "
+    String paidShareAmount =
+        "(${getAmountQuery(AppConstants.ttShare, filter.trxPeriod)}) as paidShareAmount ";
+    String paidLoanAmount =
+        "(${getAmountQuery(AppConstants.ttLoan, filter.trxPeriod)}) as paidLoanAmount ";
+    String paidLateFee =
+        "(${getAmountQuery(AppConstants.ttLateFee, filter.trxPeriod)}) as paidLateFee ";
+    String paidOtherAmount =
+        "(${getAmountQuery(AppConstants.ttOthers, filter.trxPeriod)}) as paidOtherAmount ";
+    String paidLoanInterestAmount =
+        "(${getAmountQuery(AppConstants.ttLoanInterest, filter.trxPeriod)}) as paidLoanInterestAmount ";
+
+    String pendingLoanAmount = "(select ifnull(sum(l.remainingLoanAmount), 0) "
         "from $loanTableName l "
         "where l.groupId = m.groupId "
         "and l.memberId = m.id "
         ") as pendingLoanAmount ";
 
-    String query = "select m.id "
-        ",m.name "
+    String query = "select m.name "
         ",m.groupId "
-        ",$paidInstallmentAmount "
+        ",m.id as memberId "
+        ",$paidShareAmount "
         ",$paidLoanAmount "
-        ",$paidPenaltyAmount "
+        ",$paidLateFee "
+        ",$paidLoanInterestAmount "
+        ",$paidOtherAmount "
         ",$balanceAmount "
         ",$pendingLoanAmount "
         "from $memberTableName m "
         "where m.groupId = ? ";
 
-    var rows = await dbService.read(query,
-        [filter.trxPeriod, filter.trxPeriod, filter.trxPeriod, filter.groupId]);
+    var rows = await dbService.read(query, [filter.groupId]);
     var members = rows.map((e) => GroupMemberDetails.fromJson(e)).toList();
     return members;
+  }
+
+  String getAmountQuery(String trxType, String trxPeriod) {
+    return "select ifnull(sum(t.cr), 0) "
+        "from $transactionTableName t "
+        "where t.groupId = m.groupId "
+        "and t.memberId = m.id "
+        "and t.trxPeriod = '$trxPeriod' "
+        "and t.trxType = '$trxType' ";
   }
 }

@@ -145,6 +145,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                         CustomTextField(
                           label: "Installment Amount",
                           field: "installmentAmt",
+                          suffixIcon: const Icon(Icons.currency_rupee),
                           value:
                               "${(group.installmentAmtPerMonth ?? 0).toInt()}",
                           onChange: (value) {
@@ -155,7 +156,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                         CustomTextField(
                           label: "Loan Interest",
                           field: "loanInterestPer",
-                          suffix: const Icon(Icons.percent),
+                          suffixIcon: const Icon(Icons.percent),
                           value:
                               "${(group.loanInterestPercentPerMonth ?? 0).toInt()}",
                           onChange: (value) {
@@ -169,9 +170,8 @@ class _GroupAddPageState extends State<GroupAddPage> {
                       children: [
                         CustomTextField(
                           label: "Late Fee",
-                          field: "loanInterestPer",
-                          suffix: const Icon(Icons.percent),
-                          prefix: const Icon(Icons.currency_rupee),
+                          field: "lateFeePerDay",
+                          suffixIcon: const Icon(Icons.currency_rupee),
                           value: "${(group.lateFeePerDay ?? 0).toInt()}",
                           onChange: (value) {
                             group.lateFeePerDay = double.tryParse(value) ?? 0;

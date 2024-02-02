@@ -1,3 +1,4 @@
+import 'package:bachat_gat/common/utils.dart';
 import 'package:bachat_gat/features/groups/pages/add_member_page.dart';
 import 'package:flutter/material.dart';
 
@@ -74,13 +75,12 @@ class _MembersListState extends State<MembersList> {
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ct) => MemberAddPage(
-                              _group,
-                              groupMember: member,
-                              key: ValueKey(member.id),
-                            ),
+                        await AppUtils.navigateTo(
+                          context,
+                          MemberAddPage(
+                            _group,
+                            groupMember: member,
+                            key: ValueKey(member.id),
                           ),
                         );
                         await getMembers();

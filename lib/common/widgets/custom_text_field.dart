@@ -9,8 +9,8 @@ class CustomTextField extends StatefulWidget {
   final ValueChanged<String>? onChange;
   final bool isRequired;
   final bool readOnly;
-  final Widget? suffix;
-  final Widget? prefix;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
 
   const CustomTextField({
     super.key,
@@ -20,8 +20,8 @@ class CustomTextField extends StatefulWidget {
     this.maxLines,
     this.keyboardType,
     this.onChange,
-    this.suffix,
-    this.prefix,
+    this.suffixIcon,
+    this.prefixIcon,
     this.isRequired = false,
     this.readOnly = false,
   });
@@ -33,26 +33,29 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      maxLines: widget.maxLines,
-      keyboardType: widget.keyboardType,
-      onChanged: widget.onChange,
-      initialValue: widget.value,
-      validator: widget.isRequired
-          ? (value) {
-              if (value == null || value.isEmpty) {
-                return 'Required*';
+    return Container(
+      margin: const EdgeInsets.all(2),
+      child: TextFormField(
+        maxLines: widget.maxLines,
+        keyboardType: widget.keyboardType,
+        onChanged: widget.onChange,
+        initialValue: widget.value,
+        validator: widget.isRequired
+            ? (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Required*';
+                }
+                return null;
               }
-              return null;
-            }
-          : null,
-      readOnly: widget.readOnly,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: "Enter ${widget.label}",
-        filled: true,
-        prefix: widget.prefix,
-        suffix: widget.suffix,
+            : null,
+        readOnly: widget.readOnly,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          hintText: "Enter ${widget.label}",
+          filled: true,
+          prefixIcon: widget.prefixIcon,
+          suffixIcon: widget.suffixIcon,
+        ),
       ),
     );
   }

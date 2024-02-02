@@ -13,8 +13,8 @@ class AppUtils {
     ));
   }
 
-  static void navigateTo(BuildContext context, Widget navToWid) {
-    Navigator.of(context).push(
+  static Future<void> navigateTo(BuildContext context, Widget navToWid) async {
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ct) => navToWid,
       ),

@@ -58,14 +58,20 @@ class _CustomDropDownState extends State<CustomDropDown> {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () async {
-        var option = await showOptions();
-        if (widget.onChange != null && option != null) {
-          widget.onChange!(option);
-        }
-      },
-      child: Text(widget.label),
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () async {
+              var option = await showOptions();
+              if (widget.onChange != null && option != null) {
+                widget.onChange!(option);
+              }
+            },
+            child: Text(widget.label),
+          ),
+        ),
+      ],
     );
   }
 }

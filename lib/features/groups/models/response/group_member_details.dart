@@ -12,6 +12,8 @@ class GroupMemberDetails {
   double paidLoanAmount = 0;
   double paidLateFee = 0;
   double pendingLoanAmount = 0;
+  double paidLoanInterestAmount = 0;
+  double paidOtherAmount = 0;
 
   GroupMemberDetails();
 

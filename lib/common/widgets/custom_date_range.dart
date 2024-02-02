@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class CustomDateRange extends StatefulWidget {
-  String label;
-  String field;
-  DateTime sdt;
-  DateTime edt;
-  ValueChanged<DateTimeRange> onChange;
-  CustomDateRange(
+  final String label;
+  final String field;
+  final DateTime sdt;
+  final DateTime edt;
+  final ValueChanged<DateTimeRange> onChange;
+  const CustomDateRange(
       {super.key,
       required this.label,
       required this.field,
