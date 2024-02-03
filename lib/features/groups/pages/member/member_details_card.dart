@@ -1,7 +1,7 @@
-import 'package:bachat_gat/common/widgets/widgets.dart';
+import 'package:bachat_gat/common/common_index.dart';
 import 'package:flutter/material.dart';
 
-import '../models/models_index.dart';
+import '../../models/models_index.dart';
 
 class MemberDetailsCard extends StatelessWidget {
   final GroupMemberDetails groupMemberDetail;

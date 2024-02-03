@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-typedef CustomOptionChangeFunc = void Function(CustomDropDownOption option);
+typedef CustomOptionChangeFunc<T> = void Function(
+    CustomDropDownOption<T> option);
 
-class CustomDropDown extends StatefulWidget {
+class CustomDropDown<T> extends StatefulWidget {
   final String label;
   final String? value;
   final List<CustomDropDownOption> options;
-  final CustomOptionChangeFunc? onChange;
+  final CustomOptionChangeFunc<T>? onChange;
   const CustomDropDown({
     super.key,
     required this.label,
@@ -76,8 +77,9 @@ class _CustomDropDownState extends State<CustomDropDown> {
   }
 }
 
-class CustomDropDownOption {
+class CustomDropDownOption<T> {
   String label;
   String value;
-  CustomDropDownOption(this.label, this.value);
+  T valueObj;
+  CustomDropDownOption(this.label, this.value, this.valueObj);
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'pages/group_add_page.dart';
-import 'pages/groups_list_page.dart';
+import 'pages/group/group_add_page.dart';
+import 'pages/group/groups_list_page.dart';
 
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});

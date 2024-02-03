@@ -1,10 +1,10 @@
-import 'package:bachat_gat/features/groups/pages/group_add_page.dart';
-import 'package:bachat_gat/features/groups/pages/members_list_page.dart';
 import 'package:flutter/material.dart';
 
-import '../dao/groups_dao.dart';
-import '../models/models_index.dart';
-import 'group_actions.dart';
+import '../../dao/groups_dao.dart';
+import '../../models/models_index.dart';
+import '../member/members_list_page.dart';
+import 'group_add_page.dart';
+import 'group_details_screen.dart';
 
 class GroupsListPage extends StatefulWidget {
   const GroupsListPage({super.key});
@@ -114,7 +114,7 @@ class GroupsListPageState extends State<GroupsListPage> {
               onTap: () async {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (ct) => GroupActions(
+                    builder: (ct) => GroupDetailsScreen(
                       key: ValueKey(group.id),
                       group: group,
                     ),

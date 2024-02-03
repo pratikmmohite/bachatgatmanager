@@ -1,11 +1,9 @@
-import 'package:bachat_gat/common/constants.dart';
-import 'package:bachat_gat/common/utils.dart';
-import 'package:bachat_gat/common/widgets/widgets.dart';
+import 'package:bachat_gat/common/common_index.dart';
 import 'package:flutter/material.dart';
 
-import '../dao/dao_index.dart';
-import '../models/models_index.dart';
-import 'member_details_card.dart';
+import '../../dao/dao_index.dart';
+import '../../models/models_index.dart';
+import '../member/member_details_card.dart';
 
 class AddMemberTransaction extends StatefulWidget {
   final GroupMemberDetails groupMemberDetail;
@@ -100,6 +98,11 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   Widget getFields() {
     switch (widget.mode) {
       case AppConstants.tmLoan:
+        if (isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
         return Column(
           children: [
             buildLoanOptions(),
@@ -107,8 +110,8 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
               children: [
                 TableRow(
                   children: [
-                    buildLoanInterestField(),
                     buildLoanField(),
+                    buildLoanInterestField(),
                   ],
                 ),
               ],
@@ -146,7 +149,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: recordTransaction,
-        label: const Text("Record"),
+        label: Text("Record ${widget.mode}"),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -160,20 +163,43 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
     );
   }
 
+  bool isValid() {
+    switch (widget.mode) {
+      case AppConstants.tmLoan:
+        if (loanTrx.sourceId.isEmpty) {
+          AppUtils.toast(context, "Please select loan");
+          return false;
+        }
+        if (loanTrx.cr == 0) {
+          AppUtils.toast(context, "Please enter loan amount");
+          return false;
+        }
+        break;
+      case AppConstants.tmPayment:
+        if (shareTrx.cr == 0) {
+          AppUtils.toast(context, "Please enter share amount");
+          return false;
+        }
+        break;
+    }
+    return true;
+  }
+
   void recordTransaction() async {
     try {
+      if (!isValid()) {
+        return;
+      }
       switch (widget.mode) {
         case AppConstants.tmLoan:
-          if (loanTrx.cr > 0 && loanTrx.sourceId.isEmpty) {
-            AppUtils.toast(context, "Please select loan to pay");
-            return;
-          }
           if (loanTrx.cr > 0) {
             await groupDao.addTransaction(loanTrx);
           }
           if (loanInterestTrx.cr > 0) {
             await groupDao.addTransaction(loanInterestTrx);
           }
+          AppUtils.toast(context, "Recorded loan payment successfully");
+          AppUtils.close(context);
           break;
         case AppConstants.tmPayment:
           if (shareTrx.cr > 0) {
@@ -182,10 +208,10 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
           if (lateFeeTrx.cr > 0) {
             await groupDao.addTransaction(lateFeeTrx);
           }
+          AppUtils.toast(context, "Recorded share payment successfully");
+          AppUtils.close(context);
           break;
       }
-      AppUtils.toast(context, "Recorded transaction successfully");
-      AppUtils.close(context);
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -195,6 +221,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
     return CustomTextField(
       label: "Loan Amount",
       field: "loanAmount",
+      suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(loanTrx.cr ?? 0).toInt()}",
       onChange: (value) {
         loanTrx.cr = double.tryParse(value) ?? 0;
@@ -203,11 +230,23 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   }
 
   buildLoanOptions() {
-    return CustomDropDown(
+    var options = memberLoans
+        .map(
+          (e) => CustomDropDownOption<Loan>(e.toString(), e.id, e),
+        )
+        .toList();
+    return CustomDropDown<Loan>(
       label: "Select loan to pay",
       value: loanTrx.sourceId,
+      options: options,
       onChange: (op) {
-        loanTrx.sourceId = op.value;
+        var remainingLoan = op.valueObj.loanAmount - op.valueObj.paidLoanAmount;
+        var interest = op.valueObj.interestPercentage;
+        setState(() {
+          loanTrx.sourceId = op.value;
+          loanTrx.cr = remainingLoan;
+          loanInterestTrx.cr = (remainingLoan * interest ~/ 100).toDouble();
+        });
       },
     );
   }
@@ -217,6 +256,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       label: "Late Fee",
       field: "lateFee",
       value: "${(lateFeeTrx.cr ?? 0).toInt()}",
+      suffixIcon: const Icon(Icons.currency_rupee),
       onChange: (value) {
         lateFeeTrx.cr = double.tryParse(value) ?? 0;
       },
@@ -227,6 +267,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
     return CustomTextField(
       label: "Loan Interest",
       field: "lateFee",
+      suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(loanInterestTrx.cr ?? 0).toInt()}",
       onChange: (value) {
         loanInterestTrx.cr = double.tryParse(value) ?? 0;
@@ -238,6 +279,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
     return CustomTextField(
       label: "Share Amount",
       field: "shareAmt",
+      suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(shareTrx.cr ?? 0).toInt()}",
       onChange: (value) {
         shareTrx.cr = double.tryParse(value) ?? 0;

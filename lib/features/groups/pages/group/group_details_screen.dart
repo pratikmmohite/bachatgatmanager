@@ -1,17 +1,18 @@
+import 'package:bachat_gat/common/utils.dart';
 import 'package:flutter/material.dart';
 
-import '../models/models_index.dart';
-import 'member_details_list.dart';
+import '../../models/models_index.dart';
+import '../member/member_details_list.dart';
 
-class GroupActions extends StatefulWidget {
+class GroupDetailsScreen extends StatefulWidget {
   final Group group;
-  const GroupActions({super.key, required this.group});
+  const GroupDetailsScreen({super.key, required this.group});
 
   @override
-  State<GroupActions> createState() => _GroupActionsState();
+  State<GroupDetailsScreen> createState() => _GroupDetailsScreenState();
 }
 
-class _GroupActionsState extends State<GroupActions>
+class _GroupDetailsScreenState extends State<GroupDetailsScreen>
     with SingleTickerProviderStateMixin {
   late Group group;
   List<String> tabMonths = [];
@@ -27,42 +28,23 @@ class _GroupActionsState extends State<GroupActions>
   }
 
   void buildMonths() {
-    var dt = DateTime.now();
-    List<String> months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sept",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    var sdt = group.sdt;
-    var sMonth = sdt.month;
-    var sYear = sdt.year;
     tabs = [];
-    var currentDtStr = "${months[dt.month - 1]}-${dt.year}";
-    for (int i = sMonth; i < sMonth + 12; i++) {
-      var month = ((i - 1) % 11);
-      var tabStr = "${months[month]}-$sYear";
-      tabMonths.add(tabStr);
+    tabMonths = AppUtils.getMonthStringsFromStartToEndDt(group.sdt, group.edt);
+    for (var tabStr in tabMonths) {
       tabs.add(Tab(
         text: tabStr,
       ));
       tabContent.add(buildTabContent(tabStr));
-      if (i % 11 == 0) {
-        sYear++;
-      }
     }
+    var dt = DateTime.now();
+    var currentDtStr = AppUtils.getTrxPeriod(dt.month, dt.year);
     var initialIndex = tabMonths.indexOf(currentDtStr);
     initialIndex = initialIndex >= 0 ? initialIndex : 0;
     tabController = TabController(
-        length: tabs.length, vsync: this, initialIndex: initialIndex);
+      length: tabs.length,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
   }
 
   Widget buildTabContent(String month) {

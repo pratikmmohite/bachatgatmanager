@@ -13,8 +13,8 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
       trxPeriod: json['trxPeriod'] as String,
       cr: (json['cr'] as num).toDouble(),
       dr: (json['dr'] as num).toDouble(),
-      sourceId: json['sourceId'] as String,
       sourceType: json['sourceType'] as String,
+      sourceId: json['sourceId'] as String,
       addedBy: json['addedBy'] as String,
       note: json['note'] as String? ?? "",
       trxDt: json['trxDt'] == null

@@ -5,6 +5,7 @@ part 'member_balance_filter.g.dart';
 @JsonSerializable()
 class MemberBalanceFilter {
   String groupId = "";
+  String memberId = "";
   String trxPeriod = "";
 
   MemberBalanceFilter(this.groupId, this.trxPeriod);

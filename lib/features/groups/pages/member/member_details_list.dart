@@ -1,12 +1,11 @@
-import 'package:bachat_gat/common/constants.dart';
-import 'package:bachat_gat/common/utils.dart';
-import 'package:bachat_gat/features/groups/pages/add_loan_page.dart';
-import 'package:bachat_gat/features/groups/pages/add_member_transaction.dart';
-import 'package:bachat_gat/features/groups/pages/member_loan_list.dart';
+import 'package:bachat_gat/common/common_index.dart';
 import 'package:flutter/material.dart';
 
-import '../dao/dao_index.dart';
-import '../models/models_index.dart';
+import '../../dao/dao_index.dart';
+import '../../models/models_index.dart';
+import '../transaction/add_loan_page.dart';
+import '../transaction/add_member_transaction.dart';
+import 'member_loan_list.dart';
 
 class MemberDetailsList extends StatefulWidget {
   final String trxPeriod;
@@ -27,7 +26,8 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   List<GroupMemberDetails> groupMemberDetails = [];
   late GroupsDao groupDao;
   bool isLoading = false;
-  Future<void> getGroups() async {
+
+  Future<void> getGroupMembers() async {
     groupMemberDetails = [];
     var filter = MemberBalanceFilter(group.id, trxPeriod);
     setState(() {
@@ -48,7 +48,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
     groupDao = GroupsDao();
     group = widget.group;
     trxPeriod = widget.trxPeriod;
-    getGroups();
+    getGroupMembers();
     super.initState();
   }
 
@@ -62,7 +62,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
         mode: AppConstants.tmPayment,
       ),
     );
-    getGroups();
+    getGroupMembers();
   }
 
   Future<void> handleAddLoanTrxClick(GroupMemberDetails memberDetails) async {
@@ -75,7 +75,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
         mode: AppConstants.tmLoan,
       ),
     );
-    getGroups();
+    getGroupMembers();
   }
 
   Future<void> handleAddLoanClick(GroupMemberDetails memberDetails) async {
@@ -87,7 +87,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
         group: group,
       ),
     );
-    getGroups();
+    getGroupMembers();
   }
 
   DataCell buildCellS(String label, [GestureTapCallback? onTap]) {
@@ -121,7 +121,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       "Penalty(+)",
       "Others(+)",
       "Total",
-      "Add Loan",
+      "Actions",
     ];
     List<DataRow> rows = groupMemberDetails
         .map(
@@ -129,14 +129,33 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
             cells: [
               buildCellS(m.name, () => handleAddTrxClick(m)),
               buildCellD(m.paidShareAmount),
-              buildCellD(m.pendingLoanAmount),
+              buildCellD(m.pendingLoanAmount, () => handleShowLoanClick(m)),
               buildCellD(m.paidLoanAmount, () => handleAddLoanTrxClick(m)),
               buildCellD(m.paidLoanInterestAmount),
               buildCellD(m.paidLateFee),
               buildCellD(m.paidOtherAmount),
               buildCellD(m.balance),
-              buildCellI(const Icon(Icons.add), () => handleAddLoanClick(m)),
-              buildCellI(const Icon(Icons.list), () => handleShowLoanClick(m)),
+              buildCellI(
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => handleAddTrxClick(m),
+                      icon: const Icon(Icons.add_box_outlined),
+                      tooltip: "Add Sare",
+                    ),
+                    IconButton(
+                      onPressed: () => handleAddLoanTrxClick(m),
+                      icon: const Icon(Icons.add_shopping_cart),
+                      tooltip: "Add Loan",
+                    ),
+                    IconButton(
+                      onPressed: () => handleShowLoanClick(m),
+                      icon: const Icon(Icons.account_balance_outlined),
+                      tooltip: "Show Loans",
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         )
@@ -195,7 +214,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
           )
         : RefreshIndicator(
             onRefresh: () async {
-              await getGroups();
+              await getGroupMembers();
             },
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -207,6 +226,6 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   handleShowLoanClick(GroupMemberDetails m) async {
     await AppUtils.navigateTo(
         context, MembersLoanList(group, groupMemberDetails: m));
-    getGroups();
+    getGroupMembers();
   }
 }

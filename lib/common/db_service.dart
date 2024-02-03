@@ -5,7 +5,7 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 class DbService {
   static final DbService _instance = DbService._internal();
 
-  int version = 1;
+  int version = 2;
   late sqlite.Database db;
 
   factory DbService() {
@@ -20,13 +20,10 @@ class DbService {
       sqlite.databaseFactory = databaseFactoryFfiWeb;
       dbPath = "app_db.sqlite";
     }
-    db = await sqlite.openDatabase(
-      dbPath,
-      version: version,
-      onCreate: (dbC, version) async {
-        await _createTables(dbC);
-      },
-    );
+    db = await sqlite.openDatabase(dbPath, version: version,
+        onCreate: (dbC, version) async {
+      await _createTables(dbC);
+    });
   }
 
   Future<List<Map<String, Object?>>> read(String sql,
@@ -130,10 +127,12 @@ class DbService {
       groupId text,
       loanAmount number,
       interestPercentage number,
-      remainingLoanAmount number,
-      remainingInterestAmount number,
+      paidLoanAmount number,
+      paidInterestAmount number,
       note text,
       status text,
+      addedBy text,
+      loanDate datetime,
       sysCreated datetime,
       sysUpdated datetime,
       FOREIGN KEY(groupId) REFERENCES groups(id),

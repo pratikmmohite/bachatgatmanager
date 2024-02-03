@@ -1,3 +1,4 @@
+import 'package:bachat_gat/common/common_index.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'com_fields.dart';
@@ -12,23 +13,32 @@ class Loan extends ComFields {
   double loanAmount = 0;
   double interestPercentage = 0;
   String status = "";
-  DateTime loanDate;
+  String addedBy = "";
+  DateTime loanDate = DateTime(2024, 1, 1);
   String note = "";
-  double remainingLoanAmount = 0;
-  double remainingInterestAmount = 0;
-  Loan({
-    required this.memberId,
-    required this.groupId,
-    required this.loanAmount,
-    required this.interestPercentage,
-    required this.remainingLoanAmount,
-    required this.remainingInterestAmount,
-    required this.note,
-    required this.status,
-    required this.loanDate,
-  });
+  double paidLoanAmount = 0;
+  double paidInterestAmount = 0;
+
+  Loan(
+      {required this.memberId,
+      required this.groupId,
+      required this.loanAmount,
+      required this.interestPercentage,
+      required this.paidLoanAmount,
+      required this.paidInterestAmount,
+      required this.note,
+      required this.status,
+      required this.loanDate,
+      required this.addedBy});
+  Loan.withPayment(this.id,
+      {this.paidLoanAmount = 0, this.paidInterestAmount = 0});
 
   factory Loan.fromJson(Map<String, dynamic> json) => _$LoanFromJson(json);
 
   Map<String, dynamic> toJson() => _$LoanToJson(this);
+
+  @override
+  String toString() {
+    return 'Loan: ₹$loanAmount, Dt: ${AppUtils.getHumanReadableDt(loanDate)}';
+  }
 }

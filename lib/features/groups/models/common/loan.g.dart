@@ -11,12 +11,12 @@ Loan _$LoanFromJson(Map<String, dynamic> json) => Loan(
       groupId: json['groupId'] as String,
       loanAmount: (json['loanAmount'] as num).toDouble(),
       interestPercentage: (json['interestPercentage'] as num).toDouble(),
-      remainingLoanAmount: (json['remainingLoanAmount'] as num).toDouble(),
-      remainingInterestAmount:
-          (json['remainingInterestAmount'] as num).toDouble(),
+      paidLoanAmount: (json['paidLoanAmount'] as num).toDouble(),
+      paidInterestAmount: (json['paidInterestAmount'] as num).toDouble(),
       note: json['note'] as String,
       status: json['status'] as String,
       loanDate: DateTime.parse(json['loanDate'] as String),
+      addedBy: json['addedBy'] as String,
     )
       ..sysCreated = DateTime.parse(json['sysCreated'] as String)
       ..sysUpdated = DateTime.parse(json['sysUpdated'] as String)
@@ -31,8 +31,9 @@ Map<String, dynamic> _$LoanToJson(Loan instance) => <String, dynamic>{
       'loanAmount': instance.loanAmount,
       'interestPercentage': instance.interestPercentage,
       'status': instance.status,
+      'addedBy': instance.addedBy,
       'loanDate': instance.loanDate.toIso8601String(),
       'note': instance.note,
-      'remainingLoanAmount': instance.remainingLoanAmount,
-      'remainingInterestAmount': instance.remainingInterestAmount,
+      'paidLoanAmount': instance.paidLoanAmount,
+      'paidInterestAmount': instance.paidInterestAmount,
     };

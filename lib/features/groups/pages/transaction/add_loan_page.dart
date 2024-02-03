@@ -1,21 +1,20 @@
-import 'package:bachat_gat/common/constants.dart';
-import 'package:bachat_gat/common/utils.dart';
-import 'package:bachat_gat/common/widgets/widgets.dart';
+import 'package:bachat_gat/common/common_index.dart';
 import 'package:flutter/material.dart';
 
-import '../dao/dao_index.dart';
-import '../models/models_index.dart';
-import 'member_details_card.dart';
+import '../../dao/dao_index.dart';
+import '../../models/models_index.dart';
+import '../member/member_details_card.dart';
 
 class AddLoanPage extends StatefulWidget {
   final GroupMemberDetails groupMemberDetail;
   final String trxPeriod;
   final Group group;
-  const AddLoanPage(
-      {super.key,
-      required this.groupMemberDetail,
-      required this.trxPeriod,
-      required this.group});
+  const AddLoanPage({
+    super.key,
+    required this.groupMemberDetail,
+    required this.trxPeriod,
+    required this.group,
+  });
 
   @override
   State<AddLoanPage> createState() => _AddLoanPageState();
@@ -32,10 +31,10 @@ class _AddLoanPageState extends State<AddLoanPage> {
 
   @override
   void initState() {
+    groupDao = GroupsDao();
     groupMemberDetail = widget.groupMemberDetail;
     trxPeriod = widget.trxPeriod;
     group = widget.group;
-    groupDao = GroupsDao();
     prepareRequests();
     super.initState();
   }
@@ -47,11 +46,12 @@ class _AddLoanPageState extends State<AddLoanPage> {
       groupId: groupMemberDetail.groupId,
       loanAmount: 0,
       interestPercentage: group.loanInterestPercentPerMonth,
-      remainingLoanAmount: 0,
-      remainingInterestAmount: 0,
+      paidLoanAmount: 0,
+      paidInterestAmount: 0,
       status: AppConstants.lsActive,
       loanDate: today,
-      note: "",
+      note: '',
+      addedBy: '',
     );
   }
 
@@ -71,8 +71,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
         onPressed: () async {
           try {
             if (loanTrx.loanAmount > 0) {
-              loanTrx.remainingLoanAmount = loanTrx.remainingLoanAmount;
-              groupDao.addLoan(loanTrx);
+              await groupDao.addLoan(loanTrx);
               AppUtils.toast(context, "Recorded loan successfully");
               AppUtils.close(context);
               return;
@@ -88,7 +87,16 @@ class _AddLoanPageState extends State<AddLoanPage> {
         child: Column(
           children: [
             MemberDetailsCard(groupMemberDetail),
-            buildLoanField(),
+            Table(
+              children: [
+                TableRow(
+                  children: [
+                    buildLoanField(),
+                    buildLoanInterestField(),
+                  ],
+                )
+              ],
+            ),
             buildNoteField(),
           ],
         ),
@@ -100,9 +108,22 @@ class _AddLoanPageState extends State<AddLoanPage> {
     return CustomTextField(
       label: "Enter Loan Amount",
       field: "loanAmount",
+      suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(loanTrx.loanAmount ?? 0).toInt()}",
       onChange: (value) {
         loanTrx.loanAmount = double.tryParse(value) ?? 0;
+      },
+    );
+  }
+
+  buildLoanInterestField() {
+    return CustomTextField(
+      label: "Enter Loan Interest",
+      field: "loanAmount",
+      suffixIcon: const Icon(Icons.percent),
+      value: "${(loanTrx.interestPercentage ?? 0).toInt()}",
+      onChange: (value) {
+        loanTrx.interestPercentage = double.tryParse(value) ?? 0;
       },
     );
   }

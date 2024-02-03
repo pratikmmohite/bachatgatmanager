@@ -1,4 +1,5 @@
 import 'package:bachat_gat/common/constants.dart';
+import 'package:bachat_gat/common/utils.dart';
 
 import '../../../common/db_service.dart';
 import '../models/models_index.dart';
@@ -46,6 +47,18 @@ class GroupsDao {
 
   Future<int> addTransaction(Transaction trx) async {
     var row = await dbService.insert(transactionTableName, trx.toJson());
+    if (trx.trxType == AppConstants.ttLoan) {
+      updateLoanPaid(Loan.withPayment(
+        trx.sourceId,
+        paidLoanAmount: trx.cr,
+      ));
+    }
+    if (trx.trxType == AppConstants.ttLoanInterest) {
+      updateLoanPaid(Loan.withPayment(
+        trx.sourceId,
+        paidInterestAmount: trx.cr,
+      ));
+    }
     return row;
   }
 
@@ -60,6 +73,36 @@ class GroupsDao {
 
   Future<int> addLoan(Loan loan) async {
     var row = await dbService.insert(loanTableName, loan.toJson());
+    var trxPeriod = AppUtils.getTrxPeriodFromDt(loan.loanDate);
+    var trx = Transaction(
+      memberId: loan.memberId,
+      groupId: loan.groupId,
+      trxType: AppConstants.tmLoan,
+      trxPeriod: trxPeriod,
+      cr: 0,
+      dr: loan.loanAmount,
+      sourceType: AppConstants.sLoan,
+      sourceId: loan.addedBy,
+      addedBy: loan.addedBy,
+      note: loan.note,
+    );
+    addTransaction(trx);
+    return row;
+  }
+
+  Future<int> updateLoanPaid(Loan loan) async {
+    String updateQuery = "update loans set "
+        "paidLoanAmount = paidLoanAmount + ?, "
+        "paidInterestAmount = paidInterestAmount + ? "
+        "where id = ?";
+    var row = await dbService.write(
+      updateQuery,
+      [
+        loan.paidLoanAmount,
+        loan.paidInterestAmount,
+        loan.id,
+      ],
+    );
     return row;
   }
 
@@ -113,13 +156,14 @@ class GroupsDao {
     String paidLoanInterestAmount =
         "(${getAmountQuery(AppConstants.ttLoanInterest, filter.trxPeriod)}) as paidLoanInterestAmount ";
 
-    String pendingLoanAmount = "(select ifnull(sum(l.remainingLoanAmount), 0) "
+    String pendingLoanAmount =
+        "(select ifnull(sum(l.loanAmount - l.paidLoanAmount), 0) "
         "from $loanTableName l "
         "where l.groupId = m.groupId "
         "and l.memberId = m.id "
         ") as pendingLoanAmount ";
 
-    String query = "select m.name "
+    String selectQuery = "select m.name "
         ",m.groupId "
         ",m.id as memberId "
         ",$paidShareAmount "
@@ -129,10 +173,16 @@ class GroupsDao {
         ",$paidOtherAmount "
         ",$balanceAmount "
         ",$pendingLoanAmount "
-        "from $memberTableName m "
-        "where m.groupId = ? ";
+        "from $memberTableName m ";
 
-    var rows = await dbService.read(query, [filter.groupId]);
+    String whereClause = "where m.groupId = ? ";
+    List<Object?> pars = [filter.groupId];
+    if (filter.memberId.isNotEmpty) {
+      whereClause += "and m.id = ? ";
+      pars.add(filter.memberId);
+    }
+    String query = selectQuery + whereClause;
+    var rows = await dbService.read(query, pars);
     var members = rows.map((e) => GroupMemberDetails.fromJson(e)).toList();
     return members;
   }

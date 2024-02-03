@@ -25,15 +25,15 @@ class Transaction extends ComFields {
     required this.trxPeriod,
     required this.cr,
     required this.dr,
-    required this.sourceId,
     required this.sourceType,
+    required this.sourceId,
     required this.addedBy,
     this.note = "",
     DateTime? trxDt,
   }) {
     this.trxDt = trxDt ?? DateTime.now();
   }
-
+  Transaction.withEmpty();
   Transaction.withDefault({
     required this.memberId,
     required this.groupId,
