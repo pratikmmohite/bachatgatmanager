@@ -1,3 +1,5 @@
+import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/features/groups/pages/save_data/import_export_page.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/group/group_add_page.dart';
@@ -22,6 +24,14 @@ class _GroupsScreenState extends State<GroupsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Saving Groups"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.import_export),
+            onPressed: () {
+              AppUtils.navigateTo(context, const ImportExportPage());
+            },
+          )
+        ],
       ),
       body: GroupsListPage(
         key: groupKey,

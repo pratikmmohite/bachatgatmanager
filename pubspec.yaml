@@ -12,11 +12,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqflite: ^2.3.0
+  sqflite: ^2.3.2
   cupertino_icons: ^1.0.2
-  sqflite_common_ffi_web: ^0.4.0
+  sqflite_common_ffi_web: ^0.4.2+3
   uuid: ^4.1.0
   json_annotation: ^4.8.1
+  file_saver: ^0.2.9
+  file_picker: ^6.1.1
 
 dev_dependencies:
   flutter_test:

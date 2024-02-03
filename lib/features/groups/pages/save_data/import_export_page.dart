@@ -1,0 +1,74 @@
+import 'dart:io';
+
+import 'package:bachat_gat/common/common_index.dart';
+import 'package:flutter/material.dart';
+
+class ImportExportPage extends StatefulWidget {
+  const ImportExportPage({super.key});
+
+  @override
+  State<ImportExportPage> createState() => _ImportExportPageState();
+}
+
+class _ImportExportPageState extends State<ImportExportPage> {
+  void exportFile() {
+    var dbService = DbService();
+    AppUtils.toast(context, dbService.db.path);
+    var dt = DateTime.now();
+    String fileName = "${dt.year}_${dt.month}_${dt.day}_bachat_db.sqlite";
+    AppUtils.saveFile(fileName, dbService.db.path);
+  }
+
+  Future<void> importFile() async {
+    var newDbFilePath = await AppUtils.pickFile([".sqlite"]);
+    if (newDbFilePath.isNotEmpty) {
+      var appDbName = "app_db.sqlite";
+      var dbService = DbService();
+      String oldDbFile = dbService.db.path;
+      changeFileNameOnlySync(oldDbFile, "$appDbName.bkp");
+      var newFile = File(newDbFilePath);
+      newFile.copySync(oldDbFile);
+      dbService.initDb();
+    }
+  }
+
+  File changeFileNameOnlySync(String oldFilePath, String newFileName) {
+    var file = File(oldFilePath);
+    var path = file.path;
+    var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
+    var newPath = path.substring(0, lastSeparator + 1) + newFileName;
+    return file.renameSync(newPath);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Import/Export Data"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ButtonBar(
+          alignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                importFile();
+              },
+              icon: const Icon(Icons.upload),
+              label: const Text("Import File"),
+            ),
+            const Divider(),
+            ElevatedButton.icon(
+              onPressed: () {
+                exportFile();
+              },
+              icon: const Icon(Icons.download),
+              label: const Text("Export File"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

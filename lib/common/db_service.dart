@@ -26,6 +26,13 @@ class DbService {
     });
   }
 
+  Future<void> closeDb() async {
+    if (kIsWeb) {
+      sqlite.databaseFactory = databaseFactoryFfiWeb;
+    }
+    db.close();
+  }
+
   Future<List<Map<String, Object?>>> read(String sql,
       [List<Object?> parameters = const []]) async {
     var res = await db.rawQuery(sql, parameters);

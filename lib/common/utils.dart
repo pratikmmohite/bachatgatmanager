@@ -1,3 +1,5 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -87,5 +89,21 @@ class AppUtils {
     }
 
     return monthStrings;
+  }
+
+  static Future<String> saveFile(String name, String filePath) async {
+    return await FileSaver.instance.saveFile(filePath: filePath, name: name);
+  }
+
+  static Future<String> pickFile([List<String>? allowedExtensions]) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: allowedExtensions,
+      allowMultiple: false,
+      type: FileType.custom,
+    );
+    if (result != null) {
+      return result.files.single.path!;
+    }
+    return "";
   }
 }

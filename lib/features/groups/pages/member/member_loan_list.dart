@@ -154,15 +154,11 @@ class _MembersLoanListState extends State<MembersLoanList> {
                         )
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: RichText(
-                        text: TextSpan(
-                          text: "Note : ",
-                          children: [TextSpan(text: loan.note)],
-                        ),
-                      ),
-                    )
+                    const Text(
+                      "Note :",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(loan.note),
                   ],
                 ),
               ),
