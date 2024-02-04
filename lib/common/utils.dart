@@ -91,15 +91,18 @@ class AppUtils {
     return monthStrings;
   }
 
-  static Future<String> saveFile(String name, String filePath) async {
-    return await FileSaver.instance.saveFile(filePath: filePath, name: name);
+  static Future<String?> saveFile(String name, String filePath) async {
+    String ext = filePath.split(".").last;
+    var s = await FileSaver.instance.saveAs(
+        filePath: filePath, name: name, ext: ext, mimeType: MimeType.other);
+    return s;
   }
 
   static Future<String> pickFile([List<String>? allowedExtensions]) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowedExtensions: allowedExtensions,
+      allowedExtensions: [],
       allowMultiple: false,
-      type: FileType.custom,
+      type: FileType.any,
     );
     if (result != null) {
       return result.files.single.path!;

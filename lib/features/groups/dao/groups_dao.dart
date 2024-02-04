@@ -48,16 +48,18 @@ class GroupsDao {
   Future<int> addTransaction(Transaction trx) async {
     var row = await dbService.insert(transactionTableName, trx.toJson());
     if (trx.trxType == AppConstants.ttLoan) {
-      updateLoanPaid(Loan.withPayment(
+      var l = Loan.withPayment(
         trx.sourceId,
         paidLoanAmount: trx.cr,
-      ));
+      );
+      updateLoanPaid(l);
     }
     if (trx.trxType == AppConstants.ttLoanInterest) {
-      updateLoanPaid(Loan.withPayment(
+      var i = Loan.withPayment(
         trx.sourceId,
         paidInterestAmount: trx.cr,
-      ));
+      );
+      updateLoanPaid(i);
     }
     return row;
   }
@@ -82,7 +84,7 @@ class GroupsDao {
       cr: 0,
       dr: loan.loanAmount,
       sourceType: AppConstants.sLoan,
-      sourceId: loan.addedBy,
+      sourceId: loan.id,
       addedBy: loan.addedBy,
       note: loan.note,
     );
@@ -93,7 +95,8 @@ class GroupsDao {
   Future<int> updateLoanPaid(Loan loan) async {
     String updateQuery = "update loans set "
         "paidLoanAmount = paidLoanAmount + ?, "
-        "paidInterestAmount = paidInterestAmount + ? "
+        "paidInterestAmount = paidInterestAmount + ?, "
+        "status = iif(paidLoanAmount >= loanAmount, '${AppConstants.lsComplete}', '${AppConstants.lsActive}') "
         "where id = ?";
     var row = await dbService.write(
       updateQuery,

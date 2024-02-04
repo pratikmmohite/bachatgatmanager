@@ -106,7 +106,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
 
   DataCell buildCellD(double label, [GestureTapCallback? onTap]) {
     return DataCell(
-      Text("₹${label.toInt()}"),
+      Text("₹${label.toStringAsFixed(1)}"),
       onTap: onTap,
     );
   }
@@ -217,8 +217,11 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
               await getGroupMembers();
             },
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: buildDetailsTable(),
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: buildDetailsTable(),
+              ),
             ),
           );
   }

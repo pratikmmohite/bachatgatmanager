@@ -219,6 +219,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
 
   buildLoanField() {
     return CustomTextField(
+      key: Key("lamt_${loanTrx.sourceId}"),
       label: "Loan Amount",
       field: "loanAmount",
       suffixIcon: const Icon(Icons.currency_rupee),
@@ -245,7 +246,8 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
         setState(() {
           loanTrx.sourceId = op.value;
           loanTrx.cr = remainingLoan;
-          loanInterestTrx.cr = (remainingLoan * interest ~/ 100).toDouble();
+          loanInterestTrx.cr =
+              double.parse((remainingLoan * interest / 100).toStringAsFixed(2));
         });
       },
     );
@@ -265,10 +267,11 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
 
   buildLoanInterestField() {
     return CustomTextField(
+      key: Key("lint_${loanTrx.sourceId}"),
       label: "Loan Interest",
       field: "lateFee",
       suffixIcon: const Icon(Icons.currency_rupee),
-      value: "${(loanInterestTrx.cr ?? 0).toInt()}",
+      value: "${(loanInterestTrx.cr ?? 0)}",
       onChange: (value) {
         loanInterestTrx.cr = double.tryParse(value) ?? 0;
       },

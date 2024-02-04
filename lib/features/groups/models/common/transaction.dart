@@ -1,3 +1,4 @@
+import 'package:bachat_gat/common/common_index.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'com_fields.dart';
@@ -41,8 +42,8 @@ class Transaction extends ComFields {
     required this.trxPeriod,
     this.cr = 0,
     this.dr = 0,
-    this.sourceId = "User",
-    this.sourceType = "Admin",
+    this.sourceId = "",
+    this.sourceType = AppConstants.sUser,
     this.addedBy = "Admin",
     this.note = "",
     DateTime? trxDt,

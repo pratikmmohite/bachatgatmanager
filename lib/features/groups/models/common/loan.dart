@@ -30,8 +30,13 @@ class Loan extends ComFields {
       required this.status,
       required this.loanDate,
       required this.addedBy});
-  Loan.withPayment(this.id,
-      {this.paidLoanAmount = 0, this.paidInterestAmount = 0});
+  Loan.withPayment(
+    String loanId, {
+    this.paidLoanAmount = 0,
+    this.paidInterestAmount = 0,
+  }) {
+    id = loanId;
+  }
 
   factory Loan.fromJson(Map<String, dynamic> json) => _$LoanFromJson(json);
 

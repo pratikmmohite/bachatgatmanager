@@ -12,23 +12,38 @@ class ImportExportPage extends StatefulWidget {
 
 class _ImportExportPageState extends State<ImportExportPage> {
   void exportFile() {
-    var dbService = DbService();
-    AppUtils.toast(context, dbService.db.path);
-    var dt = DateTime.now();
-    String fileName = "${dt.year}_${dt.month}_${dt.day}_bachat_db.sqlite";
-    AppUtils.saveFile(fileName, dbService.db.path);
+    try {
+      var dbService = DbService();
+      AppUtils.toast(context, dbService.db.path);
+      var dt = DateTime.now();
+      String fileName = "${dt.year}_${dt.month}_${dt.day}_bachat_db";
+      AppUtils.saveFile(fileName, dbService.db.path);
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
+    }
   }
 
   Future<void> importFile() async {
-    var newDbFilePath = await AppUtils.pickFile([".sqlite"]);
-    if (newDbFilePath.isNotEmpty) {
-      var appDbName = "app_db.sqlite";
-      var dbService = DbService();
-      String oldDbFile = dbService.db.path;
-      changeFileNameOnlySync(oldDbFile, "$appDbName.bkp");
-      var newFile = File(newDbFilePath);
-      newFile.copySync(oldDbFile);
-      dbService.initDb();
+    try {
+      var newDbFilePath = await AppUtils.pickFile(["sqlite"]);
+      if (!newDbFilePath.endsWith(".sqlite")) {
+        AppUtils.toast(context, "Select supported file with ext .sqlite");
+        return;
+      }
+      if (newDbFilePath.isNotEmpty) {
+        var appDbName = "app_db.sqlite";
+        var dbService = DbService();
+        String oldDbFile = dbService.db.path;
+        dbService.closeDb();
+        changeFileNameOnlySync(oldDbFile, "$appDbName.bkp");
+        AppUtils.toast(context, "Renamed old file");
+        var newFile = File(newDbFilePath);
+        newFile.copySync(oldDbFile);
+        AppUtils.toast(context, "Coppied new file");
+        dbService.initDb();
+      }
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
     }
   }
 

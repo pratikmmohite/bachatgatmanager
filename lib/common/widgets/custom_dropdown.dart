@@ -6,7 +6,7 @@ typedef CustomOptionChangeFunc<T> = void Function(
 class CustomDropDown<T> extends StatefulWidget {
   final String label;
   final String? value;
-  final List<CustomDropDownOption> options;
+  final List<CustomDropDownOption<T>> options;
   final CustomOptionChangeFunc<T>? onChange;
   const CustomDropDown({
     super.key,
@@ -17,11 +17,12 @@ class CustomDropDown<T> extends StatefulWidget {
   });
 
   @override
-  State<CustomDropDown> createState() => _CustomDropDownState();
+  State<CustomDropDown<T>> createState() => _CustomDropDownState<T>();
 }
 
-class _CustomDropDownState extends State<CustomDropDown> {
-  Future<CustomDropDownOption?> showOptions() async {
+class _CustomDropDownState<T> extends State<CustomDropDown<T>> {
+  CustomDropDownOption<T>? selectedOptionObject;
+  Future<CustomDropDownOption<T>?> showOptions() async {
     List<Widget> optionsList = widget.options
         .map((e) => ListTile(
               leading: widget.value == e.value
@@ -33,7 +34,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
               title: Text(e.label),
             ))
         .toList();
-    return showDialog<CustomDropDownOption?>(
+    return showDialog<CustomDropDownOption<T>?>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
@@ -58,6 +59,13 @@ class _CustomDropDownState extends State<CustomDropDown> {
   }
 
   @override
+  void initState() {
+    var x = widget.options.where((op) => op.value == widget.value);
+    selectedOptionObject = x.isNotEmpty ? x.first : null;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -65,11 +73,20 @@ class _CustomDropDownState extends State<CustomDropDown> {
           child: ElevatedButton(
             onPressed: () async {
               var option = await showOptions();
-              if (widget.onChange != null && option != null) {
-                widget.onChange!(option);
+              try {
+                setState(() {
+                  selectedOptionObject = option;
+                });
+                if (option != null && widget.onChange != null) {
+                  widget.onChange!(option);
+                }
+              } catch (e) {
+                print(e);
               }
             },
-            child: Text(widget.label),
+            child: selectedOptionObject != null
+                ? Text(selectedOptionObject?.label ?? "")
+                : Text(widget.label),
           ),
         ),
       ],
