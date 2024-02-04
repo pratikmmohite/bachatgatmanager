@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 class ImportExportPage extends StatefulWidget {
@@ -57,9 +58,10 @@ class _ImportExportPageState extends State<ImportExportPage> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Import/Export Data"),
+        title: Text(local.abImportExport),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -71,7 +73,7 @@ class _ImportExportPageState extends State<ImportExportPage> {
                 importFile();
               },
               icon: const Icon(Icons.upload),
-              label: const Text("Import File"),
+              label: Text(local.bImportFile),
             ),
             const Divider(),
             ElevatedButton.icon(
@@ -79,7 +81,7 @@ class _ImportExportPageState extends State<ImportExportPage> {
                 exportFile();
               },
               icon: const Icon(Icons.download),
-              label: const Text("Export File"),
+              label: Text(local.bExportFile),
             ),
           ],
         ),

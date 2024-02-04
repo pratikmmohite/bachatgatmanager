@@ -19,6 +19,9 @@ dependencies:
   json_annotation: ^4.8.1
   file_saver: ^0.2.9
   file_picker: ^6.1.1
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
 dev_dependencies:
   flutter_test:

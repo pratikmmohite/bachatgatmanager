@@ -1,4 +1,5 @@
 import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/groups_dao.dart';
@@ -40,9 +41,10 @@ class _MembersListState extends State<MembersList> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Members"),
+        title: Text(local.abMemberList),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

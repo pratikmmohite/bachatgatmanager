@@ -1,4 +1,5 @@
 import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -112,16 +113,17 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   }
 
   Widget buildDetailsTable() {
+    var local = AppLocal.of(context);
     List<String> columns = [
-      "Member",
-      "Total",
-      "Share(+)",
-      "Remaining Loan(-)",
-      "Loan(+)",
-      "Interest(+)",
-      "Penalty(+)",
-      "Others(+)",
-      "Actions",
+      local.lMember,
+      local.lTotal,
+      local.lShare,
+      local.lRemaining,
+      local.lLoan,
+      local.lInterest,
+      local.lPenalty,
+      local.lOthers,
+      local.lActions,
     ];
     List<DataRow> rows = groupMemberDetails
         .map(
@@ -141,17 +143,17 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
                     IconButton(
                       onPressed: () => handleAddTrxClick(m),
                       icon: const Icon(Icons.add_box_outlined),
-                      tooltip: "Add Sare",
+                      tooltip: local.bAddShare,
                     ),
                     IconButton(
                       onPressed: () => handleAddLoanTrxClick(m),
                       icon: const Icon(Icons.add_shopping_cart),
-                      tooltip: "Add Loan",
+                      tooltip: local.bAddLoan,
                     ),
                     IconButton(
                       onPressed: () => handleShowLoanClick(m),
                       icon: const Icon(Icons.account_balance_outlined),
-                      tooltip: "Show Loans",
+                      tooltip: local.bShowLoans,
                     )
                   ],
                 ),

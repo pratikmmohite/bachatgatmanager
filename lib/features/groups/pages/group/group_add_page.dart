@@ -1,4 +1,5 @@
 import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../common/widgets/widgets_index.dart';
@@ -40,8 +41,9 @@ class _GroupAddPageState extends State<GroupAddPage> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Saving Group")),
+      appBar: AppBar(title: Text(local.abAddGroup)),
       body: Container(
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -53,7 +55,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomTextField(
-                    label: "Group Name",
+                    label: local.tfGroupName,
                     field: "name",
                     isRequired: true,
                     value: group.name,
@@ -61,7 +63,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                       group.name = value;
                     }),
                 CustomDateField(
-                  label: "Start Date",
+                  label: local.tfStartDate,
                   field: "sdt_edt",
                   value: group.sdt,
                   onChange: (value) {
@@ -74,7 +76,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                 ),
                 CustomTextField(
                   key: Key("edt_dt_${group.edt.toString()}"),
-                  label: "End Date",
+                  label: local.tfEndDate,
                   field: "end_dt",
                   value: group.edt.toString().split(" ")[0],
                   onChange: (value) {},
@@ -82,7 +84,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                   keyboardType: TextInputType.none,
                 ),
                 CustomTextField(
-                  label: "Address",
+                  label: local.tfAddress,
                   field: "address",
                   value: group.address ?? "",
                   onChange: (value) {
@@ -96,7 +98,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                     TableRow(
                       children: [
                         CustomTextField(
-                          label: "Bank Name",
+                          label: local.tfBankName,
                           field: "bankName",
                           value: group.bankName ?? "",
                           onChange: (value) {
@@ -104,7 +106,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                           },
                         ),
                         CustomTextField(
-                          label: "Account No",
+                          label: local.tfAccountNot,
                           field: "accountNo",
                           value: group.accountNo ?? "",
                           onChange: (value) {
@@ -116,7 +118,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                     TableRow(
                       children: [
                         CustomTextField(
-                          label: "IFSC Code",
+                          label: local.tfIfscCode,
                           field: "ifscCode",
                           value: group.ifscCode ?? "",
                           onChange: (value) {
@@ -124,7 +126,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                           },
                         ),
                         CustomDateField(
-                          label: "Account Opening Date",
+                          label: local.tfAccountOpeningDt,
                           field: "accountOpeningDate",
                           value: group.accountOpeningDate,
                           onChange: (value) {
@@ -138,13 +140,13 @@ class _GroupAddPageState extends State<GroupAddPage> {
                   ],
                 ),
                 const Divider(),
-                const Text("Group Settings"),
+                Text(local.tfGroupSettings),
                 Table(
                   children: [
                     TableRow(
                       children: [
                         CustomTextField(
-                          label: "Installment Amount",
+                          label: local.tfInstallmentAmt,
                           field: "installmentAmt",
                           suffixIcon: const Icon(Icons.currency_rupee),
                           value:
@@ -155,7 +157,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                           },
                         ),
                         CustomTextField(
-                          label: "Loan Interest",
+                          label: local.tfLoanInterest,
                           field: "loanInterestPer",
                           suffixIcon: const Icon(Icons.percent),
                           value:
@@ -170,7 +172,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
                     TableRow(
                       children: [
                         CustomTextField(
-                          label: "Late Fee",
+                          label: local.tfLateFee,
                           field: "lateFeePerDay",
                           suffixIcon: const Icon(Icons.currency_rupee),
                           value: "${(group.lateFeePerDay ?? 0).toInt()}",
@@ -202,7 +204,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
             }
           }
         },
-        label: const Text("Save"),
+        label: Text(local.bSave),
         icon: const Icon(Icons.save),
       ),
     );

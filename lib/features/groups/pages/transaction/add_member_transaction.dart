@@ -1,4 +1,5 @@
 import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -137,9 +138,10 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Record transaction"),
+        title: Text(local.abRecordTransaction),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -166,20 +168,21 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   }
 
   bool isValid() {
+    var local = AppLocal.of(context);
     switch (widget.mode) {
       case AppConstants.tmLoan:
         if (loanTrx.sourceId.isEmpty) {
-          AppUtils.toast(context, "Please select loan");
+          AppUtils.toast(context, local.mSelectLoan);
           return false;
         }
         if (loanTrx.cr == 0) {
-          AppUtils.toast(context, "Please enter loan amount");
+          AppUtils.toast(context, local.mEnterLoanAmount);
           return false;
         }
         break;
       case AppConstants.tmPayment:
         if (shareTrx.cr == 0) {
-          AppUtils.toast(context, "Please enter share amount");
+          AppUtils.toast(context, local.mEnterShareAmount);
           return false;
         }
         break;
@@ -192,6 +195,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       if (!isValid()) {
         return;
       }
+      var local = AppLocal.of(context);
       switch (widget.mode) {
         case AppConstants.tmLoan:
           if (loanTrx.cr > 0) {
@@ -200,7 +204,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
           if (loanInterestTrx.cr > 0) {
             await groupDao.addTransaction(loanInterestTrx);
           }
-          AppUtils.toast(context, "Recorded loan payment successfully");
+          AppUtils.toast(context, local.mRecordedLoanPaymentSuccess);
           AppUtils.close(context);
           break;
         case AppConstants.tmPayment:
@@ -210,7 +214,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
           if (lateFeeTrx.cr > 0) {
             await groupDao.addTransaction(lateFeeTrx);
           }
-          AppUtils.toast(context, "Recorded share payment successfully");
+          AppUtils.toast(context, local.mRecordedSharePaymentSuccess);
           AppUtils.close(context);
           break;
       }
@@ -220,9 +224,10 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   }
 
   buildLoanField() {
+    var local = AppLocal.of(context);
     return CustomTextField(
       key: Key("lamt_${loanTrx.sourceId}"),
-      label: "Loan Amount",
+      label: local.tfLoanAmt,
       field: "loanAmount",
       suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(loanTrx.cr ?? 0).toInt()}",
@@ -238,8 +243,9 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
           (e) => CustomDropDownOption<Loan>(e.toString(), e.id, e),
         )
         .toList();
+    var local = AppLocal.of(context);
     return CustomDropDown<Loan>(
-      label: "Select loan to pay",
+      label: local.tfSelectLoanToPay,
       value: loanTrx.sourceId,
       options: options,
       onChange: (op) {
@@ -256,8 +262,9 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   }
 
   buildLateFeeField() {
+    var local = AppLocal.of(context);
     return CustomTextField(
-      label: "Late Fee",
+      label: local.tfLateFee,
       field: "lateFee",
       value: "${(lateFeeTrx.cr ?? 0).toInt()}",
       suffixIcon: const Icon(Icons.currency_rupee),
@@ -268,9 +275,10 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   }
 
   buildLoanInterestField() {
+    var local = AppLocal.of(context);
     return CustomTextField(
       key: Key("lint_${loanTrx.sourceId}"),
-      label: "Loan Interest",
+      label: local.tfLateFee,
       field: "lateFee",
       suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(loanInterestTrx.cr ?? 0)}",
@@ -281,8 +289,9 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   }
 
   buildShareField() {
+    var local = AppLocal.of(context);
     return CustomTextField(
-      label: "Share Amount",
+      label: local.tfShareAmount,
       field: "shareAmt",
       suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(shareTrx.cr ?? 0).toInt()}",

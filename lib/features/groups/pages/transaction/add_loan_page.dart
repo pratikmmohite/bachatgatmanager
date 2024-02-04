@@ -1,4 +1,5 @@
 import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -41,6 +42,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
 
   void prepareRequests() {
     var today = DateTime.now();
+
     loanTrx = Loan(
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
@@ -57,9 +59,10 @@ class _AddLoanPageState extends State<AddLoanPage> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Loan"),
+        title: Text(local.abAddLoan),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -72,7 +75,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
           try {
             if (loanTrx.loanAmount > 0) {
               await groupDao.addLoan(loanTrx);
-              AppUtils.toast(context, "Recorded loan successfully");
+              AppUtils.toast(context, local.mLoanSuccess);
               AppUtils.close(context);
               return;
             }
@@ -80,7 +83,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
             AppUtils.toast(context, e.toString());
           }
         },
-        label: const Text("Give loan"),
+        label: Text(local.bGiveLoan),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -107,8 +110,9 @@ class _AddLoanPageState extends State<AddLoanPage> {
   }
 
   buildLoanField() {
+    var local = AppLocal.of(context);
     return CustomTextField(
-      label: "Enter Loan Amount",
+      label: local.tfEnterLoanAmt,
       field: "loanAmount",
       suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(loanTrx.loanAmount ?? 0).toInt()}",
@@ -119,8 +123,9 @@ class _AddLoanPageState extends State<AddLoanPage> {
   }
 
   buildLoanInterestField() {
+    var local = AppLocal.of(context);
     return CustomTextField(
-      label: "Enter Loan Interest",
+      label: local.tfEnterLoanInterest,
       field: "loanAmount",
       suffixIcon: const Icon(Icons.percent),
       value: "${(loanTrx.interestPercentage ?? 0).toInt()}",
@@ -131,8 +136,9 @@ class _AddLoanPageState extends State<AddLoanPage> {
   }
 
   buildNoteField() {
+    var local = AppLocal.of(context);
     return CustomTextField(
-      label: "Enter Note",
+      label: local.tfEnterNote,
       field: "note",
       value: loanTrx.note,
       onChange: (value) {

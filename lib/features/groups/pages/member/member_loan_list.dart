@@ -1,5 +1,6 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/member/member_details_card.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/groups_dao.dart';
@@ -62,9 +63,10 @@ class _MembersLoanListState extends State<MembersLoanList> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Loan"),
+        title: Text(local.abLoanList),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(120),
           child: MemberDetailsCard(groupMemberDetails),
@@ -126,12 +128,12 @@ class _MembersLoanListState extends State<MembersLoanList> {
                         TableRow(
                           children: [
                             CustomAmountChip(
-                              label: "Loan Amount",
+                              label: local.tfLoanAmt,
                               amount: loan.loanAmount,
                               showInRow: true,
                             ),
                             CustomAmountChip(
-                              label: "Interest (%)",
+                              label: "${local.lLoanInterest} (%)",
                               amount: loan.interestPercentage,
                               prefix: "",
                               showInRow: true,
@@ -141,12 +143,12 @@ class _MembersLoanListState extends State<MembersLoanList> {
                         TableRow(
                           children: [
                             CustomAmountChip(
-                              label: "Paid Loan",
+                              label: local.lPaidLoan,
                               amount: loan.paidLoanAmount,
                               showInRow: true,
                             ),
                             CustomAmountChip(
-                              label: "Paid Interest",
+                              label: local.lPaidInterest,
                               amount: loan.paidInterestAmount,
                               showInRow: true,
                             ),
@@ -154,8 +156,8 @@ class _MembersLoanListState extends State<MembersLoanList> {
                         )
                       ],
                     ),
-                    const Text(
-                      "Note :",
+                    Text(
+                      local.lNote,
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(loan.note),

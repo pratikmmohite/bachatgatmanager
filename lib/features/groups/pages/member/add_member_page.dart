@@ -1,3 +1,4 @@
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../common/widgets/widgets_index.dart';
@@ -42,8 +43,9 @@ class _MemberAddPageState extends State<MemberAddPage> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Saving Group")),
+      appBar: AppBar(title: Text(local.abAddMember)),
       body: Container(
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -55,7 +57,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomTextField(
-                    label: "Member Name",
+                    label: local.tfMemberName,
                     field: "name",
                     value: _groupMember.name,
                     isRequired: true,
@@ -63,7 +65,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
                       _groupMember.name = value;
                     }),
                 CustomTextField(
-                  label: "Mobile No",
+                  label: local.tfMobileNo,
                   field: "mobileNo",
                   value: _groupMember.mobileNo ?? "",
                   onChange: (value) {
@@ -76,7 +78,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
                     TableRow(
                       children: [
                         CustomTextField(
-                          label: "Aadhar No",
+                          label: local.tfAadherNo,
                           field: "aadharNo",
                           value: _groupMember.aadharNo ?? "",
                           onChange: (value) {
@@ -85,7 +87,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
                           keyboardType: TextInputType.number,
                         ),
                         CustomTextField(
-                          label: "Pan No",
+                          label: local.tfPanNo,
                           field: "panNo",
                           value: _groupMember.panNo ?? "",
                           onChange: (value) {
@@ -97,7 +99,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
                   ],
                 ),
                 CustomDateField(
-                  label: "Joining Date",
+                  label: local.tfJoiningDate,
                   field: "joiningDate",
                   value: _groupMember.joiningDate,
                   onChange: (value) {
@@ -125,7 +127,7 @@ class _MemberAddPageState extends State<MemberAddPage> {
             }
           }
         },
-        label: const Text("Save"),
+        label: Text(local.bSave),
         icon: const Icon(Icons.save),
       ),
     );
