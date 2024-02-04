@@ -48,31 +48,51 @@ class _GroupActionsState extends State<GroupActions> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Group Actions"),
-        ),
-        body: ListView(
-          children: [
-            ListTile(
-              title: const Text("Record Statement"),
-              onTap: () {
-                AppUtils.navigateTo(
-                  context,
-                  GroupDetailsScreen(
-                    key: ValueKey(group.id),
-                    group: group,
-                  ),
-                );
-              },
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  group.name,
+                  style: TextStyle(fontSize: 20),
+                ),
+                const Divider(),
+              ],
             ),
-            ListTile(
-              onTap: () {
-                AppUtils.navigateTo(
-                  context,
-                  GroupMonthlySummary(
-                    group: group,
-                  ),
-                );
-              },
-              title: const Text("Group Summary"),
+          ),
+        ),
+        body: Wrap(
+          children: [
+            Card(
+              child: ListTile(
+                title: const Text("Record Statement"),
+                leading: const Icon(Icons.money),
+                onTap: () {
+                  AppUtils.navigateTo(
+                    context,
+                    GroupDetailsScreen(
+                      key: ValueKey(group.id),
+                      group: group,
+                    ),
+                  );
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.summarize_outlined),
+                onTap: () {
+                  AppUtils.navigateTo(
+                    context,
+                    GroupMonthlySummary(
+                      group: group,
+                    ),
+                  );
+                },
+                title: const Text("Group Summary"),
+              ),
             )
           ],
         ));

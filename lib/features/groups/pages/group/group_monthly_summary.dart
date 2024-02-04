@@ -89,6 +89,11 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Group Summary"),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(10),
+          child: Text(
+              "${AppUtils.getHumanReadableDt(filter.sdt)}-${AppUtils.getHumanReadableDt(filter.edt)}"),
+        ),
         actions: [
           IconButton(
             onPressed: () async {
@@ -112,7 +117,7 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
         ],
       ),
       bottomSheet: GroupSummaryCard(
-        key: Key("gs_" + groupSummary.length.toString()),
+        key: Key("gs_${groupSummary.length}"),
         summary: groupSummary,
       ),
       body: RefreshIndicator(
