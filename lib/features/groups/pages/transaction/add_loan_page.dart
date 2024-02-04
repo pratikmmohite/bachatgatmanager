@@ -82,23 +82,25 @@ class _AddLoanPageState extends State<AddLoanPage> {
         },
         label: const Text("Give loan"),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            MemberDetailsCard(groupMemberDetail),
-            Table(
-              children: [
-                TableRow(
-                  children: [
-                    buildLoanField(),
-                    buildLoanInterestField(),
-                  ],
-                )
-              ],
-            ),
-            buildNoteField(),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              MemberDetailsCard(groupMemberDetail),
+              Table(
+                children: [
+                  TableRow(
+                    children: [
+                      buildLoanField(),
+                      buildLoanInterestField(),
+                    ],
+                  )
+                ],
+              ),
+              buildNoteField(),
+            ],
+          ),
         ),
       ),
     );

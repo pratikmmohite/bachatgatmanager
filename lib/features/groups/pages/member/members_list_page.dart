@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../dao/groups_dao.dart';
 import '../../models/models_index.dart';
-import '../transaction/add_member_page.dart';
+import 'add_member_page.dart';
 
 class MembersList extends StatefulWidget {
   final Group group;

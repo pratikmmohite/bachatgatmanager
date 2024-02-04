@@ -151,13 +151,15 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
         onPressed: recordTransaction,
         label: Text("Record ${widget.mode}"),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            MemberDetailsCard(groupMemberDetail),
-            getFields(),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              MemberDetailsCard(groupMemberDetail),
+              getFields(),
+            ],
+          ),
         ),
       ),
     );

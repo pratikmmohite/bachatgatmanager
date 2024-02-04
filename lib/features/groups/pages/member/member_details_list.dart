@@ -114,13 +114,13 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   Widget buildDetailsTable() {
     List<String> columns = [
       "Member",
+      "Total",
       "Share(+)",
       "Remaining Loan(-)",
       "Loan(+)",
       "Interest(+)",
       "Penalty(+)",
       "Others(+)",
-      "Total",
       "Actions",
     ];
     List<DataRow> rows = groupMemberDetails
@@ -128,13 +128,13 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
           (m) => DataRow(
             cells: [
               buildCellS(m.name, () => handleAddTrxClick(m)),
+              buildCellD(m.balance),
               buildCellD(m.paidShareAmount),
               buildCellD(m.pendingLoanAmount, () => handleShowLoanClick(m)),
               buildCellD(m.paidLoanAmount, () => handleAddLoanTrxClick(m)),
               buildCellD(m.paidLoanInterestAmount),
               buildCellD(m.paidLateFee),
               buildCellD(m.paidOtherAmount),
-              buildCellD(m.balance),
               buildCellI(
                 Row(
                   children: [
@@ -195,13 +195,13 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
 
     return DataRow(cells: [
       buildCellS("Total"),
+      buildCellD(totalBalance),
       buildCellD(totalPaidShareAmount),
       buildCellD(totalPendingLoanAmount),
       buildCellD(totalPaidLoanAmount),
       buildCellD(totalPaidLoanInterestAmount),
       buildCellD(totalPaidLateFee),
       buildCellD(totalPaidOtherAmount),
-      buildCellD(totalBalance),
       buildCellS(""),
     ]);
   }
