@@ -65,8 +65,48 @@ class _CustomDropDownState<T> extends State<CustomDropDown<T>> {
     super.initState();
   }
 
+  Widget buildMenuDropDown() {
+    var dropOptions = widget.options
+        .map(
+          (e) => DropdownMenuEntry<CustomDropDownOption<T>>(
+            value: e,
+            label: e.label,
+            leadingIcon:
+                widget.value == e.value ? const Icon(Icons.check_circle) : null,
+          ),
+        )
+        .toList();
+
+    return Container(
+      margin: const EdgeInsets.all(2),
+      child: DropdownMenu<CustomDropDownOption<T>>(
+        label: Text(widget.label),
+        initialSelection: selectedOptionObject,
+        expandedInsets: EdgeInsets.zero,
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+        ),
+        dropdownMenuEntries: dropOptions,
+        onSelected: (option) {
+          try {
+            if (option != null && widget.onChange != null) {
+              setState(() {
+                selectedOptionObject = option;
+              });
+              widget.onChange!(option);
+            }
+          } catch (e) {
+            print(e);
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    return buildMenuDropDown();
     return Row(
       children: [
         Expanded(
@@ -74,10 +114,10 @@ class _CustomDropDownState<T> extends State<CustomDropDown<T>> {
             onPressed: () async {
               var option = await showOptions();
               try {
-                setState(() {
-                  selectedOptionObject = option;
-                });
                 if (option != null && widget.onChange != null) {
+                  setState(() {
+                    selectedOptionObject = option;
+                  });
                   widget.onChange!(option);
                 }
               } catch (e) {

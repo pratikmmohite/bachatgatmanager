@@ -9,11 +9,15 @@ class AppConstants {
   static const String lsComplete = "Complete";
 
   static const String tmPayment = "Payment";
+  static const String tmBoth = "Record Payment";
   static const String tmLoan = "Loan Payment";
 
   static const String sLoan = "Loan";
   static const String sUser = "User";
-  static const List<String> cMonthsStr = [
+
+  static const String sfViewMode = "sfViewMode";
+
+  static const List<String> cEnMonthsStr = [
     "Jan",
     "Feb",
     "Mar",

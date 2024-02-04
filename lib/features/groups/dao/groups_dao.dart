@@ -45,6 +45,16 @@ class GroupsDao {
     return row;
   }
 
+  Future<List<Transaction>> getTransactions(
+      String groupId, String memberId) async {
+    String query = "select * from $transactionTableName "
+        "where groupId = ? and memberId = ? "
+        "order by trxDt desc";
+    var rows = await dbService.read(query, [groupId, memberId]);
+    var transactions = rows.map((e) => Transaction.fromJson(e)).toList();
+    return transactions;
+  }
+
   Future<int> addTransaction(Transaction trx) async {
     var row = await dbService.insert(transactionTableName, trx.toJson());
     if (trx.trxType == AppConstants.ttLoan) {
@@ -190,6 +200,28 @@ class GroupsDao {
     return members;
   }
 
+  Future<List<GroupSummary>> getGroupSummary(GroupSummaryFilter filter) async {
+    String selectQuery = "select trx.groupId "
+        ",trx.trxPeriod "
+        ",trx.trxType "
+        ",sum(trx.cr) as totalCr "
+        ",sum(trx.dr) as totalDr "
+        "from $transactionTableName trx ";
+    String whereClause =
+        "where trx.groupId = ? and trx.trxDt >= ? and trx.trxDt <= ? ";
+    String groupBy = "group by trx.groupId, trx.trxPeriod, trx.trxType ";
+    String orderBy = "order by trx.trxPeriod ";
+    List<Object?> pars = [
+      filter.groupId,
+      filter.sdt.toIso8601String(),
+      filter.edt.toIso8601String(),
+    ];
+    String query = selectQuery + whereClause + groupBy + orderBy;
+    var rows = await dbService.read(query, pars);
+    var summary = rows.map((e) => GroupSummary.fromJson(e)).toList();
+    return summary;
+  }
+
   String getAmountQuery(String trxType, String trxPeriod) {
     return "select ifnull(sum(t.cr), 0) "
         "from $transactionTableName t "
@@ -197,5 +229,13 @@ class GroupsDao {
         "and t.memberId = m.id "
         "and t.trxPeriod = '$trxPeriod' "
         "and t.trxType = '$trxType' ";
+  }
+
+  String getTotalQuery(String trxType) {
+    return "select ifnull(sum(t.cr-t.dr), 0) "
+        "from $transactionTableName t "
+        "where t.groupId = m.groupId "
+        "and t.trxType = '$trxType' "
+        "and t.trx_dt < ? ";
   }
 }

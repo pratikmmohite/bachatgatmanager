@@ -1,4 +1,5 @@
 import 'package:bachat_gat/common/utils.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/models_index.dart';
@@ -15,43 +16,54 @@ class GroupDetailsScreen extends StatefulWidget {
 class _GroupDetailsScreenState extends State<GroupDetailsScreen>
     with SingleTickerProviderStateMixin {
   late Group group;
-  List<String> tabMonths = [];
+  List<DateTime> tabMonths = [];
   List<Tab> tabs = [];
-  List<Widget> tabContent = [];
+  // YYYY-MM
+  late DateTime selectedTrxPeriodDt;
   TabController? tabController;
-
   @override
   void initState() {
-    super.initState();
     group = widget.group;
     buildMonths();
+    super.initState();
   }
 
   void buildMonths() {
     tabs = [];
-    tabMonths = AppUtils.getMonthStringsFromStartToEndDt(group.sdt, group.edt);
-    for (var tabStr in tabMonths) {
-      tabs.add(Tab(
-        text: tabStr,
-      ));
-      tabContent.add(buildTabContent(tabStr));
-    }
+    tabMonths = AppUtils.getMonthsFromStartToEndDt(group.sdt, group.edt, true);
     var dt = DateTime.now();
-    var currentDtStr = AppUtils.getTrxPeriod(dt.month, dt.year);
-    var initialIndex = tabMonths.indexOf(currentDtStr);
+    var initialIndex = tabMonths.indexWhere(
+      (element) => element.year == dt.year && element.month == dt.month,
+    );
+    selectedTrxPeriodDt = tabMonths[initialIndex];
     initialIndex = initialIndex >= 0 ? initialIndex : 0;
     tabController = TabController(
-      length: tabs.length,
+      length: tabMonths.length,
       vsync: this,
       initialIndex: initialIndex,
     );
+    tabController?.addListener(() {
+      setState(() {
+        selectedTrxPeriodDt = tabMonths[tabController?.index ?? 0];
+      });
+    });
   }
 
-  Widget buildTabContent(String month) {
-    return MemberDetailsList(
-      trxPeriod: month,
-      group: group,
-    );
+  List<Tab> buildLocalTabs() {
+    var local = AppLocal.of(context);
+    List<Tab> lTabs = tabMonths.map((tm) {
+      String tabStr = local.getHumanTrxPeriod(tm);
+      return Tab(
+        key: Key(tabStr),
+        text: tabStr,
+      );
+    }).toList();
+    return lTabs;
+  }
+
+  String getGroupPeriod() {
+    var local = AppLocal.of(context);
+    return "${local.getHumanTrxPeriod(group.sdt)} - ${local.getHumanTrxPeriod(group.edt)}";
   }
 
   @override
@@ -59,30 +71,28 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen>
     String title = "${group.name} ";
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          children: [
-            Text(
-              title,
-            ),
-          ],
+        title: Text(
+          title,
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: Text(
-              "${tabMonths.first} - ${tabMonths.last}",
+              getGroupPeriod(),
             ),
           ),
         ],
         bottom: TabBar(
-          tabs: tabs,
+          tabs: buildLocalTabs(),
           isScrollable: true,
           controller: tabController,
         ),
       ),
-      body: TabBarView(
-        controller: tabController,
-        children: tabContent,
+      body: MemberDetailsList(
+        key: Key("md_${selectedTrxPeriodDt.toIso8601String()}"),
+        trxPeriodDt: selectedTrxPeriodDt,
+        group: group,
+        viewMode: "table",
       ),
     );
   }

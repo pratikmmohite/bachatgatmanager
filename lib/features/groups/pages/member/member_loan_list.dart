@@ -10,8 +10,9 @@ import '../transaction/add_loan_page.dart';
 class MembersLoanList extends StatefulWidget {
   final Group group;
   final GroupMemberDetails groupMemberDetails;
+  final DateTime trxPeriodDt;
   const MembersLoanList(this.group,
-      {super.key, required this.groupMemberDetails});
+      {super.key, required this.groupMemberDetails, required this.trxPeriodDt});
 
   @override
   State<MembersLoanList> createState() => _MembersLoanListState();
@@ -23,6 +24,7 @@ class _MembersLoanListState extends State<MembersLoanList> {
   late GroupsDao groupDao;
   late Group _group;
   late GroupMemberDetails groupMemberDetails;
+  late DateTime trxPeriodDt;
 
   Future<void> getMemberLoans() async {
     loans = [];
@@ -56,6 +58,7 @@ class _MembersLoanListState extends State<MembersLoanList> {
   void initState() {
     _group = widget.group;
     groupMemberDetails = widget.groupMemberDetails;
+    trxPeriodDt = widget.trxPeriodDt;
     groupDao = GroupsDao();
     getMemberLoans();
     super.initState();
@@ -72,20 +75,21 @@ class _MembersLoanListState extends State<MembersLoanList> {
           child: MemberDetailsCard(groupMemberDetails),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await AppUtils.navigateTo(
             context,
             AddLoanPage(
               groupMemberDetail: groupMemberDetails,
-              trxPeriod: "",
+              trxPeriodDt: trxPeriodDt,
               group: _group,
             ),
           );
           await getGroupMembersDetails();
           await getMemberLoans();
         },
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: Text(local.bAddLoan),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -158,7 +162,7 @@ class _MembersLoanListState extends State<MembersLoanList> {
                     ),
                     Text(
                       local.lNote,
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                      style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(loan.note),
                   ],

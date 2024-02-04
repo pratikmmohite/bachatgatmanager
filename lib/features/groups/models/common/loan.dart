@@ -44,6 +44,6 @@ class Loan extends ComFields {
 
   @override
   String toString() {
-    return 'Loan: ₹$loanAmount, Dt: ${AppUtils.getHumanReadableDt(loanDate)}';
+    return 'Loan: ₹$loanAmount, Paid:$paidLoanAmount\nDt: ${AppUtils.getHumanReadableDt(loanDate)}';
   }
 }

@@ -1,4 +1,6 @@
 import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/features/groups/pages/member/member_details_card.dart';
+import 'package:bachat_gat/features/groups/pages/member/member_transactions_list.dart';
 import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
@@ -9,12 +11,14 @@ import '../transaction/add_member_transaction.dart';
 import 'member_loan_list.dart';
 
 class MemberDetailsList extends StatefulWidget {
-  final String trxPeriod;
+  final DateTime trxPeriodDt;
   final Group group;
+  final String viewMode;
   const MemberDetailsList({
     super.key,
-    required this.trxPeriod,
+    required this.trxPeriodDt,
     required this.group,
+    this.viewMode = "table",
   });
 
   @override
@@ -23,14 +27,16 @@ class MemberDetailsList extends StatefulWidget {
 
 class _MemberDetailsListState extends State<MemberDetailsList> {
   late Group group;
-  late String trxPeriod;
+  late DateTime trxPeriodDt;
   List<GroupMemberDetails> groupMemberDetails = [];
   late GroupsDao groupDao;
   bool isLoading = false;
+  String viewMode = "table";
 
   Future<void> getGroupMembers() async {
     groupMemberDetails = [];
-    var filter = MemberBalanceFilter(group.id, trxPeriod);
+    var filter =
+        MemberBalanceFilter(group.id, AppUtils.getTrxPeriodFromDt(trxPeriodDt));
     setState(() {
       isLoading = true;
     });
@@ -48,9 +54,20 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   void initState() {
     groupDao = GroupsDao();
     group = widget.group;
-    trxPeriod = widget.trxPeriod;
+    trxPeriodDt = widget.trxPeriodDt;
+    viewMode = widget.viewMode;
+    // initDefault();
     getGroupMembers();
     super.initState();
+  }
+
+  Future<void> initDefault() async {
+    viewMode = await StorageService.read(AppConstants.sfViewMode);
+    setState(() {});
+  }
+
+  Future<void> saveViewMode() async {
+    await StorageService.write(AppConstants.sfViewMode, viewMode);
   }
 
   Future<void> handleAddTrxClick(GroupMemberDetails memberDetails) async {
@@ -58,9 +75,22 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       context,
       AddMemberTransaction(
         groupMemberDetail: memberDetails,
-        trxPeriod: trxPeriod,
+        trxPeriodDt: trxPeriodDt,
         group: group,
         mode: AppConstants.tmPayment,
+      ),
+    );
+    getGroupMembers();
+  }
+
+  Future<void> handleBothTrxClick(GroupMemberDetails memberDetails) async {
+    await AppUtils.navigateTo(
+      context,
+      AddMemberTransaction(
+        groupMemberDetail: memberDetails,
+        trxPeriodDt: trxPeriodDt,
+        group: group,
+        mode: AppConstants.tmBoth,
       ),
     );
     getGroupMembers();
@@ -71,7 +101,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       context,
       AddMemberTransaction(
         groupMemberDetail: memberDetails,
-        trxPeriod: trxPeriod,
+        trxPeriodDt: trxPeriodDt,
         group: group,
         mode: AppConstants.tmLoan,
       ),
@@ -84,7 +114,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       context,
       AddLoanPage(
         groupMemberDetail: memberDetails,
-        trxPeriod: trxPeriod,
+        trxPeriodDt: trxPeriodDt,
         group: group,
       ),
     );
@@ -112,52 +142,52 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
     );
   }
 
+  Widget buildDetailsList() {
+    var local = AppLocal.of(context);
+    return ListView.builder(
+      itemCount: groupMemberDetails.length,
+      itemBuilder: (context, index) {
+        var m = groupMemberDetails[index];
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          shape: const RoundedRectangleBorder(side: BorderSide(width: 0.1)),
+          title: MemberDetailsCard(m),
+          subtitle: buildActions(m),
+        );
+      },
+    );
+  }
+
   Widget buildDetailsTable() {
     var local = AppLocal.of(context);
     List<String> columns = [
       local.lMember,
-      local.lTotal,
       local.lShare,
-      local.lRemaining,
       local.lLoan,
       local.lInterest,
       local.lPenalty,
       local.lOthers,
+      local.lTotal,
+      local.lRmLoan,
       local.lActions,
     ];
     List<DataRow> rows = groupMemberDetails
         .map(
           (m) => DataRow(
             cells: [
-              buildCellS(m.name, () => handleAddTrxClick(m)),
-              buildCellD(m.balance),
-              buildCellD(m.paidShareAmount),
-              buildCellD(m.pendingLoanAmount, () => handleShowLoanClick(m)),
+              buildCellS(m.name),
+              buildCellD(m.paidShareAmount, () => handleAddTrxClick(m)),
               buildCellD(m.paidLoanAmount, () => handleAddLoanTrxClick(m)),
               buildCellD(m.paidLoanInterestAmount),
               buildCellD(m.paidLateFee),
               buildCellD(m.paidOtherAmount),
-              buildCellI(
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => handleAddTrxClick(m),
-                      icon: const Icon(Icons.add_box_outlined),
-                      tooltip: local.bAddShare,
-                    ),
-                    IconButton(
-                      onPressed: () => handleAddLoanTrxClick(m),
-                      icon: const Icon(Icons.add_shopping_cart),
-                      tooltip: local.bAddLoan,
-                    ),
-                    IconButton(
-                      onPressed: () => handleShowLoanClick(m),
-                      icon: const Icon(Icons.account_balance_outlined),
-                      tooltip: local.bShowLoans,
-                    )
-                  ],
-                ),
-              ),
+              buildCellD(m.paidLoanAmount +
+                  m.paidLoanInterestAmount +
+                  m.paidShareAmount +
+                  m.paidLateFee +
+                  m.paidOtherAmount),
+              buildCellD(m.pendingLoanAmount, () => handleShowLoanClick(m)),
+              buildCellI(buildActions(m)),
             ],
           ),
         )
@@ -165,16 +195,19 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
     var summary = getSummaryRow();
     rows.add(summary);
     return DataTable(
-        columns: columns
-            .map(
-              (e) => DataColumn(
-                label: Text(
-                  e,
-                ),
+      showBottomBorder: true,
+      columnSpacing: 25,
+      columns: columns
+          .map(
+            (e) => DataColumn(
+              label: Text(
+                e,
               ),
-            )
-            .toList(),
-        rows: rows);
+            ),
+          )
+          .toList(),
+      rows: rows,
+    );
   }
 
   DataRow getSummaryRow() {
@@ -195,42 +228,120 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       totalPaidOtherAmount += m.paidOtherAmount;
     }
 
-    return DataRow(cells: [
-      buildCellS("Total"),
-      buildCellD(totalBalance),
-      buildCellD(totalPaidShareAmount),
-      buildCellD(totalPendingLoanAmount),
-      buildCellD(totalPaidLoanAmount),
-      buildCellD(totalPaidLoanInterestAmount),
-      buildCellD(totalPaidLateFee),
-      buildCellD(totalPaidOtherAmount),
-      buildCellS(""),
-    ]);
+    return DataRow(
+      cells: [
+        buildCellS("Total"),
+        buildCellD(totalPaidShareAmount),
+        buildCellD(totalPaidLoanAmount),
+        buildCellD(totalPaidLoanInterestAmount),
+        buildCellD(totalPaidLateFee),
+        buildCellD(totalPaidOtherAmount),
+        buildCellD(totalPaidShareAmount +
+            totalPaidLoanAmount +
+            totalPaidLoanInterestAmount +
+            totalPaidLateFee +
+            totalPaidOtherAmount),
+        buildCellD(totalPendingLoanAmount),
+        buildCellS(""),
+      ],
+    );
+  }
+
+  Widget buildView() {
+    if (viewMode == "list") {
+      return buildDetailsList();
+    }
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: buildDetailsTable(),
+      ),
+    );
+  }
+
+  Widget buildActions(GroupMemberDetails m) {
+    var local = AppLocal.of(context);
+    return ButtonBar(
+      alignment: MainAxisAlignment.spaceEvenly,
+      buttonPadding: const EdgeInsets.all(0),
+      children: [
+        IconButton(
+          onPressed: () => handleBothTrxClick(m),
+          icon: const Icon(Icons.attach_money),
+          tooltip: local.bAddShare,
+        ),
+        // IconButton(
+        //   onPressed: () => handleAddLoanTrxClick(m),
+        //   icon: const Icon(Icons.add_shopping_cart),
+        //   tooltip: local.bAddLoan,
+        // ),
+        IconButton(
+          onPressed: () => handleShowLoanClick(m),
+          icon: const Icon(Icons.account_balance_outlined),
+          tooltip: local.bShowLoans,
+        ),
+        IconButton(
+          onPressed: () => handleShowTransactionListClick(m),
+          icon: const Icon(Icons.remove_red_eye_outlined),
+          tooltip: local.bShowTransactions,
+        )
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : RefreshIndicator(
-            onRefresh: () async {
-              await getGroupMembers();
-            },
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: buildDetailsTable(),
-              ),
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          switch (viewMode) {
+            case "table":
+              viewMode = "list";
+              break;
+            case "list":
+              viewMode = "table";
+              break;
+          }
+          // saveViewMode();
+          setState(() {});
+        },
+        child: const Icon(Icons.view_agenda_outlined),
+      ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: () async {
+                await getGroupMembers();
+              },
+              child: buildView(),
             ),
-          );
+    );
   }
 
   handleShowLoanClick(GroupMemberDetails m) async {
     await AppUtils.navigateTo(
-        context, MembersLoanList(group, groupMemberDetails: m));
+      context,
+      MembersLoanList(
+        group,
+        groupMemberDetails: m,
+        trxPeriodDt: trxPeriodDt,
+      ),
+    );
+    getGroupMembers();
+  }
+
+  handleShowTransactionListClick(GroupMemberDetails m) async {
+    await AppUtils.navigateTo(
+      context,
+      MemberTransactionsList(
+        group,
+        groupMemberDetails: m,
+        trxPeriodDt: trxPeriodDt,
+      ),
+    );
     getGroupMembers();
   }
 }

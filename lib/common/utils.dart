@@ -30,15 +30,19 @@ class AppUtils {
   }
 
   static String getTrxPeriodFromDt(DateTime dt) {
-    return "${AppConstants.cMonthsStr[dt.month - 1]}-${dt.year}";
+    return "${dt.year}-${dt.month.toString().padLeft(2, "0")}";
   }
 
   static String getHumanReadableDt(DateTime dt) {
-    return "${dt.day}-${AppConstants.cMonthsStr[dt.month - 1]}-${dt.year}";
+    return "${dt.day}-${AppConstants.cEnMonthsStr[dt.month - 1]}-${dt.year}";
+  }
+
+  static String getReadableTrxPeriod(DateTime dt) {
+    return "${dt.day}-${AppConstants.cEnMonthsStr[dt.month - 1]}-${dt.year}";
   }
 
   static String getTrxPeriod(int month, int year) {
-    return "${AppConstants.cMonthsStr[month - 1]}-${year}";
+    return "$year-${AppConstants.cEnMonthsStr[month - 1]}";
   }
 
   static List<String> getMonthStringsFromDate(DateTime startDate) {
@@ -66,21 +70,26 @@ class AppUtils {
     return monthStrings;
   }
 
-  static List<String> getMonthStringsFromStartToEndDt(
-      DateTime startDate, DateTime endDate) {
-    List<String> monthStrings = [];
-
+  static List<DateTime> getMonthsFromStartToEndDt(
+      DateTime startDate, DateTime endDate,
+      [bool noFuture = false]) {
+    List<DateTime> monthStrings = [];
+    if (noFuture) {
+      var today = DateTime.now();
+      if (endDate.year >= today.year && endDate.month >= today.month) {
+        endDate = today;
+      }
+    }
     int currentYear = endDate.year;
     int currentMonth = endDate.month;
 
+    int startDay = startDate.day;
     int startYear = startDate.year;
     int startMonth = startDate.month;
 
     while (startYear < currentYear ||
         (startYear == currentYear && startMonth <= currentMonth)) {
-      String monthYearString = getTrxPeriod(startMonth, startYear);
-      monthStrings.add(monthYearString);
-
+      monthStrings.add(DateTime(startYear, startMonth, startDay));
       startMonth++;
       if (startMonth > 12) {
         startMonth = 1;

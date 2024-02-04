@@ -8,12 +8,12 @@ import '../member/member_details_card.dart';
 
 class AddLoanPage extends StatefulWidget {
   final GroupMemberDetails groupMemberDetail;
-  final String trxPeriod;
+  final DateTime trxPeriodDt;
   final Group group;
   const AddLoanPage({
     super.key,
     required this.groupMemberDetail,
-    required this.trxPeriod,
+    required this.trxPeriodDt,
     required this.group,
   });
 
@@ -25,7 +25,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
   late GroupMemberDetails groupMemberDetail;
   late Group group;
   late GroupsDao groupDao;
-  String trxPeriod = "";
+  late DateTime trxPeriodDt;
   List<Loan> memberLoans = [];
   bool isLoading = false;
   late Loan loanTrx;
@@ -34,7 +34,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
   void initState() {
     groupDao = GroupsDao();
     groupMemberDetail = widget.groupMemberDetail;
-    trxPeriod = widget.trxPeriod;
+    trxPeriodDt = widget.trxPeriodDt;
     group = widget.group;
     prepareRequests();
     super.initState();
@@ -66,7 +66,9 @@ class _AddLoanPageState extends State<AddLoanPage> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(trxPeriod),
+            child: Text(
+              AppUtils.getTrxPeriodFromDt(trxPeriodDt),
+            ),
           )
         ],
       ),

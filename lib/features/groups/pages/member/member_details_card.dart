@@ -14,42 +14,35 @@ class MemberDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var local = AppLocal.of(context);
-    return Card(
-      child: ListTile(
-        titleAlignment: ListTileTitleAlignment.center,
-        title: Text(
-          groupMemberDetail.name,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-        ),
-        subtitle: Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          runAlignment: WrapAlignment.center,
-          spacing: 10,
-          runSpacing: 10,
-          children: [
+    return ListTile(
+      titleAlignment: ListTileTitleAlignment.center,
+      title: Text(
+        groupMemberDetail.name,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+      ),
+      subtitle: Table(
+        children: [
+          TableRow(children: [
             CustomAmountChip(
-              label: local.lBalance,
-              amount: groupMemberDetail.balance,
-            ),
-            CustomAmountChip(
-              label: local.lShare,
+              label: local.lPaidShare,
               amount: groupMemberDetail.paidShareAmount,
             ),
             CustomAmountChip(
-              label: local.lLateFee,
+              label: local.lPaidInterest,
               amount: groupMemberDetail.paidLateFee,
             ),
+          ]),
+          TableRow(children: [
             CustomAmountChip(
-              label: local.lLoan,
+              label: local.lPaidLoan,
               amount: groupMemberDetail.paidLoanAmount,
             ),
             CustomAmountChip(
               label: local.lRmLoan,
               amount: groupMemberDetail.pendingLoanAmount,
             )
-          ],
-        ),
+          ])
+        ],
       ),
     );
   }

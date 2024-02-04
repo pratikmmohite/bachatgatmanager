@@ -1,10 +1,11 @@
+import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/features/groups/pages/group/group_actions.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/groups_dao.dart';
 import '../../models/models_index.dart';
 import '../member/members_list_page.dart';
 import 'group_add_page.dart';
-import 'group_details_screen.dart';
 
 class GroupsListPage extends StatefulWidget {
   const GroupsListPage({super.key});
@@ -59,7 +60,7 @@ class GroupsListPageState extends State<GroupsListPage> {
     final edtMonth = shortMonthNames[edt.month - 1];
     final edtYear = (edt.year % 100).toString().padLeft(2, '0');
 
-    return "$sdtMonth $sdtYear- $edtMonth $edtYear";
+    return "$sdtMonth $sdtYear - $edtMonth $edtYear";
   }
 
   @override
@@ -112,12 +113,11 @@ class GroupsListPageState extends State<GroupsListPage> {
                 ],
               ),
               onTap: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (ct) => GroupDetailsScreen(
-                      key: ValueKey(group.id),
-                      group: group,
-                    ),
+                AppUtils.navigateTo(
+                  context,
+                  GroupActions(
+                    key: ValueKey(group.id),
+                    group: group,
                   ),
                 );
               },

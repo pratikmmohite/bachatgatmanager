@@ -1,15 +1,16 @@
 abstract class AppLocalization {
   Map<String, String> defaultLocalMap = {
-    "appTitle": "Bachat Gat",
+    "appTitle": "Saving Group",
     "abAddLoan": "Add Loan",
     "abAddMember": "Add Member",
     "abRecordTransaction": "Record transaction",
     "abMemberList": "Members",
-    "abLoanList": "Loan",
+    "abLoanList": "Loan List",
     "abAddGroup": "Add Group",
     "abImportExport": "Import/Export Data",
     "mRecordedLoanPaymentSuccess": "Recorded loan payment successfully",
     "mRecordedSharePaymentSuccess": "Recorded share payment successfully",
+    "mRecordedTrxPaymentSuccess": "Recorded transaction successfully",
     "mSelectLoan": "Please select loan",
     "mEnterLoanAmount": "Please enter loan amount",
     "mEnterShareAmount": "Please enter share amount",
@@ -19,8 +20,9 @@ abstract class AppLocalization {
     "bGiveLoan": "Give loan",
     "bRecord": "Record",
     "bAddShare": "Add Share",
-    "bAddLoan": "Add Loan",
+    "bAddLoan": "Give new loan",
     "bShowLoans": "Show Loans",
+    "bShowTransactions": "Show transactions",
     "tfEnterLoanAmt": "Enter loan amount",
     "tfEnterLoanInterest": "Enter loan interest",
     "tfEnterNote": "Enter note",
@@ -48,26 +50,46 @@ abstract class AppLocalization {
     "lLoanInterest": "Loan Interest",
     "lPaidLoan": "Paid Loan",
     "lPaidInterest": "Paid Interest",
+    "lPaidShare": "Paid Share",
+    "lPaidLateFee": "Paid Late Fee",
     "lLateFee": "Late Fee",
     "lShareAmount": "Share Amount",
     "lRmLoan": "Remaining Loan(-)",
     "lNote": "Note",
     "lBalance": "Balance",
-    "lLoan": "Loan",
-    "lShare": "Share",
+    "lLoan": "Loan(+)",
+    "lShare": "Share(+)",
     "lMember": "Member",
     "lTotal": "Total",
     "lRemaining": "Remaining",
-    "lInterest": "Interest",
-    "lPenalty": "Penalty",
-    "lOthers": "Others",
-    "lActions": "Actions",
+    "lInterest": "Interest(+)",
+    "lPenalty": "Penalty(+)",
+    "lOthers": "Others(+)",
+    "lActions": "Actions"
   };
+  List<String> get months => [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sept",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
 
   Map<String, String> get languageSpecificMap;
 
   String getValue(String k) {
     return languageSpecificMap[k] ?? defaultLocalMap[k] ?? k;
+  }
+
+  String getHumanTrxPeriod(DateTime dt) {
+    return "${months[dt.month - 1]}-${dt.year}";
   }
 
   // App Titles
@@ -86,6 +108,8 @@ abstract class AppLocalization {
       getValue("mRecordedLoanPaymentSuccess");
   String get mRecordedSharePaymentSuccess =>
       getValue("mRecordedSharePaymentSuccess");
+  String get mRecordedTrxPaymentSuccess =>
+      getValue("mRecordedTrxPaymentSuccess");
   String get mSelectLoan => getValue("mSelectLoan");
   String get mEnterLoanAmount => getValue("mEnterLoanAmount");
   String get mEnterShareAmount => getValue("mEnterShareAmount");
@@ -98,6 +122,7 @@ abstract class AppLocalization {
   String get bAddShare => getValue("bAddShare");
   String get bAddLoan => getValue("bAddLoan");
   String get bShowLoans => getValue("bShowLoans");
+  String get bShowTransactions => getValue("bShowTransactions");
   // Input Fields
   String get tfEnterLoanAmt => getValue("tfEnterLoanAmt");
   String get tfEnterLoanInterest => getValue("tfEnterLoanInterest");
@@ -128,7 +153,6 @@ abstract class AppLocalization {
   String get lShare => getValue("lShare");
   String get lMember => getValue("lMember");
   String get lTotal => getValue("lTotal");
-  String get lRemaining => getValue("lRemaining");
   String get lInterest => getValue("lInterest");
   String get lPenalty => getValue("lPenalty");
   String get lOthers => getValue("lOthers");
@@ -137,6 +161,8 @@ abstract class AppLocalization {
   String get lLoanInterest => getValue("lLoanInterest");
   String get lPaidLoan => getValue("lPaidLoan");
   String get lPaidInterest => getValue("lPaidInterest");
+  String get lPaidLateFee => getValue("lPaidLateFee");
+  String get lPaidShare => getValue("lPaidShare");
   String get lLateFee => getValue("lLateFee");
   String get lShareAmount => getValue("lShareAmount");
   String get lRmLoan => getValue("lRmLoan");
@@ -201,10 +227,12 @@ class MrAppLocalization extends AppLocalization {
         "lPaidInterest": "भुगतान केलेला व्याज",
         "lLateFee": "उशिर शुल्क",
         "lShareAmount": "शेअर रक्कम",
-        "lRmLoan": "शेष कर्ज (-)",
+        "lRmLoan": "बाकी कर्ज (-)",
         "lNote": "टिप",
         "lBalance": "शिल्लक",
         "lLoan": "कर्ज",
+        "lPaidShare": "भुगतान केलेला शेअर",
+        "lPaidLateFee": "भुगतान केलेला दंड",
         "lShare": "शेअर",
         "lMember": "सदस्य",
         "lTotal": "एकूण",
@@ -214,4 +242,25 @@ class MrAppLocalization extends AppLocalization {
         "lOthers": "इतर",
         "lActions": "क्रिया"
       };
+
+  @override
+  List<String> get months => [
+        "जानेवारी",
+        "फेब्रुवारी",
+        "मार्च",
+        "एप्रिल",
+        "मे",
+        "जून",
+        "जुलै",
+        "ऑगस्ट",
+        "सप्टेंबर",
+        "ऑक्टोबर",
+        "नोव्हेंबर",
+        "डिसेंबर"
+      ];
+
+  @override
+  String getHumanTrxPeriod(DateTime dt) {
+    return "${months[dt.month - 1]}-${dt.year}";
+  }
 }

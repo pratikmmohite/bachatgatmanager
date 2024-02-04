@@ -8,13 +8,13 @@ import '../member/member_details_card.dart';
 
 class AddMemberTransaction extends StatefulWidget {
   final GroupMemberDetails groupMemberDetail;
-  final String trxPeriod;
+  final DateTime trxPeriodDt;
   final Group group;
   final String mode;
   const AddMemberTransaction({
     super.key,
     required this.groupMemberDetail,
-    required this.trxPeriod,
+    required this.trxPeriodDt,
     required this.group,
     this.mode = AppConstants.tmPayment,
   });
@@ -27,9 +27,10 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   late GroupMemberDetails groupMemberDetail;
   late Group group;
   late GroupsDao groupDao;
-  String trxPeriod = "";
+  late DateTime trxPeriodDt;
   List<Loan> memberLoans = [];
   bool isLoading = false;
+  bool isRecording = false;
   late Transaction shareTrx;
   late Transaction loanTrx;
   late Transaction loanInterestTrx;
@@ -38,7 +39,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
   @override
   void initState() {
     groupMemberDetail = widget.groupMemberDetail;
-    trxPeriod = widget.trxPeriod;
+    trxPeriodDt = widget.trxPeriodDt;
     group = widget.group;
     groupDao = GroupsDao();
     prepareRequests();
@@ -69,7 +70,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttShare,
-      trxPeriod: trxPeriod,
+      trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
     );
     if (groupMemberDetail.paidShareAmount == 0) {
       shareTrx.cr = group.installmentAmtPerMonth;
@@ -78,21 +79,21 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttLoan,
-      trxPeriod: trxPeriod,
+      trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
       trxDt: today,
     );
     loanInterestTrx = Transaction.withDefault(
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttLoanInterest,
-      trxPeriod: trxPeriod,
+      trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
       trxDt: today,
     );
     lateFeeTrx = Transaction.withDefault(
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttLateFee,
-      trxPeriod: trxPeriod,
+      trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
     );
   }
 
@@ -106,6 +107,41 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
         }
         return Column(
           children: [
+            buildLoanOptions(),
+            Table(
+              children: [
+                TableRow(
+                  children: [
+                    buildLoanField(),
+                    buildLoanInterestField(),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        );
+        break;
+      case AppConstants.tmBoth:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Table(
+              children: [
+                TableRow(
+                  children: [
+                    buildShareField(),
+                    buildLateFeeField(),
+                  ],
+                ),
+              ],
+            ),
+            const Divider(),
+            const Text(
+              "Record Loan Payment",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             buildLoanOptions(),
             Table(
               children: [
@@ -145,7 +181,9 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(trxPeriod),
+            child: Text(
+              AppUtils.getTrxPeriodFromDt(trxPeriodDt),
+            ),
           )
         ],
       ),
@@ -154,14 +192,15 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
         label: Text("Record ${widget.mode}"),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              MemberDetailsCard(groupMemberDetail),
-              getFields(),
-            ],
-          ),
+        child: Column(
+          children: [
+            MemberDetailsCard(groupMemberDetail),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: getFields(),
+            ),
+          ],
         ),
       ),
     );
@@ -186,13 +225,33 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
           return false;
         }
         break;
+      case AppConstants.tmBoth:
+        if (loanTrx.cr > 0) {
+          if (loanTrx.sourceId.isEmpty) {
+            AppUtils.toast(context, local.mSelectLoan);
+            return false;
+          }
+        }
+        if (shareTrx.cr > 0 ||
+            loanTrx.cr > 0 ||
+            loanInterestTrx.cr > 0 ||
+            lateFeeTrx.cr > 0) {
+          return true;
+        }
+        break;
     }
     return true;
   }
 
   void recordTransaction() async {
+    if (isRecording) {
+      AppUtils.toast(context, "Please wait operation in progress");
+      return;
+    }
+    isRecording = true;
     try {
       if (!isValid()) {
+        isRecording = false;
         return;
       }
       var local = AppLocal.of(context);
@@ -217,10 +276,27 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
           AppUtils.toast(context, local.mRecordedSharePaymentSuccess);
           AppUtils.close(context);
           break;
+        case AppConstants.tmBoth:
+          if (shareTrx.cr > 0) {
+            await groupDao.addTransaction(shareTrx);
+          }
+          if (lateFeeTrx.cr > 0) {
+            await groupDao.addTransaction(lateFeeTrx);
+          }
+          if (loanTrx.cr > 0) {
+            await groupDao.addTransaction(loanTrx);
+          }
+          if (loanInterestTrx.cr > 0) {
+            await groupDao.addTransaction(loanInterestTrx);
+          }
+          AppUtils.toast(context, local.mRecordedSharePaymentSuccess);
+          AppUtils.close(context);
+          break;
       }
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
+    isRecording = false;
   }
 
   buildLoanField() {
@@ -253,7 +329,6 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
         var interest = op.valueObj.interestPercentage;
         setState(() {
           loanTrx.sourceId = op.value;
-          loanTrx.cr = remainingLoan;
           loanInterestTrx.cr =
               double.parse((remainingLoan * interest / 100).toStringAsFixed(2));
         });
@@ -278,7 +353,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
     var local = AppLocal.of(context);
     return CustomTextField(
       key: Key("lint_${loanTrx.sourceId}"),
-      label: local.tfLateFee,
+      label: local.tfLoanInterest,
       field: "lateFee",
       suffixIcon: const Icon(Icons.currency_rupee),
       value: "${(loanInterestTrx.cr ?? 0)}",

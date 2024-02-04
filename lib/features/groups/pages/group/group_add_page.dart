@@ -74,14 +74,14 @@ class _GroupAddPageState extends State<GroupAddPage> {
                     });
                   },
                 ),
-                CustomTextField(
+                CustomDateField(
                   key: Key("edt_dt_${group.edt.toString()}"),
                   label: local.tfEndDate,
                   field: "end_dt",
-                  value: group.edt.toString().split(" ")[0],
-                  onChange: (value) {},
-                  readOnly: true,
-                  keyboardType: TextInputType.none,
+                  value: group.edt,
+                  onChange: (value) {
+                    group.edt = value;
+                  },
                 ),
                 CustomTextField(
                   label: local.tfAddress,
