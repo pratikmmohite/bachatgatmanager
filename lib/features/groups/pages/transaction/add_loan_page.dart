@@ -51,7 +51,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
       status: AppConstants.lsActive,
       loanDate: trxPeriodDt,
       note: '',
-      addedBy: '',
+      addedBy: 'Admin',
     );
   }
 
