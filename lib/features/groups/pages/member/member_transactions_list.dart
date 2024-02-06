@@ -117,11 +117,12 @@ class _MemberTransactionsListState extends State<MemberTransactionsList> {
                         ),
                         DataCell(Text(AppUtils.getHumanReadableDt(trx.trxDt))),
                         DataCell(
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            color: Colors.red,
-                            onPressed: () {
-                              deleteTransaction(trx);
+                          CustomDeleteIcon<Transaction>(
+                            item: trx,
+                            content:
+                                Text("Trx: ${trx.trxType} \nAmount ${trx.cr}"),
+                            onAccept: (t) {
+                              deleteTransaction(t);
                             },
                           ),
                         ),

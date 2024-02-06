@@ -24,6 +24,12 @@ class GroupsDao {
 
   Future<int> deleteGroup(Group group) async {
     var row = await dbService
+        .delete(loanTableName, where: "groupId = ?", whereArgs: [group.id]);
+    row += await dbService.delete(transactionTableName,
+        where: "groupId = ?", whereArgs: [group.id]);
+    row += await dbService
+        .delete(memberTableName, where: "id = ?", whereArgs: [group.id]);
+    row += await dbService
         .delete(groupTableName, where: "id = ?", whereArgs: [group.id]);
     return row;
   }
@@ -80,6 +86,49 @@ class GroupsDao {
       where: "id = ?",
       whereArgs: [trx.id],
     );
+    if (trx.trxType == AppConstants.ttLoan ||
+        trx.trxType == AppConstants.ttLoanInterest) {
+      recalculateLoanAmounts(trx.sourceId);
+    }
+    return row;
+  }
+
+  Future<int> deleteLoan(Loan loan) async {
+    var row = await dbService.delete(
+      loanTableName,
+      where: "id = ?",
+      whereArgs: [loan.id],
+    );
+    await dbService.delete(
+      transactionTableName,
+      where: "trxType in (?, ?) and sourceId = ? and sourceType = ?",
+      whereArgs: [
+        AppConstants.ttLoan,
+        AppConstants.ttLoanInterest,
+        loan.id,
+        AppConstants.sLoan,
+      ],
+    );
+    return row;
+  }
+
+  Future<int> recalculateLoanAmounts(String loanId) async {
+    String trxQuery = "select isnull(sum(cr), 0) from $transactionTableName t "
+        "where t.trxType = ? and t.sourceType = ? and t.sourceId = ?";
+    String query = "update $loanTableName set "
+        "paidLoanAmount = ($trxQuery), "
+        "paidInterestAmount = ($trxQuery) "
+        "where id = ?";
+    List<String> pars = [
+      AppConstants.ttLoan,
+      AppConstants.sLoan,
+      loanId,
+      AppConstants.ttLoanInterest,
+      AppConstants.sLoan,
+      loanId,
+      loanId
+    ];
+    var row = await dbService.write(query, pars);
     return row;
   }
 
@@ -89,7 +138,7 @@ class GroupsDao {
     var trx = Transaction(
       memberId: loan.memberId,
       groupId: loan.groupId,
-      trxType: AppConstants.tmLoan,
+      trxType: AppConstants.ttLoan,
       trxPeriod: trxPeriod,
       cr: 0,
       dr: loan.loanAmount,
@@ -121,12 +170,20 @@ class GroupsDao {
 
   Future<int> deleteGroupMember(GroupMember member) async {
     var row = await dbService
+        .delete(loanTableName, where: "memberId = ?", whereArgs: [member.id]);
+    row = await dbService.delete(transactionTableName,
+        where: "memberId = ?", whereArgs: [member.id]);
+    row = await dbService
         .delete(memberTableName, where: "id = ?", whereArgs: [member.id]);
     return row;
   }
 
-  Future<List<GroupMember>> getMembers() async {
-    var rows = await dbService.read("select * from $memberTableName");
+  Future<List<GroupMember>> getMembers(MemberFilter filter) async {
+    var rows = await dbService.read(
+      "select * from $memberTableName "
+      "where groupId = ?",
+      [filter.groupId],
+    );
     var members = rows.map((e) => GroupMember.fromJson(e)).toList();
     return members;
   }
@@ -169,12 +226,12 @@ class GroupsDao {
     String paidLoanInterestAmount =
         "(${getAmountQuery(AppConstants.ttLoanInterest, filter.trxPeriod)}) as paidLoanInterestAmount ";
 
-    String pendingLoanAmount =
-        "(select ifnull(sum(l.loanAmount - l.paidLoanAmount), 0) "
-        "from $loanTableName l "
-        "where l.groupId = m.groupId "
-        "and l.memberId = m.id "
-        ") as pendingLoanAmount ";
+    String pendingLoanAmount = "(select ifnull(sum(t.dr-t.cr), 0) "
+        "from $transactionTableName t "
+        "where t.groupId = m.groupId "
+        "and t.memberId = m.id "
+        "and t.trxPeriod <= '${filter.trxPeriod}' "
+        "and t.trxType = '${AppConstants.ttLoan}' ) as pendingLoanAmount ";
 
     String selectQuery = "select m.name "
         ",m.groupId "
@@ -207,19 +264,70 @@ class GroupsDao {
         ",sum(trx.cr) as totalCr "
         ",sum(trx.dr) as totalDr "
         "from $transactionTableName trx ";
-    String whereClause =
-        "where trx.groupId = ? and trx.trxDt >= ? and trx.trxDt <= ? ";
+
+    String whereClause = "where trx.groupId = ? ";
+    List<Object?> pars = [filter.groupId];
+
+    if (filter.dateMode == "trxPeriod") {
+      whereClause += "and trx.trxPeriod >= ? "
+          "and trx.trxPeriod <= ? ";
+      pars.add(AppUtils.getTrxPeriodFromDt(filter.sdt));
+      pars.add(AppUtils.getTrxPeriodFromDt(filter.edt));
+    } else if (filter.dateMode == "trxDt") {
+      whereClause += "and trx.trxDt >= ? "
+          "and trx.trxDt <= ? ";
+      pars.add(filter.sdt.toIso8601String());
+      pars.add(filter.edt.toIso8601String());
+    }
+
     String groupBy = "group by trx.groupId, trx.trxPeriod, trx.trxType ";
     String orderBy = "order by trx.trxPeriod ";
-    List<Object?> pars = [
-      filter.groupId,
-      filter.sdt.toIso8601String(),
-      filter.edt.toIso8601String(),
-    ];
     String query = selectQuery + whereClause + groupBy + orderBy;
     var rows = await dbService.read(query, pars);
+    var balances = await getBalances(filter);
     var summary = rows.map((e) => GroupSummary.fromJson(e)).toList();
+    var openingBalance = balances.first;
+    var closingBalance = balances.last;
+    summary.insert(0, openingBalance);
+    summary.add(closingBalance);
     return summary;
+  }
+
+  Future<List<GroupSummary>> getBalances(GroupSummaryFilter filter) async {
+    String selectQuery = "select "
+        "? as groupId, "
+        "? as trxType, "
+        "? as trxPeriod, "
+        "ifnull(sum(trx.cr), 0) as totalCr, "
+        "ifnull(sum(trx.dr), 0) as totalDr "
+        "from $transactionTableName trx ";
+    String whereClause = "where trx.groupId = ? ";
+    whereClause += "and trx.trxPeriod < ? ";
+    String trxPeriodSdt = AppUtils.getTrxPeriodFromDt(filter.sdt);
+    String trxPeriodEdt = AppUtils.getTrxPeriodFromDt(filter.edt);
+    List<Object?> openingPars = [
+      filter.groupId,
+      AppConstants.ttOpeningBalance,
+      trxPeriodSdt,
+      filter.groupId,
+      trxPeriodSdt
+    ];
+    List<Object?> closingPars = [
+      filter.groupId,
+      AppConstants.ttClosingBalance,
+      trxPeriodEdt,
+      filter.groupId,
+      trxPeriodEdt
+    ];
+    String balanceQuery = selectQuery + whereClause;
+    String query = "$balanceQuery union $balanceQuery";
+
+    var rows = await dbService.read(query, [
+      ...openingPars,
+      ...closingPars,
+    ]);
+    var summary = rows.map((e) => GroupSummary.fromJson(e)).toList();
+    return summary.reversed.toList();
   }
 
   String getAmountQuery(String trxType, String trxPeriod) {
@@ -229,13 +337,5 @@ class GroupsDao {
         "and t.memberId = m.id "
         "and t.trxPeriod = '$trxPeriod' "
         "and t.trxType = '$trxType' ";
-  }
-
-  String getTotalQuery(String trxType) {
-    return "select ifnull(sum(t.cr-t.dr), 0) "
-        "from $transactionTableName t "
-        "where t.groupId = m.groupId "
-        "and t.trxType = '$trxType' "
-        "and t.trx_dt < ? ";
   }
 }

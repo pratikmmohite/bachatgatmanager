@@ -64,6 +64,16 @@ class _MembersLoanListState extends State<MembersLoanList> {
     super.initState();
   }
 
+  Future<void> deleteLoan(Loan loan) async {
+    try {
+      var res = await groupDao.deleteLoan(loan);
+      getMemberLoans();
+      AppUtils.toast(context, "Loan deleted successfully");
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var local = AppLocal.of(context);
@@ -120,45 +130,45 @@ class _MembersLoanListState extends State<MembersLoanList> {
                             : Colors.red,
                       ),
                     ),
+                    CustomDeleteIcon<Loan>(
+                      item: loan,
+                      content: Text(
+                          "Loan: ${AppUtils.getHumanReadableDt(loan.loanDate)} \nAmount ${loan.loanAmount}"),
+                      onAccept: (l) {
+                        deleteLoan(l);
+                      },
+                    ),
                   ],
                 ),
                 subtitle: Column(
-                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Table(
-                      children: [
-                        TableRow(
-                          children: [
-                            CustomAmountChip(
-                              label: local.tfLoanAmt,
-                              amount: loan.loanAmount,
-                              showInRow: true,
-                            ),
-                            CustomAmountChip(
-                              label: "${local.lLoanInterest} (%)",
-                              amount: loan.interestPercentage,
-                              prefix: "",
-                              showInRow: true,
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            CustomAmountChip(
-                              label: local.lPaidLoan,
-                              amount: loan.paidLoanAmount,
-                              showInRow: true,
-                            ),
-                            CustomAmountChip(
-                              label: local.lPaidInterest,
-                              amount: loan.paidInterestAmount,
-                              showInRow: true,
-                            ),
-                          ],
-                        )
-                      ],
+                    CustomAmountChip(
+                      label: local.tfLoanAmt,
+                      amount: loan.loanAmount,
+                      showInRow: true,
+                    ),
+                    CustomAmountChip(
+                      label: "${local.lLoanInterest} (%)",
+                      amount: loan.interestPercentage,
+                      prefix: "",
+                      showInRow: true,
+                    ),
+                    CustomAmountChip(
+                      label: local.lPaidLoan,
+                      amount: loan.paidLoanAmount,
+                      showInRow: true,
+                    ),
+                    CustomAmountChip(
+                      label: local.lPaidInterest,
+                      amount: loan.paidInterestAmount,
+                      showInRow: true,
+                    ),
+                    CustomAmountChip(
+                      label: "Pending",
+                      amount: loan.loanAmount - loan.paidLoanAmount,
+                      showInRow: true,
                     ),
                     Text(
                       local.lNote,

@@ -119,6 +119,7 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
       bottomSheet: GroupSummaryCard(
         key: Key("gs_${groupSummary.length}"),
         summary: groupSummary,
+        showCombined: true,
       ),
       body: RefreshIndicator(
         onRefresh: () async {

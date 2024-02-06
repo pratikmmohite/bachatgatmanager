@@ -4,7 +4,9 @@ import 'package:bachat_gat/features/groups/pages/group/group_monthly_summary.dar
 import 'package:flutter/material.dart';
 
 import '../../models/models_index.dart';
+import '../member/members_list_page.dart';
 import 'group_details_screen.dart';
+import 'group_summary_card.dart';
 
 class GroupActions extends StatefulWidget {
   final Group group;
@@ -34,7 +36,7 @@ class _GroupActionsState extends State<GroupActions> {
       isLoading = true;
     });
     try {
-      groupSummary = await groupDao.getGroupSummary(filter);
+      groupSummary = await groupDao.getBalances(filter);
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -43,58 +45,99 @@ class _GroupActionsState extends State<GroupActions> {
     });
   }
 
+  Widget buildSummary() {
+    return GroupSummaryCard(
+      summary: groupSummary,
+      showCombined: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Group Actions"),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  group.name,
-                  style: TextStyle(fontSize: 20),
-                ),
-                const Divider(),
-              ],
-            ),
-          ),
+          title: Text(group.name),
         ),
-        body: Wrap(
-          children: [
-            Card(
-              child: ListTile(
-                title: const Text("Record Statement"),
-                leading: const Icon(Icons.money),
-                onTap: () {
-                  AppUtils.navigateTo(
-                    context,
-                    GroupDetailsScreen(
-                      key: ValueKey(group.id),
-                      group: group,
-                    ),
-                  );
-                },
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (groupSummary.isNotEmpty)
+                Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: isLoading
+                      ? const CircularProgressIndicator()
+                      : ListTile(
+                          title: const Text(
+                            "Total",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: buildSummary(),
+                        ),
+                ),
+              const Divider(),
+              Card(
+                child: ListTile(
+                  title: const Text("Record Statement"),
+                  leading: const Icon(Icons.money),
+                  onTap: () {
+                    AppUtils.navigateTo(
+                      context,
+                      GroupDetailsScreen(
+                        key: ValueKey(group.id),
+                        group: group,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.summarize_outlined),
-                onTap: () {
-                  AppUtils.navigateTo(
-                    context,
-                    GroupMonthlySummary(
-                      group: group,
-                    ),
-                  );
-                },
-                title: const Text("Group Summary"),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.summarize_outlined),
+                  onTap: () {
+                    AppUtils.navigateTo(
+                      context,
+                      GroupMonthlySummary(
+                        group: group,
+                      ),
+                    );
+                  },
+                  title: const Text("Group Summary"),
+                ),
               ),
-            )
-          ],
+              // Card(
+              //   child: ListTile(
+              //     leading: const Icon(Icons.account_balance),
+              //     onTap: () {
+              //       AppUtils.navigateTo(
+              //         context,
+              //         BankDepositPage(
+              //           group: group,
+              //         ),
+              //       );
+              //     },
+              //     title: const Text("Bank Deposits"),
+              //   ),
+              // ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.people),
+                  onTap: () {
+                    AppUtils.navigateTo(
+                      context,
+                      MembersList(
+                        group,
+                      ),
+                    );
+                  },
+                  title: const Text("Member List"),
+                ),
+              ),
+            ],
+          ),
         ));
   }
 }

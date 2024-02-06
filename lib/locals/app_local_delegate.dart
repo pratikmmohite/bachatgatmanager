@@ -25,10 +25,13 @@ class AppLocalDelegate extends LocalizationsDelegate<AppLocalization> {
 class AppLocal {
   static final AppLocal _instance = AppLocal._internal();
   AppLocal._internal();
+
   factory AppLocal() {
     return _instance;
   }
+
   static ValueNotifier<Locale> l() => _instance.currentLocal;
+
   static void c(String code) {
     _instance.currentLocal.value = Locale(code);
   }

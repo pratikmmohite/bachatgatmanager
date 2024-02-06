@@ -41,8 +41,6 @@ class _AddLoanPageState extends State<AddLoanPage> {
   }
 
   void prepareRequests() {
-    var today = DateTime.now();
-
     loanTrx = Loan(
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
@@ -51,7 +49,7 @@ class _AddLoanPageState extends State<AddLoanPage> {
       paidLoanAmount: 0,
       paidInterestAmount: 0,
       status: AppConstants.lsActive,
-      loanDate: today,
+      loanDate: trxPeriodDt,
       note: '',
       addedBy: '',
     );

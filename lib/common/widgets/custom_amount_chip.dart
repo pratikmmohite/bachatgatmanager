@@ -33,7 +33,7 @@ class CustomAmountChip extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(5),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: childs,
         ),

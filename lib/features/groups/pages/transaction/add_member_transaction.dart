@@ -70,6 +70,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttShare,
+      sourceType: AppConstants.sUser,
       trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
     );
     if (groupMemberDetail.paidShareAmount == 0) {
@@ -79,6 +80,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttLoan,
+      sourceType: AppConstants.sLoan,
       trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
       trxDt: today,
     );
@@ -86,6 +88,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttLoanInterest,
+      sourceType: AppConstants.sLoan,
       trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
       trxDt: today,
     );
@@ -93,6 +96,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       memberId: groupMemberDetail.memberId,
       groupId: groupMemberDetail.groupId,
       trxType: AppConstants.ttLateFee,
+      sourceType: AppConstants.sUser,
       trxPeriod: AppUtils.getTrxPeriodFromDt(trxPeriodDt),
     );
   }
@@ -329,6 +333,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
         var interest = op.valueObj.interestPercentage;
         setState(() {
           loanTrx.sourceId = op.value;
+          loanInterestTrx.sourceId = op.value;
           loanInterestTrx.cr =
               double.parse((remainingLoan * interest / 100).toStringAsFixed(2));
         });

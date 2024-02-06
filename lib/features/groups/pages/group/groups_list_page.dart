@@ -24,7 +24,11 @@ class GroupsListPageState extends State<GroupsListPage> {
     setState(() {
       isLoading = true;
     });
-    groups = await groupDao.getGroups();
+    try {
+      groups = await groupDao.getGroups();
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
+    }
     setState(() {
       isLoading = false;
     });
@@ -63,6 +67,17 @@ class GroupsListPageState extends State<GroupsListPage> {
     return "$sdtMonth $sdtYear - $edtMonth $edtYear";
   }
 
+  void deleteGroup(Group group) async {
+    groups = [];
+    try {
+      var d = await groupDao.deleteGroup(group);
+      AppUtils.toast(context, "Group deleted successfully");
+      getGroups();
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -82,20 +97,20 @@ class GroupsListPageState extends State<GroupsListPage> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.people),
-                    onPressed: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (ct) => MembersList(
-                            group,
-                            key: ValueKey(group.id),
-                          ),
-                        ),
-                      );
-                      await getGroups();
-                    },
-                  ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.people),
+                  //   onPressed: () async {
+                  //     await Navigator.of(context).push(
+                  //       MaterialPageRoute(
+                  //         builder: (ct) => MembersList(
+                  //           group,
+                  //           key: ValueKey(group.id),
+                  //         ),
+                  //       ),
+                  //     );
+                  //     await getGroups();
+                  //   },
+                  // ),
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () async {
@@ -110,6 +125,13 @@ class GroupsListPageState extends State<GroupsListPage> {
                       await getGroups();
                     },
                   ),
+                  CustomDeleteIcon<Group>(
+                    item: group,
+                    content: Text("Group: ${group.name}"),
+                    onAccept: (g) {
+                      deleteGroup(g);
+                    },
+                  )
                 ],
               ),
               onTap: () async {

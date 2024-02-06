@@ -22,10 +22,15 @@ class _MembersListState extends State<MembersList> {
 
   Future<void> getMembers() async {
     members = [];
+    var filter = MemberFilter(_group.id);
     setState(() {
       isLoading = true;
     });
-    members = await groupDao.getMembers();
+    try {
+      members = await groupDao.getMembers(filter);
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
+    }
     setState(() {
       isLoading = false;
     });
@@ -37,6 +42,31 @@ class _MembersListState extends State<MembersList> {
     groupDao = GroupsDao();
     getMembers();
     super.initState();
+  }
+
+  void editMember(GroupMember member) async {
+    await AppUtils.navigateTo(
+      context,
+      MemberAddPage(
+        _group,
+        groupMember: member,
+        key: ValueKey(member.id),
+      ),
+    );
+    await getMembers();
+  }
+
+  Future<void> deleteMember(GroupMember member) async {
+    try {
+      var rows = await groupDao.deleteGroupMember(member);
+      AppUtils.toast(context, "Deleted member");
+      getMembers();
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -77,20 +107,21 @@ class _MembersListState extends State<MembersList> {
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () async {
-                        await AppUtils.navigateTo(
-                          context,
-                          MemberAddPage(
-                            _group,
-                            groupMember: member,
-                            key: ValueKey(member.id),
-                          ),
-                        );
-                        await getMembers();
+                        editMember(member);
+                      },
+                    ),
+                    CustomDeleteIcon<GroupMember>(
+                      item: member,
+                      content: Text("Member: ${member.name}"),
+                      onAccept: (m) {
+                        deleteMember(m);
                       },
                     ),
                   ],
                 ),
-                onTap: () {},
+                onTap: () async {
+                  editMember(member);
+                },
               ),
             );
           },
