@@ -63,19 +63,9 @@ class GroupsDao {
 
   Future<int> addTransaction(Transaction trx) async {
     var row = await dbService.insert(transactionTableName, trx.toJson());
-    if (trx.trxType == AppConstants.ttLoan) {
-      var l = Loan.withPayment(
-        trx.sourceId,
-        paidLoanAmount: trx.cr,
-      );
-      updateLoanPaid(l);
-    }
-    if (trx.trxType == AppConstants.ttLoanInterest) {
-      var i = Loan.withPayment(
-        trx.sourceId,
-        paidInterestAmount: trx.cr,
-      );
-      updateLoanPaid(i);
+    if (trx.trxType == AppConstants.ttLoan ||
+        trx.trxType == AppConstants.ttLoanInterest) {
+      recalculateLoanAmounts(trx.sourceId);
     }
     return row;
   }
