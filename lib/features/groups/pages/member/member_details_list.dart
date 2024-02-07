@@ -143,7 +143,6 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   }
 
   Widget buildDetailsList() {
-    var local = AppLocal.of(context);
     return ListView.builder(
       itemCount: groupMemberDetails.length,
       itemBuilder: (context, index) {
@@ -257,8 +256,10 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       return buildDetailsList();
     }
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
         child: buildDetailsTable(),
       ),

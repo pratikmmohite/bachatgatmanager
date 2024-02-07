@@ -138,8 +138,10 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
                 child: CircularProgressIndicator(),
               )
             : SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 scrollDirection: Axis.vertical,
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   child: buildSummaryDetails(),
                 ),
