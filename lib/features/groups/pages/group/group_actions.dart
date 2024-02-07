@@ -48,7 +48,7 @@ class _GroupActionsState extends State<GroupActions> {
   Widget buildSummary() {
     return GroupSummaryCard(
       summary: groupSummary,
-      showCombined: true,
+      viewMode: "balance",
     );
   }
 
@@ -67,30 +67,22 @@ class _GroupActionsState extends State<GroupActions> {
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   child: isLoading
                       ? const CircularProgressIndicator()
-                      : ListTile(
-                          title: const Text(
-                            "Total",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          subtitle: buildSummary(),
-                        ),
+                      : ListTile(title: buildSummary()),
                 ),
               const Divider(),
               Card(
                 child: ListTile(
                   title: const Text("Record Statement"),
                   leading: const Icon(Icons.money),
-                  onTap: () {
-                    AppUtils.navigateTo(
+                  onTap: () async {
+                    await AppUtils.navigateTo(
                       context,
                       GroupDetailsScreen(
                         key: ValueKey(group.id),
                         group: group,
                       ),
                     );
+                    getGroupSummary();
                   },
                 ),
               ),

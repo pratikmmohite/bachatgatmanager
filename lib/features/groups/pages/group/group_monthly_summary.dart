@@ -61,26 +61,34 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
         label: Text("Total Debit"),
       ),
     ];
-    List<DataRow> rows = groupSummary
-        .map(
-          (e) => DataRow(
-            cells: [
-              DataCell(
-                Text(e.trxPeriod),
-              ),
-              DataCell(
-                Text(e.trxType),
-              ),
-              DataCell(
-                Text(e.totalCr.toStringAsFixed(2)),
-              ),
-              DataCell(
-                Text(e.totalDr.toStringAsFixed(2)),
-              )
-            ],
-          ),
-        )
-        .toList();
+    List<DataRow> rows = groupSummary.map(
+      (e) {
+        var totalCr = e.totalCr;
+        var totalDr = e.totalDr;
+        if (e.trxType == AppConstants.ttOpeningBalance ||
+            e.trxType == AppConstants.ttClosingBalance) {
+          totalCr = (e.totalCr - e.totalDr);
+          totalDr = 0;
+        }
+
+        return DataRow(
+          cells: [
+            DataCell(
+              Text(e.trxPeriod),
+            ),
+            DataCell(
+              Text(e.trxType),
+            ),
+            DataCell(
+              Text(totalCr.toStringAsFixed(2)),
+            ),
+            DataCell(
+              Text(totalDr.toStringAsFixed(2)),
+            )
+          ],
+        );
+      },
+    ).toList();
     return DataTable(columns: columns, rows: rows);
   }
 
@@ -119,7 +127,7 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
       bottomSheet: GroupSummaryCard(
         key: Key("gs_${groupSummary.length}"),
         summary: groupSummary,
-        showCombined: true,
+        viewMode: "cr+dr",
       ),
       body: RefreshIndicator(
         onRefresh: () async {

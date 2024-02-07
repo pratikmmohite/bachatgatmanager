@@ -18,6 +18,7 @@ GroupMemberDetails _$GroupMemberDetailsFromJson(Map<String, dynamic> json) =>
       ..pendingLoanAmount = (json['pendingLoanAmount'] as num).toDouble()
       ..paidLoanInterestAmount =
           (json['paidLoanInterestAmount'] as num).toDouble()
+      ..lendLoan = (json['lendLoan'] as num).toDouble()
       ..paidOtherAmount = (json['paidOtherAmount'] as num).toDouble();
 
 Map<String, dynamic> _$GroupMemberDetailsToJson(GroupMemberDetails instance) =>
@@ -31,5 +32,6 @@ Map<String, dynamic> _$GroupMemberDetailsToJson(GroupMemberDetails instance) =>
       'paidLateFee': instance.paidLateFee,
       'pendingLoanAmount': instance.pendingLoanAmount,
       'paidLoanInterestAmount': instance.paidLoanInterestAmount,
+      'lendLoan': instance.lendLoan,
       'paidOtherAmount': instance.paidOtherAmount,
     };

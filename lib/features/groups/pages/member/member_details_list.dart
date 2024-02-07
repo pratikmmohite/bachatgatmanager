@@ -167,6 +167,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       local.lInterest,
       local.lPenalty,
       local.lOthers,
+      local.lGivenLoan,
       local.lTotal,
       local.lRmLoan,
       local.lActions,
@@ -181,6 +182,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
               buildCellD(m.paidLoanInterestAmount),
               buildCellD(m.paidLateFee),
               buildCellD(m.paidOtherAmount),
+              buildCellD(m.lendLoan, () => handleShowLoanClick(m)),
               buildCellD(m.paidLoanAmount +
                   m.paidLoanInterestAmount +
                   m.paidShareAmount +
@@ -214,6 +216,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
     double totalBalance = 0;
     double totalPaidShareAmount = 0;
     double totalPaidLoanAmount = 0;
+    double totalLendLoanAmount = 0;
     double totalPaidLateFee = 0;
     double totalPendingLoanAmount = 0;
     double totalPaidLoanInterestAmount = 0;
@@ -222,6 +225,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       totalBalance += m.balance;
       totalPaidShareAmount += m.paidShareAmount;
       totalPaidLoanAmount += m.paidLoanAmount;
+      totalLendLoanAmount += m.lendLoan;
       totalPaidLateFee += m.paidLateFee;
       totalPendingLoanAmount += m.pendingLoanAmount;
       totalPaidLoanInterestAmount += m.paidLoanInterestAmount;
@@ -236,6 +240,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
         buildCellD(totalPaidLoanInterestAmount),
         buildCellD(totalPaidLateFee),
         buildCellD(totalPaidOtherAmount),
+        buildCellD(totalLendLoanAmount),
         buildCellD(totalPaidShareAmount +
             totalPaidLoanAmount +
             totalPaidLoanInterestAmount +

@@ -22,26 +22,42 @@ class MemberDetailsCard extends StatelessWidget {
       ),
       subtitle: Table(
         children: [
-          TableRow(children: [
-            CustomAmountChip(
-              label: local.lPaidShare,
-              amount: groupMemberDetail.paidShareAmount,
-            ),
-            CustomAmountChip(
-              label: local.lPaidInterest,
-              amount: groupMemberDetail.paidLateFee,
-            ),
-          ]),
-          TableRow(children: [
-            CustomAmountChip(
-              label: local.lPaidLoan,
-              amount: groupMemberDetail.paidLoanAmount,
-            ),
-            CustomAmountChip(
-              label: local.lRmLoan,
-              amount: groupMemberDetail.pendingLoanAmount,
-            )
-          ])
+          TableRow(
+            children: [
+              CustomAmountChip(
+                label: local.lPaidShare,
+                amount: groupMemberDetail.paidShareAmount,
+              ),
+              CustomAmountChip(
+                label: local.lPaidInterest,
+                amount: groupMemberDetail.paidLateFee,
+              ),
+            ],
+          ),
+          TableRow(
+            children: [
+              CustomAmountChip(
+                label: local.lPaidLoan,
+                amount: groupMemberDetail.paidLoanAmount,
+              ),
+              CustomAmountChip(
+                label: local.lRmLoan,
+                amount: groupMemberDetail.paidLoanInterestAmount,
+              )
+            ],
+          ),
+          TableRow(
+            children: [
+              CustomAmountChip(
+                label: local.lGivenLoan,
+                amount: groupMemberDetail.lendLoan,
+              ),
+              CustomAmountChip(
+                label: local.lRmLoan,
+                amount: groupMemberDetail.pendingLoanAmount,
+              )
+            ],
+          ),
         ],
       ),
     );

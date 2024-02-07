@@ -68,7 +68,19 @@ class _MembersLoanListState extends State<MembersLoanList> {
     try {
       var res = await groupDao.deleteLoan(loan);
       getMemberLoans();
+      getGroupMembersDetails();
       AppUtils.toast(context, "Loan deleted successfully");
+    } catch (e) {
+      AppUtils.toast(context, e.toString());
+    }
+  }
+
+  Future<void> recalculateLoan(Loan loan) async {
+    try {
+      var res = await groupDao.recalculateLoanAmounts(loan.id);
+      getMemberLoans();
+      getGroupMembersDetails();
+      AppUtils.toast(context, "Loan recalculated successfully");
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -103,10 +115,12 @@ class _MembersLoanListState extends State<MembersLoanList> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
+          await getGroupMembersDetails();
           await getMemberLoans();
         },
         child: ListView.builder(
           itemCount: loans.length,
+          padding: const EdgeInsets.only(bottom: 100),
           itemBuilder: (ctx, index) {
             var loan = loans[index];
             var trxPeriod = AppUtils.getHumanReadableDt(loan.loanDate);
@@ -130,14 +144,24 @@ class _MembersLoanListState extends State<MembersLoanList> {
                             : Colors.red,
                       ),
                     ),
-                    CustomDeleteIcon<Loan>(
-                      item: loan,
-                      content: Text(
-                          "Loan: ${AppUtils.getHumanReadableDt(loan.loanDate)} \nAmount ${loan.loanAmount}"),
-                      onAccept: (l) {
-                        deleteLoan(l);
-                      },
-                    ),
+                    ButtonBar(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            recalculateLoan(loan);
+                          },
+                          icon: Icon(Icons.calculate_sharp),
+                        ),
+                        CustomDeleteIcon<Loan>(
+                          item: loan,
+                          content: Text(
+                              "Loan: ${AppUtils.getHumanReadableDt(loan.loanDate)} \nAmount ${loan.loanAmount}"),
+                          onAccept: (l) {
+                            deleteLoan(l);
+                          },
+                        ),
+                      ],
+                    )
                   ],
                 ),
                 subtitle: Column(

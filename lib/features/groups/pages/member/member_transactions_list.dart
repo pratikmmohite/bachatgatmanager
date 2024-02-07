@@ -85,51 +85,54 @@ class _MemberTransactionsListState extends State<MemberTransactionsList> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              rows: transactions
-                  .map(
-                    (trx) => DataRow(
-                      cells: [
-                        DataCell(Text(trx.trxPeriod)),
-                        DataCell(Text(
-                          trx.trxType,
+              rows: transactions.map(
+                (trx) {
+                  var cr = trx.cr;
+                  var dr = trx.dr;
+
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(trx.trxPeriod)),
+                      DataCell(Text(
+                        trx.trxType,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 15),
+                      )),
+                      DataCell(
+                        Text(
+                          cr.toStringAsFixed(2),
                           style: const TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 15),
-                        )),
-                        DataCell(
-                          Text(
-                            trx.cr.toStringAsFixed(2),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              color: Colors.green,
-                            ),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: Colors.green,
                           ),
                         ),
-                        DataCell(
-                          Text(
-                            trx.dr.toStringAsFixed(2),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              color: Colors.green,
-                            ),
+                      ),
+                      DataCell(
+                        Text(
+                          dr.toStringAsFixed(2),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: Colors.green,
                           ),
                         ),
-                        DataCell(Text(AppUtils.getHumanReadableDt(trx.trxDt))),
-                        DataCell(
-                          CustomDeleteIcon<Transaction>(
-                            item: trx,
-                            content:
-                                Text("Trx: ${trx.trxType} \nAmount ${trx.cr}"),
-                            onAccept: (t) {
-                              deleteTransaction(t);
-                            },
-                          ),
+                      ),
+                      DataCell(Text(AppUtils.getHumanReadableDt(trx.trxDt))),
+                      DataCell(
+                        CustomDeleteIcon<Transaction>(
+                          item: trx,
+                          content:
+                              Text("Trx: ${trx.trxType} \nAmount ${trx.cr}"),
+                          onAccept: (t) {
+                            deleteTransaction(t);
+                          },
                         ),
-                      ],
-                    ),
-                  )
-                  .toList(),
+                      ),
+                    ],
+                  );
+                },
+              ).toList(),
               columns: const [
                 DataColumn(
                   label: Text("Month"),

@@ -103,7 +103,7 @@ class GroupsDao {
   }
 
   Future<int> recalculateLoanAmounts(String loanId) async {
-    String trxQuery = "select isnull(sum(cr), 0) from $transactionTableName t "
+    String trxQuery = "select ifnull(sum(cr), 0) from $transactionTableName t "
         "where t.trxType = ? and t.sourceType = ? and t.sourceId = ?";
     String query = "update $loanTableName set "
         "paidLoanAmount = ($trxQuery), "
@@ -215,6 +215,8 @@ class GroupsDao {
         "(${getAmountQuery(AppConstants.ttOthers, filter.trxPeriod)}) as paidOtherAmount ";
     String paidLoanInterestAmount =
         "(${getAmountQuery(AppConstants.ttLoanInterest, filter.trxPeriod)}) as paidLoanInterestAmount ";
+    String givenLoanAmount =
+        "(${getAmountQuery(AppConstants.ttLoan, filter.trxPeriod, "dr")}) as lendLoan ";
 
     String pendingLoanAmount = "(select ifnull(sum(t.dr-t.cr), 0) "
         "from $transactionTableName t "
@@ -232,6 +234,7 @@ class GroupsDao {
         ",$paidLoanInterestAmount "
         ",$paidOtherAmount "
         ",$balanceAmount "
+        ",$givenLoanAmount "
         ",$pendingLoanAmount "
         "from $memberTableName m ";
 
@@ -292,7 +295,6 @@ class GroupsDao {
         "ifnull(sum(trx.dr), 0) as totalDr "
         "from $transactionTableName trx ";
     String whereClause = "where trx.groupId = ? ";
-    whereClause += "and trx.trxPeriod < ? ";
     String trxPeriodSdt = AppUtils.getTrxPeriodFromDt(filter.sdt);
     String trxPeriodEdt = AppUtils.getTrxPeriodFromDt(filter.edt);
     List<Object?> openingPars = [
@@ -309,8 +311,11 @@ class GroupsDao {
       filter.groupId,
       trxPeriodEdt
     ];
-    String balanceQuery = selectQuery + whereClause;
-    String query = "$balanceQuery union $balanceQuery";
+    String openingBalance =
+        selectQuery + whereClause + "and trx.trxPeriod < ? ";
+    String closingBalance =
+        selectQuery + whereClause + "and trx.trxPeriod <= ? ";
+    String query = "$openingBalance union $closingBalance";
 
     var rows = await dbService.read(query, [
       ...openingPars,
@@ -320,8 +325,15 @@ class GroupsDao {
     return summary.reversed.toList();
   }
 
-  String getAmountQuery(String trxType, String trxPeriod) {
-    return "select ifnull(sum(t.cr), 0) "
+  String getAmountQuery(String trxType, String trxPeriod,
+      [String mode = "cr"]) {
+    String column = "t.cr";
+    if (mode == "dr") {
+      column = "t.dr";
+    } else if (mode == "both") {
+      column = "t.cr - t.dr";
+    }
+    return "select ifnull(sum($column), 0) "
         "from $transactionTableName t "
         "where t.groupId = m.groupId "
         "and t.memberId = m.id "

@@ -58,6 +58,7 @@ abstract class AppLocalization {
     "lNote": "Note",
     "lBalance": "Balance",
     "lLoan": "Loan(+)",
+    "lGivenLoan": "Loan(-)",
     "lShare": "Share(+)",
     "lMember": "Member",
     "lTotal": "Total",
@@ -150,6 +151,7 @@ abstract class AppLocalization {
   // Labels
   String get lBalance => getValue("lBalance");
   String get lLoan => getValue("lLoan");
+  String get lGivenLoan => getValue("lGivenLoan");
   String get lShare => getValue("lShare");
   String get lMember => getValue("lMember");
   String get lTotal => getValue("lTotal");
