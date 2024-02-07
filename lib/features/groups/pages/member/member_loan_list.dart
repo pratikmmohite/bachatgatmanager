@@ -93,8 +93,11 @@ class _MembersLoanListState extends State<MembersLoanList> {
       appBar: AppBar(
         title: Text(local.abLoanList),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(120),
-          child: MemberDetailsCard(groupMemberDetails),
+          preferredSize: const Size.fromHeight(140),
+          child: MemberDetailsCard(
+            groupMemberDetail: groupMemberDetails,
+            trxPeriodDt: trxPeriodDt,
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -120,7 +123,7 @@ class _MembersLoanListState extends State<MembersLoanList> {
         },
         child: ListView.builder(
           itemCount: loans.length,
-          padding: const EdgeInsets.only(bottom: 100),
+          padding: const EdgeInsets.only(bottom: 300.0),
           itemBuilder: (ctx, index) {
             var loan = loans[index];
             var trxPeriod = AppUtils.getHumanReadableDt(loan.loanDate);

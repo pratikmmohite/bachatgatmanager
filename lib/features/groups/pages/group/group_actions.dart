@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../../models/models_index.dart';
 import '../member/members_list_page.dart';
 import 'group_details_screen.dart';
-import 'group_summary_card.dart';
 
 class GroupActions extends StatefulWidget {
   final Group group;
@@ -18,25 +17,24 @@ class GroupActions extends StatefulWidget {
 class _GroupActionsState extends State<GroupActions> {
   late Group group;
   late GroupsDao groupDao;
-  List<GroupSummary> groupSummary = [];
+  GroupTotal groupTotal = GroupTotal();
   bool isLoading = false;
   @override
   void initState() {
     group = widget.group;
     groupDao = GroupsDao();
-    getGroupSummary();
+    getGroupTotals();
     super.initState();
   }
 
-  Future<void> getGroupSummary() async {
-    groupSummary = [];
-    var filter = GroupSummaryFilter(group.id);
-    filter.edt = group.edt;
+  Future<void> getGroupTotals() async {
+    groupTotal = GroupTotal();
+    var filter = GroupTotalFilter(group.id);
     setState(() {
       isLoading = true;
     });
     try {
-      groupSummary = await groupDao.getBalances(filter);
+      groupTotal = await groupDao.getTotalBalances(filter);
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -46,9 +44,49 @@ class _GroupActionsState extends State<GroupActions> {
   }
 
   Widget buildSummary() {
-    return GroupSummaryCard(
-      summary: groupSummary,
-      viewMode: "balance",
+    return Table(
+      children: [
+        TableRow(
+          children: [
+            const TableCell(
+              child: Text("Balance"),
+            ),
+            TableCell(
+              child: Text(groupTotal.balance.toStringAsFixed(2)),
+            ),
+          ],
+        ),
+        TableRow(
+          children: [
+            const TableCell(
+              child: Text("Total Saving"),
+            ),
+            TableCell(
+              child: Text(groupTotal.totalSaving.toStringAsFixed(2)),
+            ),
+          ],
+        ),
+        TableRow(
+          children: [
+            const TableCell(
+              child: Text("Member Count"),
+            ),
+            TableCell(
+              child: Text(groupTotal.memberCount.toStringAsFixed(2)),
+            ),
+          ],
+        ),
+        TableRow(
+          children: [
+            const TableCell(
+              child: Text("Member Portion"),
+            ),
+            TableCell(
+              child: Text(groupTotal.perMemberShare.toStringAsFixed(2)),
+            ),
+          ],
+        )
+      ],
     );
   }
 
@@ -62,13 +100,12 @@ class _GroupActionsState extends State<GroupActions> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (groupSummary.isNotEmpty)
-                Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  child: isLoading
-                      ? const CircularProgressIndicator()
-                      : ListTile(title: buildSummary()),
-                ),
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                child: isLoading
+                    ? const CircularProgressIndicator()
+                    : ListTile(title: buildSummary()),
+              ),
               const Divider(),
               Card(
                 child: ListTile(
@@ -82,7 +119,7 @@ class _GroupActionsState extends State<GroupActions> {
                         group: group,
                       ),
                     );
-                    getGroupSummary();
+                    getGroupTotals();
                   },
                 ),
               ),

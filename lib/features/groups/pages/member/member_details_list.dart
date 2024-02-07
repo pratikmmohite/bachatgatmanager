@@ -145,12 +145,16 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   Widget buildDetailsList() {
     return ListView.builder(
       itemCount: groupMemberDetails.length,
+      padding: const EdgeInsets.only(bottom: 300.0),
       itemBuilder: (context, index) {
         var m = groupMemberDetails[index];
         return ListTile(
           contentPadding: EdgeInsets.zero,
           shape: const RoundedRectangleBorder(side: BorderSide(width: 0.1)),
-          title: MemberDetailsCard(m),
+          title: MemberDetailsCard(
+            groupMemberDetail: m,
+            trxPeriodDt: trxPeriodDt,
+          ),
           subtitle: buildActions(m),
         );
       },
@@ -261,7 +265,10 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
-        child: buildDetailsTable(),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 300.0),
+          child: buildDetailsTable(),
+        ),
       ),
     );
   }

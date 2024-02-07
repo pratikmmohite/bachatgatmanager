@@ -90,7 +90,10 @@ class _AddLoanPageState extends State<AddLoanPage> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              MemberDetailsCard(groupMemberDetail),
+              MemberDetailsCard(
+                groupMemberDetail: groupMemberDetail,
+                trxPeriodDt: trxPeriodDt,
+              ),
               Table(
                 children: [
                   TableRow(

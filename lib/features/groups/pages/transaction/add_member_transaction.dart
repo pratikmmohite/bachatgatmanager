@@ -198,7 +198,10 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            MemberDetailsCard(groupMemberDetail),
+            MemberDetailsCard(
+              groupMemberDetail: groupMemberDetail,
+              trxPeriodDt: trxPeriodDt,
+            ),
             const Divider(),
             Padding(
               padding: const EdgeInsets.all(8.0),

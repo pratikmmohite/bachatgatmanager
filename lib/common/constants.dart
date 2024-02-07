@@ -5,10 +5,16 @@ class AppConstants {
   static const String ttLateFee = "LateFee";
   static const String ttLoanInterest = "LoanInterest";
   static const String ttOthers = "Others";
+  static const String ttBankFee = "BankFee";
+  static const String ttBankInterest = "BankInterest";
+  static const String ttExpenditures = "BankInterest";
   static const String ttBankDeposit = "BankDeposit";
   static const String ttOpeningBalance = "Opening Balance";
   static const String ttClosingBalance = "Closing Balance";
-
+  static String dbCreditFilter =
+      "('${[ttShare, ttLateFee, ttLoanInterest, ttOthers].join("','")}')";
+  static String dbDebitFilter =
+      "('${[ttBankFee, ttExpenditures].join("','")}')";
   // Loan status
   static const String lsActive = "Active";
   static const String lsComplete = "Complete";

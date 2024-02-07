@@ -58,7 +58,7 @@ abstract class AppLocalization {
     "lNote": "Note",
     "lBalance": "Balance",
     "lLoan": "Loan(+)",
-    "lGivenLoan": "Loan(-)",
+    "lGivenLoan": "Given Loan",
     "lShare": "Share(+)",
     "lMember": "Member",
     "lTotal": "Total",

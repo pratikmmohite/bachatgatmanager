@@ -6,9 +6,11 @@ import '../../models/models_index.dart';
 
 class MemberDetailsCard extends StatelessWidget {
   final GroupMemberDetails groupMemberDetail;
-  const MemberDetailsCard(
-    this.groupMemberDetail, {
+  final DateTime trxPeriodDt;
+  const MemberDetailsCard({
     super.key,
+    required this.groupMemberDetail,
+    required this.trxPeriodDt,
   });
 
   @override
@@ -16,9 +18,16 @@ class MemberDetailsCard extends StatelessWidget {
     var local = AppLocal.of(context);
     return ListTile(
       titleAlignment: ListTileTitleAlignment.center,
-      title: Text(
-        groupMemberDetail.name,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+      title: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            groupMemberDetail.name,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+          ),
+          Text(AppUtils.getTrxPeriodFromDt(trxPeriodDt))
+        ],
       ),
       subtitle: Table(
         children: [
@@ -29,7 +38,7 @@ class MemberDetailsCard extends StatelessWidget {
                 amount: groupMemberDetail.paidShareAmount,
               ),
               CustomAmountChip(
-                label: local.lPaidInterest,
+                label: local.lPaidLateFee,
                 amount: groupMemberDetail.paidLateFee,
               ),
             ],
@@ -41,7 +50,7 @@ class MemberDetailsCard extends StatelessWidget {
                 amount: groupMemberDetail.paidLoanAmount,
               ),
               CustomAmountChip(
-                label: local.lRmLoan,
+                label: local.lPaidInterest,
                 amount: groupMemberDetail.paidLoanInterestAmount,
               )
             ],

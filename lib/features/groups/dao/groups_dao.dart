@@ -325,6 +325,34 @@ class GroupsDao {
     return summary.reversed.toList();
   }
 
+  Future<GroupTotal> getTotalBalances(GroupTotalFilter filter) async {
+    String balanceQuery = "select "
+        "sum(trx.cr - trx.dr) as balance "
+        "from $transactionTableName trx "
+        "where trx.groupId = ? ";
+    String memberCountQuery = "select "
+        "count(1) as memberCount "
+        "from $memberTableName m "
+        "where m.groupId = ? ";
+    String totalGroupAmountQuery = "select "
+        "sum(trx.cr + trx.dr) as totalSaving "
+        "from $transactionTableName trx "
+        "where trx.groupId = ? "
+        "and trx.trxType in ${AppConstants.dbCreditFilter} ";
+    String query = "select ifnull(($balanceQuery), 0) as balance, "
+        "ifnull(($memberCountQuery), 0) as memberCount, "
+        "ifnull(($totalGroupAmountQuery), 0) as totalSaving, "
+        "0 as perMemberShare ";
+    var rows = await dbService
+        .read(query, [filter.groupId, filter.groupId, filter.groupId]);
+    var totals = rows.map((e) => GroupTotal.fromJson(e)).toList();
+    var total = totals.isEmpty ? GroupTotal() : totals[0];
+    if (total.memberCount != 0) {
+      total.perMemberShare = total.totalSaving / total.memberCount;
+    }
+    return total;
+  }
+
   String getAmountQuery(String trxType, String trxPeriod,
       [String mode = "cr"]) {
     String column = "t.cr";

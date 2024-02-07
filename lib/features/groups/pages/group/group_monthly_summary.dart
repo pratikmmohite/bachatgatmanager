@@ -143,7 +143,10 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
-                  child: buildSummaryDetails(),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 300.0),
+                    child: buildSummaryDetails(),
+                  ),
                 ),
               ),
       ),

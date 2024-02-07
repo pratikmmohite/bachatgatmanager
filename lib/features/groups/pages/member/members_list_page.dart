@@ -92,6 +92,7 @@ class _MembersListState extends State<MembersList> {
           await getMembers();
         },
         child: ListView.builder(
+          padding: const EdgeInsets.only(bottom: 300.0),
           itemBuilder: (ctx, index) {
             var member = members[index];
             return Card(
