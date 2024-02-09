@@ -12,12 +12,18 @@ class AppUtils {
   }
 
   static void toast(BuildContext context, String msg) {
+    if (!context.mounted) {
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg),
     ));
   }
 
   static Future<void> navigateTo(BuildContext context, Widget navToWid) async {
+    if (!context.mounted) {
+      return;
+    }
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ct) => navToWid,
@@ -26,6 +32,9 @@ class AppUtils {
   }
 
   static void close(BuildContext context) {
+    if (!context.mounted) {
+      return;
+    }
     Navigator.of(context).pop();
   }
 

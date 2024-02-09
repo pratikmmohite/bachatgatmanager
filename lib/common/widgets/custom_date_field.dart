@@ -4,6 +4,7 @@ class CustomDateField extends StatelessWidget {
   final String label;
   final String field;
   final DateTime value;
+  final bool futureDataDisable;
   final ValueChanged<DateTime> onChange;
 
   const CustomDateField({
@@ -12,6 +13,7 @@ class CustomDateField extends StatelessWidget {
     required this.field,
     required this.value,
     required this.onChange,
+    this.futureDataDisable = true,
   });
 
   @override
@@ -28,10 +30,11 @@ class CustomDateField extends StatelessWidget {
         readOnly: true,
         onTap: () async {
           DateTime? selectedDate = await showDatePicker(
-              context: context,
-              initialDate: value,
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2099));
+            context: context,
+            initialDate: value,
+            firstDate: DateTime(2000),
+            lastDate: futureDataDisable ? DateTime.now() : DateTime(2099),
+          );
           if (selectedDate != null) {
             onChange(selectedDate);
           }

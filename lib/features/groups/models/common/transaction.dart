@@ -34,7 +34,12 @@ class Transaction extends ComFields {
   }) {
     this.trxDt = trxDt ?? DateTime.now();
   }
-  Transaction.withEmpty();
+
+  Transaction.withEmpty() {
+    trxDt = DateTime.now();
+    trxPeriod = AppUtils.getTrxPeriodFromDt(trxDt);
+  }
+
   Transaction.withDefault({
     required this.memberId,
     required this.groupId,

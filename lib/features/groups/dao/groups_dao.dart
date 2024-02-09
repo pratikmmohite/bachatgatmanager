@@ -56,7 +56,8 @@ class GroupsDao {
     String query = "select * from $transactionTableName "
         "where groupId = ? and memberId = ? "
         "order by trxDt desc";
-    var rows = await dbService.read(query, [groupId, memberId]);
+    List<String> pars = [groupId, memberId];
+    var rows = await dbService.read(query, pars);
     var transactions = rows.map((e) => Transaction.fromJson(e)).toList();
     return transactions;
   }
@@ -335,10 +336,11 @@ class GroupsDao {
         "from $memberTableName m "
         "where m.groupId = ? ";
     String totalGroupAmountQuery = "select "
-        "sum(trx.cr + trx.dr) as totalSaving "
+        "sum(trx.cr + iif(trx.trxType = '${AppConstants.ttExpenditures}', -1, 1) * trx.dr) as totalSaving "
         "from $transactionTableName trx "
         "where trx.groupId = ? "
-        "and trx.trxType in ${AppConstants.dbCreditFilter} ";
+        "and (trx.trxType in ${AppConstants.dbCreditFilter} "
+        "or trx.trxType in ('${AppConstants.ttExpenditures}' )) ";
     String query = "select ifnull(($balanceQuery), 0) as balance, "
         "ifnull(($memberCountQuery), 0) as memberCount, "
         "ifnull(($totalGroupAmountQuery), 0) as totalSaving, "

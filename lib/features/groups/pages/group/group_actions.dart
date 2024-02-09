@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../models/models_index.dart';
 import '../member/members_list_page.dart';
 import 'group_details_screen.dart';
+import 'group_transaction_list.dart';
 
 class GroupActions extends StatefulWidget {
   final Group group;
@@ -137,20 +138,21 @@ class _GroupActionsState extends State<GroupActions> {
                   title: const Text("Group Summary"),
                 ),
               ),
-              // Card(
-              //   child: ListTile(
-              //     leading: const Icon(Icons.account_balance),
-              //     onTap: () {
-              //       AppUtils.navigateTo(
-              //         context,
-              //         BankDepositPage(
-              //           group: group,
-              //         ),
-              //       );
-              //     },
-              //     title: const Text("Bank Deposits"),
-              //   ),
-              // ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.account_balance),
+                  onTap: () async {
+                   await AppUtils.navigateTo(
+                      context,
+                      GroupTransactionList(
+                        group: group,
+                      ),
+                    );
+                   getGroupTotals();
+                  },
+                  title: const Text("Group Transactions"),
+                ),
+              ),
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.people),

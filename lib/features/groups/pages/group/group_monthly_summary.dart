@@ -92,31 +92,61 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
     return DataTable(columns: columns, rows: rows);
   }
 
+  void dateRangePickup() async {
+    var dtRng = await showDateRangePicker(
+      context: context,
+      initialDateRange: DateTimeRange(start: filter.sdt, end: filter.edt),
+      firstDate: DateTime(2010),
+      lastDate: DateTime(2099),
+    );
+    if (dtRng != null) {
+      filter.sdt = dtRng.start;
+      filter.edt = dtRng.end;
+      getGroupSummary();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Group Summary"),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
-          child: Text(
-              "${AppUtils.getHumanReadableDt(filter.sdt)}-${AppUtils.getHumanReadableDt(filter.edt)}"),
+          preferredSize: const Size.fromHeight(20),
+          child: InkWell(
+            onTap: () {
+              dateRangePickup();
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppUtils.getHumanReadableDt(filter.sdt),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: Colors.indigo,
+                  ),
+                ),
+                const Text("To"),
+                Text(
+                  AppUtils.getHumanReadableDt(filter.edt),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: Colors.indigo,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         actions: [
           IconButton(
             onPressed: () async {
-              var dtRng = await showDateRangePicker(
-                context: context,
-                initialDateRange:
-                    DateTimeRange(start: filter.sdt, end: filter.edt),
-                firstDate: DateTime(2010),
-                lastDate: DateTime(2099),
-              );
-              if (dtRng != null) {
-                filter.sdt = dtRng.start;
-                filter.edt = dtRng.end;
-                getGroupSummary();
-              }
+              dateRangePickup();
             },
             icon: const Icon(
               Icons.date_range,
@@ -124,10 +154,16 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
           )
         ],
       ),
-      bottomSheet: GroupSummaryCard(
-        key: Key("gs_${groupSummary.length}"),
-        summary: groupSummary,
-        viewMode: "cr+dr",
+      bottomSheet: ExpansionTile(
+        title: const Text("Totals"),
+        initiallyExpanded: true,
+        children: [
+          GroupSummaryCard(
+            key: Key("gs_${groupSummary.length}"),
+            summary: groupSummary,
+            viewMode: "cr+dr",
+          )
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {

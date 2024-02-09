@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../dao/groups_dao.dart';
 import '../../models/models_index.dart';
-import '../member/members_list_page.dart';
 import 'group_add_page.dart';
 
 class GroupsListPage extends StatefulWidget {
@@ -97,20 +96,6 @@ class GroupsListPageState extends State<GroupsListPage> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // IconButton(
-                  //   icon: const Icon(Icons.people),
-                  //   onPressed: () async {
-                  //     await Navigator.of(context).push(
-                  //       MaterialPageRoute(
-                  //         builder: (ct) => MembersList(
-                  //           group,
-                  //           key: ValueKey(group.id),
-                  //         ),
-                  //       ),
-                  //     );
-                  //     await getGroups();
-                  //   },
-                  // ),
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () async {

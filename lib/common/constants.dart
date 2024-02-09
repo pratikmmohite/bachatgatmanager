@@ -1,20 +1,34 @@
+import 'package:bachat_gat/common/common_index.dart';
+
 class AppConstants {
   // Trx Types
+  // Credit
   static const String ttShare = "Share";
-  static const String ttLoan = "Loan";
   static const String ttLateFee = "LateFee";
   static const String ttLoanInterest = "LoanInterest";
   static const String ttOthers = "Others";
-  static const String ttBankFee = "BankFee";
   static const String ttBankInterest = "BankInterest";
-  static const String ttExpenditures = "BankInterest";
+  // Debit
+  static const String ttBankFee = "BankFee";
+  static const String ttExpenditures = "Expenditures";
+  // BOTH CR + DR
+  static const String ttLoan = "Loan";
+  // Special for filtering
   static const String ttBankDeposit = "BankDeposit";
   static const String ttOpeningBalance = "Opening Balance";
   static const String ttClosingBalance = "Closing Balance";
-  static String dbCreditFilter =
-      "('${[ttShare, ttLateFee, ttLoanInterest, ttOthers].join("','")}')";
-  static String dbDebitFilter =
-      "('${[ttBankFee, ttExpenditures].join("','")}')";
+
+  static String dbCreditFilter = "('${[
+    ttShare,
+    ttLateFee,
+    ttLoanInterest,
+    ttOthers,
+    ttBankInterest
+  ].join("','")}')";
+  static String dbDebitFilter = "('${[
+    ttBankFee,
+    ttExpenditures,
+  ].join("','")}')";
   // Loan status
   static const String lsActive = "Active";
   static const String lsComplete = "Complete";
@@ -43,5 +57,11 @@ class AppConstants {
     "Oct",
     "Nov",
     "Dec",
+  ];
+  static List<CustomDropDownOption<String>> otherTrxTypeOptions = [
+    CustomDropDownOption<String>(
+        ttBankInterest, ttBankInterest, ttBankInterest),
+    CustomDropDownOption<String>(
+        ttExpenditures, ttExpenditures, ttExpenditures),
   ];
 }

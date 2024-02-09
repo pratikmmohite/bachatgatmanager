@@ -1,37 +1,34 @@
-import 'package:bachat_gat/features/groups/models/models_index.dart';
+import 'package:bachat_gat/common/common_index.dart';
+import 'package:bachat_gat/features/groups/pages/transaction/add_group_transaction.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../common/common_index.dart';
 import '../../dao/dao_index.dart';
+import '../../models/models_index.dart';
 
-class MemberTransactionsList extends StatefulWidget {
+class GroupTransactionList extends StatefulWidget {
   final Group group;
-  final GroupMemberDetails groupMemberDetails;
-  final DateTime trxPeriodDt;
-  const MemberTransactionsList(this.group,
-      {super.key, required this.groupMemberDetails, required this.trxPeriodDt});
+  const GroupTransactionList({super.key, required this.group});
 
   @override
-  State<MemberTransactionsList> createState() => _MemberTransactionsListState();
+  State<GroupTransactionList> createState() => _GroupTransactionListState();
 }
 
-class _MemberTransactionsListState extends State<MemberTransactionsList> {
+class _GroupTransactionListState extends State<GroupTransactionList> {
   late Group group;
-  late DateTime trxPeriodDt;
-  late GroupMemberDetails groupMemberDetail;
   List<Transaction> transactions = [];
   late GroupsDao groupDao;
   bool isLoading = false;
-  String viewMode = "table";
+  double totalCr = 0;
+  double totalDr = 0;
 
-  Future<void> getMemberTransactions() async {
+  Future<void> getTransactions() async {
     transactions = [];
     setState(() {
       isLoading = true;
     });
     try {
-      transactions = await groupDao.getTransactions(
-          groupMemberDetail.groupId, groupMemberDetail.memberId);
+      transactions = await groupDao.getTransactions(group.id, "");
+      calculateTotals();
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -40,20 +37,27 @@ class _MemberTransactionsListState extends State<MemberTransactionsList> {
     });
   }
 
+  void calculateTotals() {
+    totalCr = 0;
+    totalDr = 0;
+    for (var trx in transactions) {
+      totalCr += trx.cr;
+      totalDr += trx.cr;
+    }
+  }
+
   @override
   void initState() {
     groupDao = GroupsDao();
-    groupMemberDetail = widget.groupMemberDetails;
-    trxPeriodDt = widget.trxPeriodDt;
     group = widget.group;
-    getMemberTransactions();
+    getTransactions();
     super.initState();
   }
 
   Future<void> deleteTransaction(Transaction trx) async {
     try {
       await groupDao.deleteTransaction(trx);
-      getMemberTransactions();
+      getTransactions();
       AppUtils.toast(context, "Transaction deleted successfully");
     } catch (e) {
       AppUtils.toast(context, e.toString());
@@ -64,21 +68,49 @@ class _MemberTransactionsListState extends State<MemberTransactionsList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Transactions"),
+        title: const Text("Group Transactions"),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(groupMemberDetail.name),
+              Text(group.name),
               const Divider(),
             ],
           ),
         ),
       ),
+      bottomSheet: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Total"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text("Credit"),
+                Text(totalCr.toStringAsFixed(2))
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [const Text("Debit"), Text(totalDr.toStringAsFixed(2))],
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await AppUtils.navigateTo(context, AddGroupTransaction(group: group));
+          getTransactions();
+        },
+        child: const Icon(Icons.add),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await getMemberTransactions();
+          await getTransactions();
         },
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -118,11 +150,11 @@ class _MemberTransactionsListState extends State<MemberTransactionsList> {
                           ),
                         ),
                       ),
-                      DataCell(
-                        Text(
-                          trx.note,
-                        ),
-                      ),
+                      DataCell(Text(
+                        trx.note,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 15),
+                      )),
                       DataCell(Text(AppUtils.getHumanReadableDt(trx.trxDt))),
                       DataCell(
                         CustomDeleteIcon<Transaction>(
