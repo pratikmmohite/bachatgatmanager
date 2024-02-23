@@ -54,12 +54,31 @@ class _PdfReportsState extends State<PdfReports> {
                 child: ListTile(
               leading: const Icon(Icons.picture_as_pdf),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
+                if (members.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Add Members for displaying list",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
                       builder: (context) => MonthlyReport(
-                          widget.group, members, members[0].name)),
-                );
+                        widget.group,
+                        members,
+                        members[0].name,
+                      ),
+                    ),
+                  );
+                }
               },
               title: const Text("Monthly Reports"),
             )),
