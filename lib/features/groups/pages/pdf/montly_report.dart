@@ -92,7 +92,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
                       final data = await dao.getMemberDetailsByMemberId(
                           selectedMemberId, _group.id);
                       if (data != null) {
-                        await PdfApi.generateTable(data, selectedMemberName);
+                        await PdfApi.generateTable(
+                            data, selectedMemberName, _group.name.toString());
                       } else {
                         // Handle case when no data is returned
                         // e.g., show a snackbar indicating no data found

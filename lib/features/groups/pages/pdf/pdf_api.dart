@@ -32,11 +32,10 @@ class PdfApi {
   }
 
   // Method to generate table with member transaction details
-  static Future<void> generateTable(
-      List<MemberTransactionDetails> memberData, String MemberName) async {
+  static Future<void> generateTable(List<MemberTransactionDetails> memberData,
+      String MemberName, String groupName) async {
     final pdf = pw.Document();
     final headers = [
-      'MemberName'
       'Month',
       'Paid Shares',
       'Loan Taken',
@@ -49,7 +48,6 @@ class PdfApi {
 
     final data = memberData
         .map((member) => [
-              MemberName,
               member.trxPeriod ?? '',
               member.paidShares?.toString() ?? '',
               member.loanTaken?.toString() ?? '',
@@ -62,9 +60,30 @@ class PdfApi {
         .toList();
 
     pdf.addPage(pw.Page(build: (Context) {
-      return pw.TableHelper.fromTextArray(
-        headers: headers,
-        data: data,
+      return pw.Column(
+        children: [
+          pw.Text(groupName,
+              style: pw.TextStyle(
+                fontSize: 20,
+                fontWeight: pw.FontWeight.bold,
+              )),
+          pw.SizedBox(height: 20),
+          pw.Column(
+            children: [
+              pw.Text("Member Name: $MemberName",
+                  style: pw.TextStyle(
+                    fontSize: 15,
+                    fontWeight: pw.FontWeight.normal,
+                    fontStyle: pw.FontStyle.normal,
+                  ))
+            ],
+          ),
+          pw.SizedBox(height: 15),
+          pw.TableHelper.fromTextArray(
+            headers: headers,
+            data: data,
+          ),
+        ],
       );
     }));
 
