@@ -38,5 +38,6 @@ class GroupMember extends ComFields {
   factory GroupMember.fromJson(Map<String, dynamic> json) =>
       _$GroupMemberFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$GroupMemberToJson(this);
 }

@@ -13,3 +13,4 @@ export 'requests/member_loan_filter.dart';
 export 'response/group_member_details.dart';
 export 'response/group_summary.dart';
 export 'response/group_total.dart';
+export 'response/member_transaction_details.dart';

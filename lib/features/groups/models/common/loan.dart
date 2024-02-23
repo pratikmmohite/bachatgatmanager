@@ -7,6 +7,7 @@ part 'loan.g.dart';
 
 @JsonSerializable()
 class Loan extends ComFields {
+  @override
   String id = "";
   String memberId = "";
   String groupId = "";
@@ -40,6 +41,7 @@ class Loan extends ComFields {
 
   factory Loan.fromJson(Map<String, dynamic> json) => _$LoanFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$LoanToJson(this);
 
   @override

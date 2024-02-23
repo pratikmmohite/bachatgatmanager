@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/models_index.dart';
 import '../member/members_list_page.dart';
+import '../pdf/pdf_reports.dart';
 import 'group_details_screen.dart';
 import 'group_transaction_list.dart';
 
@@ -142,13 +143,13 @@ class _GroupActionsState extends State<GroupActions> {
                 child: ListTile(
                   leading: const Icon(Icons.account_balance),
                   onTap: () async {
-                   await AppUtils.navigateTo(
+                    await AppUtils.navigateTo(
                       context,
                       GroupTransactionList(
                         group: group,
                       ),
                     );
-                   getGroupTotals();
+                    getGroupTotals();
                   },
                   title: const Text("Group Transactions"),
                 ),
@@ -167,6 +168,20 @@ class _GroupActionsState extends State<GroupActions> {
                   title: const Text("Member List"),
                 ),
               ),
+              Card(
+                  child: ListTile(
+                leading: const Icon(Icons.picture_as_pdf),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PdfReports(
+                              group,
+                            )),
+                  );
+                },
+                title: const Text("Reports"),
+              )),
             ],
           ),
         ));
