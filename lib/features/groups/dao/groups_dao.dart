@@ -404,7 +404,7 @@ class GroupsDao {
 //     }
 //   }
   Future<List<MemberTransactionDetails>> getMemberDetailsByMemberId(
-      String memberId, String groupId) async {
+      String memberId, String groupId, String startDate, String endDate) async {
     String query = """
        SELECT
   memberId,
@@ -421,7 +421,7 @@ class GroupsDao {
 FROM
   transactions
 WHERE
-  memberId =? and groupId=?
+  memberId =? and groupId=? and (trxPeriod>=? and trxPeriod<=?)
 GROUP BY
   memberId, trxPeriod;
     """;
