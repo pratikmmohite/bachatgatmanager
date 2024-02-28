@@ -369,40 +369,6 @@ class GroupsDao {
         "and t.trxType = '$trxType' ";
   }
 
-//   Future<List<MemberTransactionDetails>?> getMemberDetailsByMemberId(
-//       String memberId, String groupId) async {
-//     String query = """
-//          SELECT
-//     memberId,
-//     trxPeriod,
-//     SUM(CASE WHEN trxType='Share' THEN cr ELSE 0 END) AS Paid_Shares,
-//     SUM(CASE WHEN trxType='Loan' AND dr > 0 THEN dr ELSE 0 END) AS Lend_Loan,
-//     SUM(CASE WHEN trxType='LoanInterest' THEN cr ELSE 0 END) AS Paid_Interest,
-//     SUM(CASE WHEN trxType='Loan' AND cr > 0 THEN cr ELSE 0 END) AS Paid_Loan,
-// 	(SUM(CASE WHEN trxType='Loan' AND dr > 0 THEN dr ELSE 0 END) -
-//      SUM(CASE WHEN trxType='LoanInterest' THEN cr ELSE 0 END) -
-//      SUM(CASE WHEN trxType='Loan' AND cr > 0 THEN cr ELSE 0 END)) AS Remaining_Loan,
-// 	 sum(case when trxType='LateFee' then cr else 0 end) as Paid_LateFee,
-// 	 sum(case when trxType='Others' then cr else 0 end) as Others
-// FROM
-//     transactions
-// WHERE
-//     memberId =? and groupId=?
-// GROUP BY
-//     memberId, trxPeriod;
-//       """;
-//
-//     var rows = await dbService.read(query, [memberId, groupId]);
-//
-//     if (rows.isNotEmpty) {
-//       // var member = MemberTransactionDetails.fromJson(rows.first);
-//       var member =
-//           rows.map((e) => MemberTransactionDetails.fromJson(e)).toList();
-//       return member;
-//     } else {
-//       return null; // Member not found
-//     }
-//   }
   Future<List<MemberTransactionDetails>> getMemberDetailsByMemberId(
       String memberId, String groupId, String startDate, String endDate) async {
     String query = """
@@ -421,12 +387,13 @@ class GroupsDao {
 FROM
   transactions
 WHERE
-  memberId =? and groupId=? and (trxPeriod>=? and trxPeriod<=?)
+  memberId =? and groupId=? and trxPeriod>=? and trxPeriod<=?
 GROUP BY
   memberId, trxPeriod;
     """;
 
-    var rows = await dbService.read(query, [memberId, groupId]);
+    var rows =
+        await dbService.read(query, [memberId, groupId, startDate, endDate]);
 
     if (rows.isNotEmpty) {
       return rows.map((e) => MemberTransactionDetails.fromJson(e)).toList();
@@ -435,36 +402,3 @@ GROUP BY
     }
   }
 }
-/*
-* SELECT
-    memberId,
-    trxPeriod,
-    SUM(CASE WHEN trxType='Share' THEN cr ELSE 0 END) AS Paid_Shares,
-    SUM(CASE WHEN trxType='Loan' AND dr > 0 THEN dr ELSE 0 END) AS Lend_Loan,
-    SUM(CASE WHEN trxType='LoanInterest' THEN cr ELSE 0 END) AS Paid_Interest,
-    SUM(CASE WHEN trxType='Loan' AND cr > 0 THEN cr ELSE 0 END) AS Paid_Loan,
-
-	(SUM(CASE WHEN trxType='Loan' AND dr > 0 THEN dr ELSE 0 END) -
-     SUM(CASE WHEN trxType='LoanInterest' THEN cr ELSE 0 END) -
-     SUM(CASE WHEN trxType='Loan' AND cr > 0 THEN cr ELSE 0 END)) AS Remaining_Loan,
-
-	 sum(case when trxType='LateFee' then cr else 0 end) as Paid_LateFee,
-	 sum(case when trxType='Others' then cr else 0 end) as Others,
-
-	 (SUM(CASE WHEN trxType='Share' THEN cr ELSE 0 END)+
-	  SUM(CASE WHEN trxType='LoanInterest' THEN cr ELSE 0 END)+
-	  SUM(CASE WHEN trxType='Loan' AND cr > 0 THEN cr ELSE 0 END)+
-	  sum(case when trxType='LateFee' then cr else 0 end)+
-	   sum(case when trxType='Others' then cr else 0 end) ) as Total_Paid
-
-
-
-
-FROM
-    transactions
-WHERE
-    memberId = '625ab600-7806-1e9c-8e76-2315b6d68e7f'
-GROUP BY
-    memberId, trxPeriod;
-
-* */
