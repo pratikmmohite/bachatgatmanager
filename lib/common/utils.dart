@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 import 'constants.dart';
@@ -113,6 +114,16 @@ class AppUtils {
     String ext = filePath.split(".").last;
     var s = await FileSaver.instance.saveAs(
         filePath: filePath, name: name, ext: ext, mimeType: MimeType.other);
+    return s;
+  }
+
+  static Future<String?> saveAsBytes(
+    String name,
+    String ext,
+    Uint8List bytes,
+  ) async {
+    var s = await FileSaver.instance
+        .saveAs(bytes: bytes, name: name, ext: ext, mimeType: MimeType.other);
     return s;
   }
 
