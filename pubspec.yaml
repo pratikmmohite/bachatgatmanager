@@ -23,8 +23,6 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.2.2
   pdf: ^3.10.7
-  path_provider: ^2.1.2
-  open_file: ^3.3.2
   printing: ^5.11.1
 
 dev_dependencies:
