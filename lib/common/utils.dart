@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-
+import 'package:path_provider/path_provider.dart';
 import 'constants.dart';
 
 class AppUtils {
@@ -127,4 +127,8 @@ class AppUtils {
     }
     return "";
   }
+ static Future<String> getDocumentDirectory() async {
+      final directory = await getApplicationDocumentsDirectory();
+      return directory.path;
+    }
 }
