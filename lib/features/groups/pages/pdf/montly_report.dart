@@ -164,8 +164,9 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           _formattDate(_startDate),
                           _formattDate(_endDate));
                       if (data.isNotEmpty) {
-                        await PdfApi.generateTable(
+                        var bytes = await PdfApi.generateTable(
                             data, selectedMemberName, _group.name.toString());
+                        await PdfApi.saveAsPDF(selectedMemberName, bytes);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -182,6 +183,38 @@ class _MonthlyReportState extends State<MonthlyReport> {
                       }
                     },
                     label: const Text('Download'),
+                  ),
+                ),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.download),
+                    onPressed: () async {
+                      final dao = GroupsDao();
+                      final data = await dao.getMemberDetailsByMemberId(
+                          selectedMemberId,
+                          _group.id,
+                          _formattDate(_startDate),
+                          _formattDate(_endDate));
+                      if (data.isNotEmpty) {
+                        var bytes = await PdfApi.generateTable(
+                            data, selectedMemberName, _group.name.toString());
+                        await PdfApi.previewPDF(bytes);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "There are no transaction between this period for the member please change the time period",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                    label: const Text('Preview'),
                   ),
                 ),
               ],
