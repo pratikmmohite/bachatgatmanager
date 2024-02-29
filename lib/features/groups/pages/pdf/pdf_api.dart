@@ -5,18 +5,29 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import 'getFontLoad.dart';
+
 class PdfApi {
   static Future<Uint8List> generateTable(
       List<MemberTransactionDetails> memberData,
       String memberName,
       String groupName) async {
-    final fontData = await rootBundle.load('assets/fonts/marathi.ttf');
-
     // Create the Font object
-    final font = pw.Font.ttf(fontData.buffer.asByteData());
-
+    final rfont = await FontLoaders.loadFont(
+        'assets/fonts/NotoSansDevanagari-Regular.ttf');
+    final mfont = await FontLoaders.loadFont(
+        'assets/fonts/NotoSansDevanagari-Medium.ttf');
+    final bfont =
+        await FontLoaders.loadFont('assets/fonts/NotoSansDevanagari-Bold.ttf');
+    final sbfont = await FontLoaders.loadFont(
+        'assets/fonts/NotoSansDevanagari-SemiBold.ttf');
+    final nfont = await FontLoaders.loadFont('assets/fonts/marathi.ttf');
     // Create the ThemeData with the loaded font
-    var myTheme = pw.ThemeData.withFont(base: font);
+    var myTheme = pw.ThemeData.withFont(
+      base: rfont,
+      bold: bfont,
+      fontFallback: [nfont, mfont, sbfont],
+    );
     final pdf = pw.Document(
       theme: myTheme,
     );
