@@ -1,5 +1,6 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/pdf/montly_report.dart';
+import 'package:bachat_gat/features/groups/pages/pdf/yearly_report.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -82,11 +83,24 @@ class _PdfReportsState extends State<PdfReports> {
               },
               title: const Text("Monthly Reports"),
             )),
-            const Card(
-                child: ListTile(
-              leading: Icon(Icons.picture_as_pdf),
-              title: Text("Yearly Report"),
-            ))
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.picture_as_pdf),
+                title: const Text("Yearly Report"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => YearlyReport(
+                        widget.group,
+                        members,
+                        members[0].name,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
           ],
         ));
   }

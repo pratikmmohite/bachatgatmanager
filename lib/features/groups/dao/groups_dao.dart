@@ -401,4 +401,89 @@ GROUP BY
       return []; // Return an empty list if no member details found
     }
   }
+
+  Future<String> getPreviousYearAmount(String groupId, String trxPeriod) async {
+    var query = """SELECT IFNULL(SUM(t.cr) - SUM(t.dr), 0) AS PreviousYearAmount
+    FROM transactions t
+    WHERE t.groupId = ?
+    AND t.trxPeriod < ?;
+  """;
+
+    var result = await dbService.read(query, [groupId, trxPeriod]);
+    print(result);
+
+    if (result.isNotEmpty) {
+      final previousYearAmount = result.first["PreviousYearAmount"];
+      return previousYearAmount.toString();
+    }
+
+    return "0"; // Default value if no result
+  }
+
+  Future<String> getExpenditures(String groupId, String trxPeriod) async {
+    var query =
+        """SELECT IFNULL(SUM(t.trxType='Expenditures'), 0) AS Expenditures
+    FROM transactions t
+    WHERE t.groupId = ?
+    AND t.trxPeriod < ?;
+  """;
+
+    var result = await dbService.read(query, [groupId, trxPeriod]);
+
+    if (result.isNotEmpty) {
+      final Expenditures = result.first["Expenditures"];
+      return Expenditures.toString();
+    }
+
+    return "0"; // Default value if no result
+  }
+
+  Future<String> getBankDepositInterest(
+      String groupId, String trxPeriod) async {
+    var query =
+        """SELECT IFNULL(SUM(t.trxType='BankInterest'), 0) AS BankInterest
+    FROM transactions t
+    WHERE t.groupId = ?
+    AND t.trxPeriod < ?;
+  """;
+
+    var result = await dbService.read(query, [groupId, trxPeriod]);
+
+    if (result.isNotEmpty) {
+      final BankInterest = result.first["BankInterest"];
+      return BankInterest.toString();
+    }
+
+    return "0"; // Default value if no result
+  }
+
+  Future<List<MemberTransactionSummary>> getYearlySummary(
+      String groupId, String startDate, String endDate) async {
+    var query = """SELECT 
+  m.name,
+  sum(case when t.trxType='Share' then t.cr else 0 end) as TotalSharesDeposit,
+  sum(case when t.trxType='LoanInterest' then t.cr else 0 end) as TotalLoanInterest,
+  sum(case when t.trxType='LateFee' then t.cr else 0 end) as TotalPenalty,
+  sum(case when t.trxType='Others' then t.cr else 0 end) as OtherDeposit,
+  sum(case when t.trxType='Loan' then t.dr else 0 end) as LoanTakenTillDate,
+  sum(case when t.trxType='Loan' then t.cr else 0 end) as LoanReturn,
+  (sum(case when t.trxType='Loan' then t.dr else 0 end) - sum(case when t.trxType='Loan' then t.cr else 0 end)) as Remaining_Loan,
+ 
+  sum(case when t.trxType='Share' then t.dr else 0 end) as SharesGivenByGroup,
+  
+FROM transactions t 
+JOIN members m ON t.memberId = m.id 
+WHERE t.groupId =?  and (t.trxPeriod>=? and t.trxPeirod<=?)
+GROUP BY t.memberId;
+
+     """;
+    var rows = await dbService.read(query, [groupId, startDate, endDate]);
+
+    if (rows.isNotEmpty) {
+      return rows.map((e) => MemberTransactionSummary.fromJson(e)).toList();
+    } else {
+      return []; // Return an empty list if no member details found
+    }
+    return [];
+  }
 }

@@ -5,8 +5,7 @@ import '../../models/models_index.dart';
 import '../pdf/pdf_api.dart';
 
 class MonthlyReport extends StatefulWidget {
-  const MonthlyReport(this.group, this.members, this.intitalName, {Key? key})
-      : super(key: key);
+  const MonthlyReport(this.group, this.members, this.intitalName, {super.key});
   final Group group;
   final List<GroupMember> members;
   final String intitalName;
@@ -99,7 +98,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                       ),
                       ElevatedButton.icon(
                         label: Text(_formattDate(_startDate)),
-                        icon: Icon(Icons.calendar_today),
+                        icon: const Icon(Icons.calendar_today),
                         onPressed: () async {
                           final DateTime? picked = await showDatePicker(
                             context: context,
@@ -123,12 +122,12 @@ class _MonthlyReportState extends State<MonthlyReport> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'End Date',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       ElevatedButton.icon(
-                        icon: Icon(Icons.calendar_today),
+                        icon: const Icon(Icons.calendar_today),
                         onPressed: () async {
                           final DateTime? picked = await showDatePicker(
                             context: context,

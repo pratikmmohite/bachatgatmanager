@@ -39,21 +39,59 @@ class PdfApi {
       'Paid Loan',
       'Remaining Loan',
       'Late Fee',
-      'Others'
+      'Others',
+      'Total Paid'
     ];
 
+    List<double> totalPaid = [];
+    for (var m in memberData) {
+      double total = m.paidOtherAmount! +
+          m.paidInterest! +
+          m.paidLoan! +
+          m.paidLateFee! +
+          m.paidShares!;
+      totalPaid.add(total);
+    }
+
     final data = memberData
-        .map((member) => [
-              member.trxPeriod ?? '',
-              member.paidShares?.toString() ?? '',
-              member.loanTaken?.toString() ?? '',
-              member.paidInterest?.toString() ?? '',
-              member.paidLoan?.toString() ?? '',
-              member.remainingLoan?.toString() ?? '',
-              member.paidLateFee?.toString() ?? '',
-              member.paidOtherAmount?.toString() ?? '',
+        .asMap()
+        .entries
+        .map((entry) => [
+              entry.value.trxPeriod ?? '',
+              entry.value.paidShares?.toString() ?? '',
+              entry.value.loanTaken?.toString() ?? '',
+              entry.value.paidInterest?.toString() ?? '',
+              entry.value.paidLoan?.toString() ?? '',
+              entry.value.remainingLoan?.toString() ?? '',
+              entry.value.paidLateFee?.toString() ?? '',
+              entry.value.paidOtherAmount?.toString() ?? '',
+              totalPaid[entry.key].toString(), // Add totalPaid for each member
             ])
         .toList();
+
+    // List<double> totalPaid = [];
+    // int count = 0;
+    // for (var m in memberData) {
+    //   double total = m.paidOtherAmount! +
+    //       m.paidInterest! +
+    //       m.paidLoan! +
+    //       m.paidLateFee! +
+    //       m.paidShares!;
+    //   totalPaid.add(total);
+    //   count++;
+    // }
+    // final data = memberData
+    //     .map((member) => [
+    //           member.trxPeriod ?? '',
+    //           member.paidShares?.toString() ?? '',
+    //           member.loanTaken?.toString() ?? '',
+    //           member.paidInterest?.toString() ?? '',
+    //           member.paidLoan?.toString() ?? '',
+    //           member.remainingLoan?.toString() ?? '',
+    //           member.paidLateFee?.toString() ?? '',
+    //           member.paidOtherAmount?.toString() ?? '',
+    //         ])
+    //     .toList();
 
     pdf.addPage(pw.Page(build: (context) {
       return pw.Column(
