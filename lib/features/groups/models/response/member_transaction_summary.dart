@@ -31,14 +31,14 @@ class MemberTransactionSummary extends ComFields {
   factory MemberTransactionSummary.fromJson(Map<String, dynamic> json) {
     return MemberTransactionSummary(
       name: json['name'],
-      totalSharesDeposit: json['TotalSharesDeposit'] ?? 0.0,
-      totalLoanInterest: json['TotalLoanInterest'] ?? 0.0,
-      totalPenalty: json['TotalPenalty'] ?? 0.0,
-      otherDeposit: json['OtherDeposit'] ?? 0.0,
-      loanTakenTillDate: json['LoanTakenTillDate'] ?? 0.0,
-      loanReturn: json['LoanReturn'] ?? 0.0,
-      remainingLoan: json['RemainingLoan'] ?? 0.0,
-      sharesGivenByGroup: json['SharesGivenByGroup'] ?? 0.0,
+      totalSharesDeposit: (json['TotalSharesDeposit'] ?? 0).toDouble(),
+      totalLoanInterest: (json['TotalLoanInterest'] ?? 0).toDouble(),
+      totalPenalty: (json['TotalPenalty'] ?? 0).toDouble(),
+      otherDeposit: (json['OtherDeposit'] ?? 0).toDouble(),
+      loanTakenTillDate: (json['LoanTakenTillDate'] ?? 0).toDouble(),
+      loanReturn: (json['LoanReturn'] ?? 0).toDouble(),
+      remainingLoan: (json['RemainingLoan'] ?? 0).toDouble(),
+      sharesGivenByGroup: (json['SharesGivenByGroup'] ?? 0).toDouble(),
     );
   }
   @override

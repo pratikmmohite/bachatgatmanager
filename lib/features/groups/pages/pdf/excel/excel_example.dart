@@ -1,31 +1,11 @@
-// import 'dart:io';
-import 'dart:io';
-
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/models/models_index.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../../dao/dao_index.dart';
 
 class ExcelExample {
-  void saveFile(String fileName, List<int> bytes) async {
-    try {
-      // Get the directory for storing files
-      Directory? directory = await getExternalStorageDirectory();
-      String filePath = '${directory!.path}/$fileName';
-
-      // Write the file
-      File file = File(filePath);
-      await file.writeAsBytes(bytes);
-
-      print('File saved successfully at: $filePath');
-    } catch (e) {
-      print('Error saving file: $e');
-    }
-  }
-
   static Future<void> saveAsExcel(String fileName, Uint8List bytes) async {
     await AppUtils.saveAsBytes(fileName, "xlsx", bytes);
   }
@@ -35,12 +15,12 @@ class ExcelExample {
     var excel = Excel.createExcel();
     Sheet sheetObject = excel['Sheet1'];
     final dao = GroupsDao();
-    String PreviousYearData =
+    String previousYearData =
         await dao.getPreviousYearAmount(groupId, startDate);
 
-    String Expenditures = await dao.getExpenditures(groupId, startDate);
+    String expenditures = await dao.getExpenditures(groupId, startDate);
 
-    String BankInterst = await dao.getBankDepositInterest(groupId, startDate);
+    String bankInterst = await dao.getBankDepositInterest(groupId, startDate);
 
     sheetObject.merge(
         CellIndex.indexByString('A1'), CellIndex.indexByString('I1'),
@@ -94,29 +74,29 @@ class ExcelExample {
     sheetObject.cell(CellIndex.indexByString('B26')).value =
         const TextCellValue('मागील शिल्लक');
     sheetObject.cell(CellIndex.indexByString('C26')).value =
-        TextCellValue(PreviousYearData);
+        TextCellValue(previousYearData);
 
     //for displaying the expenditures of savings group
     sheetObject.cell(CellIndex.indexByString('B27')).value =
         const TextCellValue('इतर खर्च');
     sheetObject.cell(CellIndex.indexByString('C27')).value =
-        TextCellValue(Expenditures);
+        TextCellValue(expenditures);
 
     //displays the total bank interest deposited by bank
     sheetObject.cell(CellIndex.indexByString('B28')).value =
-        TextCellValue("बँक मधून मिळालेले व्याज");
+        const TextCellValue("बँक मधून मिळालेले व्याज");
     sheetObject.cell(CellIndex.indexByString('C28')).value =
-        TextCellValue(BankInterst);
+        TextCellValue(bankInterst);
 
     List<MemberTransactionSummary> dummyData =
         await dao.getYearlySummary(groupId, startDate, endDate);
-    List<double> totalDeposit = [];
+    List<double> totalDeposit = List<double>.filled(dummyData.length, 0.0);
 
     for (int i = 0; i < dummyData.length; i++) {
-      totalDeposit[i] = dummyData[i].totalSharesDeposit +
-          dummyData[i].totalLoanInterest +
-          dummyData[i].totalPenalty +
-          dummyData[i].otherDeposit;
+      totalDeposit[i] = (dummyData[i].totalSharesDeposit.toDouble() +
+          dummyData[i].totalLoanInterest.toDouble() +
+          dummyData[i].totalPenalty.toDouble() +
+          dummyData[i].otherDeposit.toDouble());
     }
 
     for (int i = 0; i < dummyData.length; i++) {
@@ -131,7 +111,7 @@ class ExcelExample {
         totalDeposit[i].toString(),
         member.loanTakenTillDate.toString(),
         member.loanReturn.toString(),
-        member.remainingLoan.toString()
+        (member.loanTakenTillDate - member.loanReturn).toString()
       ];
       List<CellValue?> rowCells = rowData.map((cellData) {
         return (TextCellValue(cellData.toString()));
@@ -146,35 +126,3 @@ class ExcelExample {
     // saveFile("YearReport.xlsx", fileBytes!);
   }
 }
-/*  List<Member> generateDummyData() {
-    List<Member> dummyData = [];
-
-    for (int i = 1; i <= 20; i++) {
-      Member member = Member(
-        name: 'Person $i',
-        monthlySavings: '100',
-        extraSavings: '50',
-        loanRepaid: '200',
-        serviceCharge: '10',
-        penalty: '5',
-        otherDeposits: '50',
-        totalDeposit: '500',
-        givenLoan: '1000',
-        loanInterest: '100',
-        totalLoanPaid: '500',
-        totalSavings: '1000',
-        totalExtraSavings: '500',
-        savingsBack: '200',
-        loanTakenTillDate: '1500',
-        totalLoanReturn: '1000',
-        remainingLoan: '500',
-        totalServiceCharge: '50',
-        totalPenalty: '20',
-        totalOtherSavings: '100',
-      );
-
-      dummyData.add(member);
-    }
-
-    return dummyData;
-  }*/

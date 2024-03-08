@@ -469,11 +469,11 @@ GROUP BY
   sum(case when t.trxType='Loan' then t.cr else 0 end) as LoanReturn,
   (sum(case when t.trxType='Loan' then t.dr else 0 end) - sum(case when t.trxType='Loan' then t.cr else 0 end)) as Remaining_Loan,
  
-  sum(case when t.trxType='Share' then t.dr else 0 end) as SharesGivenByGroup,
+  sum(case when t.trxType='Share' then t.dr else 0 end) as SharesGivenByGroup
   
 FROM transactions t 
 JOIN members m ON t.memberId = m.id 
-WHERE t.groupId =?  and (t.trxPeriod>=? and t.trxPeirod<=?)
+WHERE t.groupId =?  and (t.trxPeriod>=? and t.trxPeriod<=?)
 GROUP BY t.memberId;
 
      """;
@@ -484,6 +484,5 @@ GROUP BY t.memberId;
     } else {
       return []; // Return an empty list if no member details found
     }
-    return [];
   }
 }
