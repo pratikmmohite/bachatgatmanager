@@ -483,8 +483,7 @@ GROUP BY
   sum(case when t.trxType='Others' then t.cr else 0 end) as OtherDeposit,
   sum(case when t.trxType='Loan' then t.dr else 0 end) as LoanTakenTillDate,
   sum(case when t.trxType='Loan' then t.cr else 0 end) as LoanReturn,
-  sum(case when t.trxType='Share' then t.dr else 0 end) as SharesGivenByGroup,
-   (select (sum(case when t1.trxType='Loan' then t1.dr else 0 end)-sum(case when t1.trxType="Loan" then t1.cr else 0 end))as Loan from transactions t1 where t1.groupId='41267050-6200-1e9a-876d-3557ef845ee6' and t1.trxPeriod<='2024-03') as remainingLoan
+  sum(case when t.trxType='Share' then t.dr else 0 end) as SharesGivenByGroup
   FROM transactions t 
   JOIN members m ON t.memberId = m.id 
   WHERE t.groupId =?  and (t.trxPeriod>=? and t.trxPeriod<=?)
@@ -534,7 +533,8 @@ GROUP BY
   SUM(CASE WHEN t.trxType = 'LoanInterest' THEN t.cr ELSE 0 END) AS TotalLoanInterest,
   SUM(CASE WHEN t.trxType = 'LateFee' THEN t.cr ELSE 0 END) AS TotalPenalty,
   SUM(CASE WHEN t.trxType = 'Others' THEN t.cr ELSE 0 END) AS OtherDeposit,
-  SUM(CASE WHEN t.trxType = 'Expenditures' THEN t.dr ELSE 0 END) AS totalExpenditures
+  SUM(CASE WHEN t.trxType = 'Expenditures' THEN t.dr ELSE 0 END) AS totalExpenditures,
+   (select (sum(case when t1.trxType='Loan' then t1.dr else 0 end)-sum(case when t1.trxType="Loan" then t1.cr else 0 end))as Loan from transactions t1 where t1.groupId=? and t1.trxPeriod<=?) as remainingLoan
 FROM transactions t
 WHERE
   t.groupId = ? AND
@@ -543,19 +543,19 @@ WHERE
 
   """;
 
-    var result = await dbService.read(query, [groupId, startDate, endDate]);
+    var result = await dbService
+        .read(query, [groupId, endDate, groupId, startDate, endDate]);
 
     if (result.isNotEmpty) {
       return GroupBalanceSummary.fromSqlResults(result.first);
     }
     return GroupBalanceSummary(
-      totalDeposit: 0.0,
-      totalShares: 0.0,
-      totalLoanInterest: 0.0,
-      totalPenalty: 0.0,
-      otherDeposit: 0.0,
-      totalExpenditures: 0.0,
-      remainingLoan: 0.0,
-    );
+        totalDeposit: 0.0,
+        totalShares: 0.0,
+        totalLoanInterest: 0.0,
+        totalPenalty: 0.0,
+        otherDeposit: 0.0,
+        totalExpenditures: 0.0,
+        remainingLoan: 0.0);
   }
 }
