@@ -16,7 +16,6 @@ MemberTransactionSummary _$MemberTransactionSummaryFromJson(
       otherDeposit: (json['otherDeposit'] as num).toDouble(),
       loanTakenTillDate: (json['loanTakenTillDate'] as num).toDouble(),
       loanReturn: (json['loanReturn'] as num).toDouble(),
-      remainingLoan: (json['remainingLoan'] as num).toDouble(),
       sharesGivenByGroup: (json['sharesGivenByGroup'] as num).toDouble(),
     )
       ..id = json['id'] as String
@@ -36,6 +35,5 @@ Map<String, dynamic> _$MemberTransactionSummaryToJson(
       'otherDeposit': instance.otherDeposit,
       'loanTakenTillDate': instance.loanTakenTillDate,
       'loanReturn': instance.loanReturn,
-      'remainingLoan': instance.remainingLoan,
       'sharesGivenByGroup': instance.sharesGivenByGroup,
     };

@@ -13,7 +13,6 @@ class MemberTransactionSummary extends ComFields {
   final double otherDeposit;
   final double loanTakenTillDate;
   final double loanReturn;
-  final double remainingLoan;
   final double sharesGivenByGroup;
 
   MemberTransactionSummary({
@@ -24,7 +23,6 @@ class MemberTransactionSummary extends ComFields {
     required this.otherDeposit,
     required this.loanTakenTillDate,
     required this.loanReturn,
-    required this.remainingLoan,
     required this.sharesGivenByGroup,
   });
 
@@ -37,7 +35,6 @@ class MemberTransactionSummary extends ComFields {
       otherDeposit: (json['OtherDeposit'] ?? 0).toDouble(),
       loanTakenTillDate: (json['LoanTakenTillDate'] ?? 0).toDouble(),
       loanReturn: (json['LoanReturn'] ?? 0).toDouble(),
-      remainingLoan: (json['RemainingLoan'] ?? 0).toDouble(),
       sharesGivenByGroup: (json['SharesGivenByGroup'] ?? 0).toDouble(),
     );
   }

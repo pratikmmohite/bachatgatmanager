@@ -9,6 +9,7 @@ export 'requests/group_total_filter.dart';
 export 'requests/member_balance_filter.dart';
 export 'requests/member_filter.dart';
 export 'requests/member_loan_filter.dart';
+export 'response/group_balance_summary.dart';
 // Response
 export 'response/group_member_details.dart';
 export 'response/group_summary.dart';

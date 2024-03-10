@@ -380,7 +380,6 @@ class GroupsDao {
   SUM(CASE WHEN trxType='LoanInterest' THEN cr ELSE 0 END) AS Paid_Interest,
   SUM(CASE WHEN trxType='Loan' AND cr > 0 THEN cr ELSE 0 END) AS Paid_Loan,
   (SUM(CASE WHEN trxType='Loan' AND dr > 0 THEN dr ELSE 0 END) -
-   SUM(CASE WHEN trxType='LoanInterest' THEN cr ELSE 0 END) -
    SUM(CASE WHEN trxType='Loan' AND cr > 0 THEN cr ELSE 0 END)) AS Remaining_Loan,
    sum(case when trxType='LateFee' then cr else 0 end) as Paid_LateFee,
    sum(case when trxType='Others' then cr else 0 end) as Others
@@ -410,7 +409,6 @@ GROUP BY
   """;
 
     var result = await dbService.read(query, [groupId, trxPeriod]);
-    print(result);
 
     if (result.isNotEmpty) {
       final previousYearAmount = result.first["PreviousYearAmount"];
@@ -431,8 +429,26 @@ GROUP BY
     var result = await dbService.read(query, [groupId, trxPeriod]);
 
     if (result.isNotEmpty) {
-      final Expenditures = result.first["Expenditures"];
-      return Expenditures.toString();
+      final expenditures = result.first["Expenditures"];
+      return expenditures.toString();
+    }
+
+    return "0"; // Default value if no result
+  }
+
+  Future<String> getBankBalanceTillToday(
+      String groupId, String trxPeriod) async {
+    var query = """SELECT IFNULL(SUM(t.cr)-Sum(t.dr), 0) AS Expenditures
+    FROM transactions t
+    WHERE t.groupId = ?
+    AND t.trxPeriod <= ?;
+  """;
+
+    var result = await dbService.read(query, [groupId, trxPeriod]);
+
+    if (result.isNotEmpty) {
+      final expenditures = result.first["Expenditures"];
+      return expenditures.toString();
     }
 
     return "0"; // Default value if no result
@@ -450,8 +466,8 @@ GROUP BY
     var result = await dbService.read(query, [groupId, trxPeriod]);
 
     if (result.isNotEmpty) {
-      final BankInterest = result.first["BankInterest"];
-      return BankInterest.toString();
+      final bankInterest = result.first["BankInterest"];
+      return bankInterest.toString();
     }
 
     return "0"; // Default value if no result
@@ -467,14 +483,12 @@ GROUP BY
   sum(case when t.trxType='Others' then t.cr else 0 end) as OtherDeposit,
   sum(case when t.trxType='Loan' then t.dr else 0 end) as LoanTakenTillDate,
   sum(case when t.trxType='Loan' then t.cr else 0 end) as LoanReturn,
-  (sum(case when t.trxType='Loan' then t.dr else 0 end) - sum(case when t.trxType='Loan' then t.cr else 0 end)) as Remaining_Loan,
- 
-  sum(case when t.trxType='Share' then t.dr else 0 end) as SharesGivenByGroup
-  
-FROM transactions t 
-JOIN members m ON t.memberId = m.id 
-WHERE t.groupId =?  and (t.trxPeriod>=? and t.trxPeriod<=?)
-GROUP BY t.memberId;
+  sum(case when t.trxType='Share' then t.dr else 0 end) as SharesGivenByGroup,
+   (select (sum(case when t1.trxType='Loan' then t1.dr else 0 end)-sum(case when t1.trxType="Loan" then t1.cr else 0 end))as Loan from transactions t1 where t1.groupId='41267050-6200-1e9a-876d-3557ef845ee6' and t1.trxPeriod<='2024-03') as remainingLoan
+  FROM transactions t 
+  JOIN members m ON t.memberId = m.id 
+  WHERE t.groupId =?  and (t.trxPeriod>=? and t.trxPeriod<=?)
+  GROUP BY t.memberId;
 
      """;
     var rows = await dbService.read(query, [groupId, startDate, endDate]);
@@ -484,5 +498,64 @@ GROUP BY t.memberId;
     } else {
       return []; // Return an empty list if no member details found
     }
+  }
+
+  Future<List<double>> getLoanTakenTillToday(
+      String groupId, String currentDate) async {
+    var query = """
+    SELECT
+      SUM(CASE WHEN t.trxType = 'Loan' THEN t.dr ELSE 0 END) as LoanTakenTillToday
+    FROM
+      transactions t
+      JOIN members m ON t.memberId = m.id
+    WHERE
+      t.groupId = ? AND t.trxPeriod <= ?
+    GROUP BY
+      t.memberId;
+  """;
+
+    var result = await dbService.read(query, [groupId, currentDate]);
+
+    if (result.isNotEmpty) {
+      return result
+          .map((e) => (e["LoanTakenTillToday"] as int).toDouble())
+          .toList();
+    }
+
+    return []; // Return an empty list if no result
+  }
+
+  Future<GroupBalanceSummary> getBalanceSummary(
+      String groupId, String startDate, String endDate) async {
+    var query = """
+    SELECT
+  SUM(CASE WHEN t.trxType = 'Deposit' THEN t.cr ELSE 0 END) AS totalDeposit,
+  SUM(CASE WHEN t.trxType = 'Share' THEN t.cr ELSE 0 END) AS totalShares,
+  SUM(CASE WHEN t.trxType = 'LoanInterest' THEN t.cr ELSE 0 END) AS TotalLoanInterest,
+  SUM(CASE WHEN t.trxType = 'LateFee' THEN t.cr ELSE 0 END) AS TotalPenalty,
+  SUM(CASE WHEN t.trxType = 'Others' THEN t.cr ELSE 0 END) AS OtherDeposit,
+  SUM(CASE WHEN t.trxType = 'Expenditures' THEN t.dr ELSE 0 END) AS totalExpenditures
+FROM transactions t
+WHERE
+  t.groupId = ? AND
+  t.trxPeriod >= ? AND
+  t.trxPeriod <= ?;
+
+  """;
+
+    var result = await dbService.read(query, [groupId, startDate, endDate]);
+
+    if (result.isNotEmpty) {
+      return GroupBalanceSummary.fromSqlResults(result.first);
+    }
+    return GroupBalanceSummary(
+      totalDeposit: 0.0,
+      totalShares: 0.0,
+      totalLoanInterest: 0.0,
+      totalPenalty: 0.0,
+      otherDeposit: 0.0,
+      totalExpenditures: 0.0,
+      remainingLoan: 0.0,
+    );
   }
 }

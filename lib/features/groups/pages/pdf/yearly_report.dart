@@ -3,13 +3,10 @@ import 'package:flutter/material.dart';
 import '../../dao/dao_index.dart';
 import '../../models/models_index.dart';
 import '../pdf/excel/excel_example.dart';
-import '../pdf/pdf_api.dart';
 
 class YearlyReport extends StatefulWidget {
-  const YearlyReport(this.group, this.members, this.intitalName, {super.key});
+  const YearlyReport(this.group, {super.key});
   final Group group;
-  final List<GroupMember> members;
-  final String intitalName;
 
   @override
   State<YearlyReport> createState() => _YearlyReportState();
@@ -17,13 +14,16 @@ class YearlyReport extends StatefulWidget {
 
 class _YearlyReportState extends State<YearlyReport> {
   late Group _group;
-  late List<GroupMember> _members;
-  late String selectedMemberId;
-  late List<MemberTransactionDetails> memberData;
-  late String selectedMemberName;
   late DateTime _startDate = DateTime.now();
   late DateTime _endDate = DateTime.now();
-
+  bool isVisible = true;
+  late String totalBankBalance;
+  late GroupBalanceSummary balanceSummary;
+  late String totalDeposit;
+  late String totalShares;
+  late String totalPenalty;
+  late String otherDeposit;
+  late String previousRemaining;
   String _formattDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}";
   }
@@ -32,9 +32,23 @@ class _YearlyReportState extends State<YearlyReport> {
   void initState() {
     super.initState();
     _group = widget.group;
-    _members = widget.members;
-    selectedMemberId = _members.isEmpty ? "" : _members[0].id;
-    selectedMemberName = _members.isEmpty ? " " : _members[0].name;
+    totalBankBalance = '0';
+    previousRemaining = '0';
+    totalBankBalance = '';
+    otherDeposit = '0';
+
+    balanceSummary = GroupBalanceSummary(
+      totalDeposit: 0.0,
+      totalShares: 0.0,
+      totalLoanInterest: 0.0,
+      totalPenalty: 0.0,
+      otherDeposit: 0.0,
+      totalExpenditures: 0.0,
+      remainingLoan: 0.0,
+    );
+    totalDeposit = '0'; // Provide appropriate initial values
+    totalShares = '0';
+    totalPenalty = '0';
   }
 
   @override
@@ -120,8 +134,11 @@ class _YearlyReportState extends State<YearlyReport> {
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.download),
                     onPressed: () async {
-                      ExcelExample.createAndSaveExcel(_group.id.toString(),
-                          _formattDate(_startDate), _formattDate(_endDate));
+                      ExcelExample.createAndSaveExcel(
+                          _group.id.toString(),
+                          _group.name.toString(),
+                          _formattDate(_startDate),
+                          _formattDate(_endDate));
                     },
                     label: const Text('Download Excel File'),
                   ),
@@ -131,15 +148,27 @@ class _YearlyReportState extends State<YearlyReport> {
                     icon: const Icon(Icons.download),
                     onPressed: () async {
                       final dao = GroupsDao();
-                      final data = await dao.getMemberDetailsByMemberId(
-                          selectedMemberId,
-                          _group.id,
-                          _formattDate(_startDate),
-                          _formattDate(_endDate));
-                      if (data.isNotEmpty) {
-                        var bytes = await PdfApi.generateTable(
-                            data, selectedMemberName, _group.name.toString());
-                        await PdfApi.previewPDF(bytes);
+                      totalBankBalance = await dao.getBankBalanceTillToday(
+                          _group.id, _formattDate(_endDate));
+                      GroupBalanceSummary summary = await dao.getBalanceSummary(
+                        _group.id.toString(),
+                        _formattDate(_startDate),
+                        _formattDate(_endDate),
+                      );
+                      String remaining = await dao.getPreviousYearAmount(
+                          _group.id.toString(), _formattDate(_startDate));
+                      if (totalBankBalance != '0') {
+                        print("inside balance summary");
+                        setState(() {
+                          totalBankBalance = totalBankBalance;
+                          totalDeposit = summary.totalDeposit.toString();
+                          otherDeposit = summary.otherDeposit.toString();
+                          totalShares = summary.totalShares.toString();
+                          totalPenalty = summary.totalPenalty.toString();
+                          balanceSummary = summary;
+                          previousRemaining = remaining;
+                          // isVisible = !isVisible;
+                        });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -155,10 +184,98 @@ class _YearlyReportState extends State<YearlyReport> {
                         );
                       }
                     },
-                    label: const Text('Preview'),
+                    label: const Text('Get BalanceSheet Summary'),
                   ),
                 ),
               ],
+            ),
+            Visibility(
+              visible: true,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Group Name:${_group.name.toString()}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      'Time Period ${_formattDate(_startDate)} to ${_formattDate(_endDate)} ',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 8, // Number of rows
+                      itemBuilder: (BuildContext context, int index) {
+                        String label = '';
+                        String value = '';
+
+                        // Assign labels and values based on index
+                        switch (index) {
+                          case 0:
+                            label = 'Previous Remaining:';
+                            value = previousRemaining.toString();
+                            break;
+                          case 1:
+                            label = 'Total Deposit:';
+                            value = balanceSummary.totalDeposit.toString();
+                            break;
+                          case 2:
+                            label = 'Total Shares:';
+                            value = balanceSummary.totalShares.toString();
+                            break;
+                          case 3:
+                            label = 'Total Penalty:';
+                            value = balanceSummary.totalPenalty.toString();
+                            break;
+                          case 4:
+                            label = 'Total Other Deposits:';
+                            value = balanceSummary.otherDeposit.toString();
+                            break;
+                          case 5:
+                            label = "Total Remaining Loan:";
+                            value = balanceSummary.remainingLoan.toString();
+                          case 6:
+                            label = "Total Bank Balance till today:";
+                            value = totalBankBalance;
+                          case 7:
+                            label = "Total Expenditures";
+                            value = balanceSummary.remainingLoan.toString();
+                            break;
+                        }
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              label,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.justify,
+                            ),
+                            Text(value),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

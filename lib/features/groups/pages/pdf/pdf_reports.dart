@@ -91,11 +91,7 @@ class _PdfReportsState extends State<PdfReports> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => YearlyReport(
-                        widget.group,
-                        members,
-                        members[0].name,
-                      ),
+                      builder: (context) => YearlyReport(widget.group),
                     ),
                   );
                 },

@@ -25,6 +25,7 @@ dependencies:
   pdf: ^3.10.7
   printing: ^5.11.1
   excel: ^4.0.2
+#  open_file: ^3.3.2
 
 dev_dependencies:
   flutter_test:
