@@ -20,6 +20,7 @@ class _GroupActionsState extends State<GroupActions> {
   late Group group;
   late GroupsDao groupDao;
   GroupTotal groupTotal = GroupTotal();
+  late double currentMonth;
   bool isLoading = false;
   @override
   void initState() {
@@ -31,12 +32,14 @@ class _GroupActionsState extends State<GroupActions> {
 
   Future<void> getGroupTotals() async {
     groupTotal = GroupTotal();
+    currentMonth = 0.0;
     var filter = GroupTotalFilter(group.id);
     setState(() {
       isLoading = true;
     });
     try {
       groupTotal = await groupDao.getTotalBalances(filter);
+      currentMonth = await groupDao.getCurrentMonthBalance(filter);
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -87,7 +90,13 @@ class _GroupActionsState extends State<GroupActions> {
               child: Text(groupTotal.perMemberShare.toStringAsFixed(2)),
             ),
           ],
-        )
+        ),
+        TableRow(children: [
+          const TableCell(child: Text('Month Collection')),
+          TableCell(
+            child: Text(currentMonth.toStringAsFixed(2)),
+          ),
+        ])
       ],
     );
   }

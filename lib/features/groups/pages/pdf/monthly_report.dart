@@ -2,25 +2,61 @@ import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
 import '../../models/models_index.dart';
-import '../pdf/excel/excel_report.dart';
 
-class YearlyReport extends StatefulWidget {
-  const YearlyReport(this.group, {super.key});
+class MonthlyReport extends StatefulWidget {
+  const MonthlyReport(this.group, {super.key});
   final Group group;
 
   @override
-  State<YearlyReport> createState() => _YearlyReportState();
+  State<MonthlyReport> createState() => _MonthlyReportState();
 }
 
-class _YearlyReportState extends State<YearlyReport> {
+class _MonthlyReportState extends State<MonthlyReport> {
   late Group _group;
-  late DateTime _startDate = DateTime.now();
-  late DateTime _endDate = DateTime.now();
-  bool isVisible = true;
-  late String totalBankBalance;
-  late GroupBalanceSummary balanceSummary;
+  DateTime selectedDate = DateTime.now();
+  String? totalBankBalance = '0.0';
+  late GroupBalanceSummary balanceSummary = GroupBalanceSummary(
+    totalDeposit: 0.0,
+    totalShares: 0.0,
+    totalLoanInterest: 0.0,
+    totalPenalty: 0.0,
+    otherDeposit: 0.0,
+    totalExpenditures: 0.0,
+    remainingLoan: 0.0,
+  );
+  String? previousRemaining;
+  late String _selectMonth;
+  String? _selectYear = "select year";
+  final List<String> months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      initialDatePickerMode: DatePickerMode.year,
+    );
 
-  late String previousRemaining;
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
   String _formattDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}";
   }
@@ -29,9 +65,10 @@ class _YearlyReportState extends State<YearlyReport> {
   void initState() {
     super.initState();
     _group = widget.group;
-    totalBankBalance = '0';
-    previousRemaining = '0';
-
+    _selectMonth = months[0];
+    _selectYear = 'Select Year';
+    totalBankBalance = '0.0';
+    previousRemaining = '0.0';
     balanceSummary = GroupBalanceSummary(
       totalDeposit: 0.0,
       totalShares: 0.0,
@@ -47,113 +84,96 @@ class _YearlyReportState extends State<YearlyReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Yearly Report"),
+        title: Text('Monthly Report'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+      body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 15),
-            // Date Pickers for Start and End Dates
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Start Date',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      ElevatedButton.icon(
-                        label: Text(_formattDate(_startDate)),
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () async {
-                          final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate:
-                                DateTime(_startDate.year, _startDate.month, 1),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2101),
-                          );
-                          if (picked != null && picked != _startDate) {
-                            setState(() {
-                              _startDate = picked;
-                            });
-                          }
-                        },
-                      ),
-                    ],
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'End Date',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () async {
-                          final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate: _endDate,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2101),
-                          );
-                          if (picked != null && picked != _endDate) {
-                            setState(() {
-                              _endDate = picked;
-                            });
-                          }
-                        },
-                        label: Text(_formattDate(_endDate)),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                menuMaxHeight: 300,
+                hint: const Text('Select Month'),
+                icon: const Icon(Icons.calendar_month),
+                iconSize: 20,
+                value: _selectMonth,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectMonth = newValue!;
+                  });
+                },
+                items: months.map((valueItem) {
+                  return DropdownMenuItem<String>(
+                    value: valueItem,
+                    child: Text(
+                      valueItem,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.normal, fontSize: 15),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
-            const SizedBox(height: 15),
-            // Download Button
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      label: Text(_selectYear!),
+                      icon: const Icon(Icons.calendar_today),
+                      onPressed: () async {
+                        final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime(
+                                DateTime.now().year, DateTime.now().month, 1),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                            initialDatePickerMode: DatePickerMode.year,
+                            initialEntryMode: DatePickerEntryMode.calendar);
+                        if (picked != null) {
+                          setState(() {
+                            _selectYear = picked.year.toString();
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Row(
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.download),
-                    onPressed: () async {
-                      ExcelExample.createAndSaveExcel(
-                          _group.id.toString(),
-                          _group.name.toString(),
-                          _formattDate(_startDate),
-                          _formattDate(_endDate));
-                    },
-                    label: const Text('Download Excel File'),
-                  ),
-                ),
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.summarize),
                     onPressed: () async {
                       final dao = GroupsDao();
-                      totalBankBalance = await dao.getBankBalanceTillToday(
-                          _group.id, _formattDate(_endDate));
+                      String _date =
+                          '$_selectYear-${months.indexOf(_selectMonth) + 1}';
+                      totalBankBalance =
+                          await dao.getBankBalanceTillToday(_group.id, _date);
                       GroupBalanceSummary summary = await dao.getBalanceSummary(
                         _group.id.toString(),
-                        _formattDate(_startDate),
-                        _formattDate(_endDate),
+                        _date,
+                        _date,
                       );
                       String remaining = await dao.getPreviousYearAmount(
-                          _group.id.toString(), _formattDate(_startDate));
+                          _group.id.toString(), _date);
                       if (totalBankBalance != '0') {
                         print("inside balance summary");
                         setState(() {
                           totalBankBalance = totalBankBalance;
-
                           balanceSummary = summary;
                           previousRemaining = remaining;
                           // isVisible = !isVisible;
@@ -178,7 +198,6 @@ class _YearlyReportState extends State<YearlyReport> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
             Visibility(
               visible: true,
               child: Container(
@@ -202,7 +221,7 @@ class _YearlyReportState extends State<YearlyReport> {
                       height: 15,
                     ),
                     Text(
-                      'Time Period ${_formattDate(_startDate)} to ${_formattDate(_endDate)} ',
+                      'Time Period $_selectMonth-$_selectYear ',
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -243,7 +262,7 @@ class _YearlyReportState extends State<YearlyReport> {
                             value = balanceSummary.remainingLoan.toString();
                           case 6:
                             label = "Total Bank Balance till today:";
-                            value = totalBankBalance;
+                            value = totalBankBalance.toString();
                           case 7:
                             label = "Total Expenditures";
                             value = balanceSummary.totalExpenditures.toString();

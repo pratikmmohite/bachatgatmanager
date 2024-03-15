@@ -4,17 +4,17 @@ import '../../dao/dao_index.dart';
 import '../../models/models_index.dart';
 import '../pdf/pdf_api.dart';
 
-class MonthlyReport extends StatefulWidget {
-  const MonthlyReport(this.group, this.members, this.intitalName, {super.key});
+class MemberReport extends StatefulWidget {
+  const MemberReport(this.group, this.members, this.intitalName, {super.key});
   final Group group;
   final List<GroupMember> members;
   final String intitalName;
 
   @override
-  State<MonthlyReport> createState() => _MonthlyReportState();
+  State<MemberReport> createState() => _MemberReportState();
 }
 
-class _MonthlyReportState extends State<MonthlyReport> {
+class _MemberReportState extends State<MemberReport> {
   late Group _group;
   late List<GroupMember> _members;
   late String selectedMemberId;
@@ -40,7 +40,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Monthly Report"),
+        title: const Text("Members Report"),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),

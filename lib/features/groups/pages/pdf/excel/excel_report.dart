@@ -107,28 +107,28 @@ class ExcelExample {
       sheetObject.insertRowIterables(
           rowCells, 4 + i); // Start appending data after 4th row
     }
-    var count = 4 + dummyData.length + 1;
+    var count = 4 + dummyData.length + 2;
     //for displaying the previous remaining amount in savings group
     sheetObject.cell(CellIndex.indexByString('B${count++}')).value =
         const TextCellValue('मागील शिल्लक');
-    sheetObject.cell(CellIndex.indexByString('C${count}')).value =
+    sheetObject.cell(CellIndex.indexByString('C${count - 1}')).value =
         TextCellValue(previousYearData);
 
     //for displaying the expenditures of savings group
     sheetObject.cell(CellIndex.indexByString('B${count++}')).value =
         const TextCellValue('इतर खर्च');
-    sheetObject.cell(CellIndex.indexByString('C${count}')).value =
+    sheetObject.cell(CellIndex.indexByString('C${count - 1}')).value =
         TextCellValue(expenditures);
 
     //displays the total bank interest deposited by bank
     sheetObject.cell(CellIndex.indexByString('B${count++}')).value =
         const TextCellValue("बँक मधून मिळालेले व्याज");
-    sheetObject.cell(CellIndex.indexByString('C${count}')).value =
+    sheetObject.cell(CellIndex.indexByString('C${count - 1}')).value =
         TextCellValue(bankInterst);
     //display total given loan till date
     sheetObject.cell(CellIndex.indexByString('B${count++}')).value =
         const TextCellValue("दिलेले कर्ज");
-    sheetObject.cell(CellIndex.indexByString('C${count}')).value =
+    sheetObject.cell(CellIndex.indexByString('C${count - 1}')).value =
         TextCellValue(totalGivenLoan.toString());
 
     final fileBytes = excel.save() as Uint8List;

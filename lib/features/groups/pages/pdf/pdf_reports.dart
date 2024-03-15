@@ -1,10 +1,11 @@
 import 'package:bachat_gat/common/common_index.dart';
-import 'package:bachat_gat/features/groups/pages/pdf/montly_report.dart';
+import 'package:bachat_gat/features/groups/pages/pdf/member_report.dart';
 import 'package:bachat_gat/features/groups/pages/pdf/yearly_report.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
 import '../../models/models_index.dart';
+import 'monthly_report.dart';
 
 class PdfReports extends StatefulWidget {
   const PdfReports(this.group, {super.key});
@@ -72,7 +73,7 @@ class _PdfReportsState extends State<PdfReports> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MonthlyReport(
+                      builder: (context) => MemberReport(
                         widget.group,
                         members,
                         members[0].name,
@@ -81,8 +82,20 @@ class _PdfReportsState extends State<PdfReports> {
                   );
                 }
               },
-              title: const Text("Monthly Reports"),
+              title: const Text("Member Reports"),
             )),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.group),
+                title: const Text("Monthly Report (मासिक अहवाल"),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MonthlyReport(widget.group)));
+                },
+              ),
+            ),
             Card(
               child: ListTile(
                 leading: const Icon(Icons.picture_as_pdf),

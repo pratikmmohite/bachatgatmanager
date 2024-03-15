@@ -339,6 +339,7 @@ class GroupsDao {
         "where trx.groupId = ? "
         "and (trx.trxType in ${AppConstants.dbCreditFilter} "
         "or trx.trxType in ('${AppConstants.ttExpenditures}' )) ";
+
     String query = "select ifnull(($balanceQuery), 0) as balance, "
         "ifnull(($memberCountQuery), 0) as memberCount, "
         "ifnull(($totalGroupAmountQuery), 0) as totalSaving, "
@@ -351,6 +352,25 @@ class GroupsDao {
       total.perMemberShare = total.totalSaving / total.memberCount;
     }
     return total;
+  }
+
+  Future<double> getCurrentMonthBalance(GroupTotalFilter filter) async {
+    DateTime currentMonth = DateTime.now();
+    String date = '${currentMonth.year}-${currentMonth.month}';
+    var query = """SELECT IFNULL(SUM(t.cr), 0) AS total
+    FROM transactions t
+    WHERE t.groupId = ?
+    AND t.trxPeriod =$date;
+  """;
+
+    var result = await dbService.read(query, [filter.groupId]);
+
+    if (result.isNotEmpty) {
+      final total = result.first["total"];
+      return total as double;
+    }
+
+    return 0.0; // Default value if no result
   }
 
   String getAmountQuery(String trxType, String trxPeriod,
@@ -420,7 +440,7 @@ GROUP BY
 
   Future<String> getExpenditures(String groupId, String trxPeriod) async {
     var query =
-        """SELECT IFNULL(SUM(t.trxType='Expenditures'), 0) AS Expenditures
+        """SELECT IFNULL(SUM(case when t.trxType='Expenditures' then t.dr else 0 end), 0) AS Expenditures
     FROM transactions t
     WHERE t.groupId = ?
     AND t.trxPeriod < ?;
@@ -438,7 +458,7 @@ GROUP BY
 
   Future<String> getBankBalanceTillToday(
       String groupId, String trxPeriod) async {
-    var query = """SELECT IFNULL(SUM(t.cr)-Sum(t.dr), 0) AS Expenditures
+    var query = """SELECT IFNULL((SUM(t.cr)-Sum(t.dr)), 0) AS bankBalance
     FROM transactions t
     WHERE t.groupId = ?
     AND t.trxPeriod <= ?;
@@ -447,8 +467,8 @@ GROUP BY
     var result = await dbService.read(query, [groupId, trxPeriod]);
 
     if (result.isNotEmpty) {
-      final expenditures = result.first["Expenditures"];
-      return expenditures.toString();
+      final bankBalance = result.first["bankBalance"];
+      return bankBalance.toString();
     }
 
     return "0"; // Default value if no result
