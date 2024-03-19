@@ -87,7 +87,7 @@ class _PdfReportsState extends State<PdfReports> {
             Card(
               child: ListTile(
                 leading: const Icon(Icons.group),
-                title: const Text("Monthly Report (मासिक अहवाल"),
+                title: const Text("Monthly Report (मासिक अहवाल)"),
                 onTap: () {
                   Navigator.push(
                       context,

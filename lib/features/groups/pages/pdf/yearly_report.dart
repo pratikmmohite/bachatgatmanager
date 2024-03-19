@@ -1,3 +1,4 @@
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -19,7 +20,8 @@ class _YearlyReportState extends State<YearlyReport> {
   bool isVisible = true;
   late String totalBankBalance;
   late GroupBalanceSummary balanceSummary;
-
+  String str = '';
+  String end = '';
   late String previousRemaining;
   String _formattDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}";
@@ -59,63 +61,34 @@ class _YearlyReportState extends State<YearlyReport> {
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Start Date',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      ElevatedButton.icon(
-                        label: Text(_formattDate(_startDate)),
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () async {
-                          final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate:
-                                DateTime(_startDate.year, _startDate.month, 1),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2101),
-                          );
-                          if (picked != null && picked != _startDate) {
-                            setState(() {
-                              _startDate = picked;
-                            });
-                          }
-                        },
-                      ),
-                    ],
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.date_range),
+                    onPressed: () async {
+                      var local = AppLocal.of(context);
+                      final DateTimeRange? picked = await showDateRangePicker(
+                        context: context,
+                        initialDateRange: DateTimeRange(
+                          start: _startDate,
+                          end: _endDate,
+                        ),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                        initialEntryMode: DatePickerEntryMode.input,
+                      );
+
+                      if (picked != null) {
+                        setState(() {
+                          _startDate = picked.start;
+                          _endDate = picked.end;
+                          str = local.getHumanTrxPeriod(_startDate);
+                          end = local.getHumanTrxPeriod(_endDate);
+                        });
+                      }
+                    },
+                    label:
+                        Text(str == end ? "Select Date Range" : '$str to $end'),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'End Date',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () async {
-                          final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate: _endDate,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2101),
-                          );
-                          if (picked != null && picked != _endDate) {
-                            setState(() {
-                              _endDate = picked;
-                            });
-                          }
-                        },
-                        label: Text(_formattDate(_endDate)),
-                      ),
-                    ],
-                  ),
-                ),
+                )
               ],
             ),
             const SizedBox(height: 15),
@@ -150,13 +123,12 @@ class _YearlyReportState extends State<YearlyReport> {
                       String remaining = await dao.getPreviousYearAmount(
                           _group.id.toString(), _formattDate(_startDate));
                       if (totalBankBalance != '0') {
-                        print("inside balance summary");
                         setState(() {
                           totalBankBalance = totalBankBalance;
 
                           balanceSummary = summary;
                           previousRemaining = remaining;
-                          // isVisible = !isVisible;
+                          isVisible = !isVisible;
                         });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -173,14 +145,15 @@ class _YearlyReportState extends State<YearlyReport> {
                         );
                       }
                     },
-                    label: const Text('Get BalanceSheet Summary'),
+                    label: Text(
+                        isVisible == false ? 'Fetch Summary' : 'Close Summary'),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
             Visibility(
-              visible: true,
+              visible: isVisible,
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(

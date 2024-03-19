@@ -104,95 +104,96 @@ class _GroupActionsState extends State<GroupActions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(group.name),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Card(
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: isLoading
-                    ? const CircularProgressIndicator()
-                    : ListTile(title: buildSummary()),
-              ),
-              const Divider(),
-              Card(
-                child: ListTile(
-                  title: const Text("Record Statement"),
-                  leading: const Icon(Icons.money),
-                  onTap: () async {
-                    await AppUtils.navigateTo(
-                      context,
-                      GroupDetailsScreen(
-                        key: ValueKey(group.id),
-                        group: group,
-                      ),
-                    );
-                    getGroupTotals();
-                  },
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.summarize_outlined),
-                  onTap: () {
-                    AppUtils.navigateTo(
-                      context,
-                      GroupMonthlySummary(
-                        group: group,
-                      ),
-                    );
-                  },
-                  title: const Text("Group Summary"),
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.account_balance),
-                  onTap: () async {
-                    await AppUtils.navigateTo(
-                      context,
-                      GroupTransactionList(
-                        group: group,
-                      ),
-                    );
-                    getGroupTotals();
-                  },
-                  title: const Text("Group Transactions"),
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.people),
-                  onTap: () {
-                    AppUtils.navigateTo(
-                      context,
-                      MembersList(
-                        group,
-                      ),
-                    );
-                  },
-                  title: const Text("Member List"),
-                ),
-              ),
-              Card(
-                  child: ListTile(
-                leading: const Icon(Icons.picture_as_pdf),
-                onTap: () {
-                  Navigator.push(
+      appBar: AppBar(
+        title: Text(group.name),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              child: isLoading
+                  ? const CircularProgressIndicator()
+                  : ListTile(title: buildSummary()),
+            ),
+            const Divider(),
+            Card(
+              child: ListTile(
+                title: const Text("Record Statement"),
+                leading: const Icon(Icons.money),
+                onTap: () async {
+                  await AppUtils.navigateTo(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => PdfReports(
-                              group,
-                            )),
+                    GroupDetailsScreen(
+                      key: ValueKey(group.id),
+                      group: group,
+                    ),
+                  );
+                  getGroupTotals();
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.summarize_outlined),
+                onTap: () {
+                  AppUtils.navigateTo(
+                    context,
+                    GroupMonthlySummary(
+                      group: group,
+                    ),
                   );
                 },
-                title: const Text("Reports"),
-              )),
-            ],
-          ),
-        ));
+                title: const Text("Group Summary"),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.account_balance),
+                onTap: () async {
+                  await AppUtils.navigateTo(
+                    context,
+                    GroupTransactionList(
+                      group: group,
+                    ),
+                  );
+                  getGroupTotals();
+                },
+                title: const Text("Group Transactions"),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.people),
+                onTap: () {
+                  AppUtils.navigateTo(
+                    context,
+                    MembersList(
+                      group,
+                    ),
+                  );
+                },
+                title: const Text("Member List"),
+              ),
+            ),
+            Card(
+                child: ListTile(
+              leading: const Icon(Icons.picture_as_pdf),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PdfReports(
+                            group,
+                          )),
+                );
+              },
+              title: const Text("Reports"),
+            )),
+          ],
+        ),
+      ),
+    );
   }
 }

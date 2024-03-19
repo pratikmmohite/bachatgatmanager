@@ -1,3 +1,4 @@
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -13,7 +14,7 @@ class MonthlyReport extends StatefulWidget {
 
 class _MonthlyReportState extends State<MonthlyReport> {
   late Group _group;
-  DateTime selectedDate = DateTime.now();
+  bool selectedDate = false;
   String? totalBankBalance = '0.0';
   late GroupBalanceSummary balanceSummary = GroupBalanceSummary(
     totalDeposit: 0.0,
@@ -25,48 +26,16 @@ class _MonthlyReportState extends State<MonthlyReport> {
     remainingLoan: 0.0,
   );
   String? previousRemaining;
-  late String _selectMonth;
-  String? _selectYear = "select year";
-  final List<String> months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'June',
-    'July',
-    'Aug',
-    'Sept',
-    'Oct',
-    'Nov',
-    'Dec'
-  ];
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      initialDatePickerMode: DatePickerMode.year,
-    );
 
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
-  String _formattDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}";
-  }
+  late String trxPeriod;
+  late String selectYear;
 
   @override
   void initState() {
     super.initState();
     _group = widget.group;
-    _selectMonth = months[0];
-    _selectYear = 'Select Year';
+
+    selectYear = '';
     totalBankBalance = '0.0';
     previousRemaining = '0.0';
     balanceSummary = GroupBalanceSummary(
@@ -84,55 +53,21 @@ class _MonthlyReportState extends State<MonthlyReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Monthly Report'),
+        title: const Text('Monthly Report'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(10),
-              child: DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                menuMaxHeight: 300,
-                hint: const Text('Select Month'),
-                icon: const Icon(Icons.calendar_month),
-                iconSize: 20,
-                value: _selectMonth,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectMonth = newValue!;
-                  });
-                },
-                items: months.map((valueItem) {
-                  return DropdownMenuItem<String>(
-                    value: valueItem,
-                    child: Text(
-                      valueItem,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.normal, fontSize: 15),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      label: Text(_selectYear!),
                       icon: const Icon(Icons.calendar_today),
                       onPressed: () async {
+                        var local = AppLocal.of(context);
                         final DateTime? picked = await showDatePicker(
                             context: context,
                             initialDate: DateTime(
@@ -143,10 +78,13 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             initialEntryMode: DatePickerEntryMode.calendar);
                         if (picked != null) {
                           setState(() {
-                            _selectYear = picked.year.toString();
+                            trxPeriod = '${picked.year}-${picked.month}';
+                            selectYear = local.getHumanTrxPeriod(picked);
+                            selectedDate = true;
                           });
                         }
                       },
+                      label: Text(!selectedDate ? "Select Date" : selectYear),
                     ),
                   ),
                 ],
@@ -159,19 +97,17 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     icon: const Icon(Icons.summarize),
                     onPressed: () async {
                       final dao = GroupsDao();
-                      String _date =
-                          '$_selectYear-${months.indexOf(_selectMonth) + 1}';
+                      String date = trxPeriod;
                       totalBankBalance =
-                          await dao.getBankBalanceTillToday(_group.id, _date);
+                          await dao.getBankBalanceTillToday(_group.id, date);
                       GroupBalanceSummary summary = await dao.getBalanceSummary(
                         _group.id.toString(),
-                        _date,
-                        _date,
+                        date,
+                        date,
                       );
                       String remaining = await dao.getPreviousYearAmount(
-                          _group.id.toString(), _date);
+                          _group.id.toString(), date);
                       if (totalBankBalance != '0') {
-                        print("inside balance summary");
                         setState(() {
                           totalBankBalance = totalBankBalance;
                           balanceSummary = summary;
@@ -221,7 +157,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                       height: 15,
                     ),
                     Text(
-                      'Time Period $_selectMonth-$_selectYear ',
+                      'Time Period $selectYear ',
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),

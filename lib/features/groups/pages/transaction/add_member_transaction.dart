@@ -313,7 +313,7 @@ class _AddMemberTransactionState extends State<AddMemberTransaction> {
       label: local.tfLoanAmt,
       field: "loanAmount",
       suffixIcon: const Icon(Icons.currency_rupee),
-      value: "${(loanTrx.cr ?? 0).toInt()}",
+      value: "${(loanTrx.cr ?? 0.0).toInt()}",
       onChange: (value) {
         loanTrx.cr = double.tryParse(value) ?? 0;
       },

@@ -357,7 +357,7 @@ class GroupsDao {
   Future<double> getCurrentMonthBalance(GroupTotalFilter filter) async {
     DateTime currentMonth = DateTime.now();
     String date = '${currentMonth.year}-${currentMonth.month}';
-    var query = """SELECT IFNULL(SUM(t.cr), 0) AS total
+    var query = """SELECT IFNULL(SUM(t.cr), 0.0) AS total
     FROM transactions t
     WHERE t.groupId = ?
     AND t.trxPeriod =$date;
@@ -381,7 +381,7 @@ class GroupsDao {
     } else if (mode == "both") {
       column = "t.cr - t.dr";
     }
-    return "select ifnull(sum($column), 0) "
+    return "select ifnull(sum($column), 0.0) "
         "from $transactionTableName t "
         "where t.groupId = m.groupId "
         "and t.memberId = m.id "
@@ -471,7 +471,7 @@ GROUP BY
       return bankBalance.toString();
     }
 
-    return "0"; // Default value if no result
+    return "0.0"; // Default value if no result
   }
 
   Future<String> getBankDepositInterest(
@@ -490,7 +490,7 @@ GROUP BY
       return bankInterest.toString();
     }
 
-    return "0"; // Default value if no result
+    return "0.0"; // Default value if no result
   }
 
   Future<List<MemberTransactionSummary>> getYearlySummary(

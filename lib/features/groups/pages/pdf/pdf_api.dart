@@ -69,30 +69,6 @@ class PdfApi {
             ])
         .toList();
 
-    // List<double> totalPaid = [];
-    // int count = 0;
-    // for (var m in memberData) {
-    //   double total = m.paidOtherAmount! +
-    //       m.paidInterest! +
-    //       m.paidLoan! +
-    //       m.paidLateFee! +
-    //       m.paidShares!;
-    //   totalPaid.add(total);
-    //   count++;
-    // }
-    // final data = memberData
-    //     .map((member) => [
-    //           member.trxPeriod ?? '',
-    //           member.paidShares?.toString() ?? '',
-    //           member.loanTaken?.toString() ?? '',
-    //           member.paidInterest?.toString() ?? '',
-    //           member.paidLoan?.toString() ?? '',
-    //           member.remainingLoan?.toString() ?? '',
-    //           member.paidLateFee?.toString() ?? '',
-    //           member.paidOtherAmount?.toString() ?? '',
-    //         ])
-    //     .toList();
-
     pdf.addPage(pw.Page(build: (context) {
       return pw.Column(
         children: [
