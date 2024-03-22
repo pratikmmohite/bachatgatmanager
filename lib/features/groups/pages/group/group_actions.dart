@@ -1,6 +1,7 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/dao/dao_index.dart';
 import 'package:bachat_gat/features/groups/pages/group/group_monthly_summary.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/models_index.dart';
@@ -49,12 +50,13 @@ class _GroupActionsState extends State<GroupActions> {
   }
 
   Widget buildSummary() {
+    var local = AppLocal.of(context);
     return Table(
       children: [
         TableRow(
           children: [
-            const TableCell(
-              child: Text("Balance"),
+            TableCell(
+              child: Text(local.lBalance),
             ),
             TableCell(
               child: Text(groupTotal.balance.toStringAsFixed(2)),
@@ -63,8 +65,8 @@ class _GroupActionsState extends State<GroupActions> {
         ),
         TableRow(
           children: [
-            const TableCell(
-              child: Text("Total Saving"),
+            TableCell(
+              child: Text(local.lTSaving),
             ),
             TableCell(
               child: Text(groupTotal.totalSaving.toStringAsFixed(2)),
@@ -73,8 +75,8 @@ class _GroupActionsState extends State<GroupActions> {
         ),
         TableRow(
           children: [
-            const TableCell(
-              child: Text("Member Count"),
+            TableCell(
+              child: Text(local.lMcount),
             ),
             TableCell(
               child: Text(groupTotal.memberCount.toStringAsFixed(2)),
@@ -83,8 +85,8 @@ class _GroupActionsState extends State<GroupActions> {
         ),
         TableRow(
           children: [
-            const TableCell(
-              child: Text("Member Portion"),
+            TableCell(
+              child: Text(local.lmPortion),
             ),
             TableCell(
               child: Text(groupTotal.perMemberShare.toStringAsFixed(2)),
@@ -92,7 +94,7 @@ class _GroupActionsState extends State<GroupActions> {
           ],
         ),
         TableRow(children: [
-          const TableCell(child: Text('Month Collection')),
+          TableCell(child: Text(local.lmCollecton)),
           TableCell(
             child: Text(currentMonth.toStringAsFixed(2)),
           ),
@@ -103,6 +105,7 @@ class _GroupActionsState extends State<GroupActions> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(group.name),
@@ -120,7 +123,7 @@ class _GroupActionsState extends State<GroupActions> {
             const Divider(),
             Card(
               child: ListTile(
-                title: const Text("Record Statement"),
+                title: Text(local.lgRecord),
                 leading: const Icon(Icons.money),
                 onTap: () async {
                   await AppUtils.navigateTo(
@@ -145,7 +148,7 @@ class _GroupActionsState extends State<GroupActions> {
                     ),
                   );
                 },
-                title: const Text("Group Summary"),
+                title: Text(local.lgSummary),
               ),
             ),
             Card(
@@ -160,7 +163,7 @@ class _GroupActionsState extends State<GroupActions> {
                   );
                   getGroupTotals();
                 },
-                title: const Text("Group Transactions"),
+                title: Text(local.lgTransaction),
               ),
             ),
             Card(
@@ -174,7 +177,7 @@ class _GroupActionsState extends State<GroupActions> {
                     ),
                   );
                 },
-                title: const Text("Member List"),
+                title: Text(local.lmList),
               ),
             ),
             Card(
@@ -189,7 +192,7 @@ class _GroupActionsState extends State<GroupActions> {
                           )),
                 );
               },
-              title: const Text("Reports"),
+              title: Text(local.lRecord),
             )),
           ],
         ),

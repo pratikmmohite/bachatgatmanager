@@ -47,9 +47,10 @@ class _YearlyReportState extends State<YearlyReport> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Yearly Report"),
+        title: Text(local.lYReport),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -192,33 +193,33 @@ class _YearlyReportState extends State<YearlyReport> {
                         // Assign labels and values based on index
                         switch (index) {
                           case 0:
-                            label = 'Previous Remaining:';
+                            label = local.lPrm;
                             value = previousRemaining.toString();
                             break;
                           case 1:
-                            label = 'Total Deposit:';
+                            label = local.lDeposit;
                             value = balanceSummary.totalDeposit.toString();
                             break;
                           case 2:
-                            label = 'Total Shares:';
+                            label = local.ltShares;
                             value = balanceSummary.totalShares.toString();
                             break;
                           case 3:
-                            label = 'Total Penalty:';
+                            label = local.lPenalty;
                             value = balanceSummary.totalPenalty.toString();
                             break;
                           case 4:
-                            label = 'Total Other Deposits:';
+                            label = local.ltOther;
                             value = balanceSummary.otherDeposit.toString();
                             break;
                           case 5:
-                            label = "Total Remaining Loan:";
+                            label = local.lRmLoan;
                             value = balanceSummary.remainingLoan.toString();
                           case 6:
-                            label = "Total Bank Balance till today:";
+                            label = local.ltBankBalance;
                             value = totalBankBalance;
                           case 7:
-                            label = "Total Expenditures";
+                            label = local.ltExpenditures;
                             value = balanceSummary.totalExpenditures.toString();
                             break;
                         }

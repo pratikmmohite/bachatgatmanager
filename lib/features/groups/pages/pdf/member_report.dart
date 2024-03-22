@@ -45,9 +45,10 @@ class _MemberReportState extends State<MemberReport> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Members Report"),
+        title: Text(local.lmReport),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -100,7 +101,6 @@ class _MemberReportState extends State<MemberReport> {
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.date_range),
                     onPressed: () async {
-                      var local = AppLocal.of(context);
                       final DateTimeRange? picked = await showDateRangePicker(
                         context: context,
                         initialDateRange: DateTimeRange(
@@ -125,64 +125,6 @@ class _MemberReportState extends State<MemberReport> {
                         Text(str == end ? "Select Date" : '${str} to ${end}'),
                   ),
                 ),
-                // Expanded(
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       const Text(
-                //         'Start Date',
-                //         style: TextStyle(fontWeight: FontWeight.bold),
-                //       ),
-                //       ElevatedButton.icon(
-                //         label: Text(_formattDate(_startDate)),
-                //         icon: const Icon(Icons.calendar_today),
-                //         onPressed: () async {
-                //           final DateTime? picked = await showDatePicker(
-                //             context: context,
-                //             initialDate:
-                //                 DateTime(_startDate.year, _startDate.month, 1),
-                //             firstDate: DateTime(2000),
-                //             lastDate: DateTime(2101),
-                //           );
-                //           if (picked != null && picked != _startDate) {
-                //             setState(() {
-                //               _startDate = picked;
-                //             });
-                //           }
-                //         },
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // const SizedBox(width: 20),
-                // Expanded(
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       const Text(
-                //         'End Date',
-                //         style: TextStyle(fontWeight: FontWeight.bold),
-                //       ),
-                //       ElevatedButton.icon(
-                //         icon: const Icon(Icons.calendar_today),
-                //         onPressed: () async {
-                //           final DateTime? picked = await showDatePicker(
-                //             context: context,
-                //             initialDate: _endDate,
-                //             firstDate: DateTime(2000),
-                //             lastDate: DateTime(2101),
-                //           );
-                //           if (picked != null && picked != _endDate) {
-                //             setState(() {
-                //               _endDate = picked;
-                //             });
-                //           }
-                //         },
-                //         label: Text(_formattDate(_endDate)),
-                //       ),
-                //     ],
-                //   ),
-                // ),
               ],
             ),
             const SizedBox(height: 15),

@@ -170,8 +170,8 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       local.lInterest,
       local.lPenalty,
       local.lOthers,
-      local.lGivenLoan,
       local.lTotal,
+      local.lGivenLoan,
       local.lRmLoan,
       local.lActions,
     ];
@@ -185,12 +185,12 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
               buildCellD(m.paidLoanInterestAmount),
               buildCellD(m.paidLateFee),
               buildCellD(m.paidOtherAmount),
-              buildCellD(m.lendLoan, () => handleShowLoanClick(m)),
               buildCellD(m.paidLoanAmount +
                   m.paidLoanInterestAmount +
                   m.paidShareAmount +
                   m.paidLateFee +
                   m.paidOtherAmount),
+              buildCellD(m.lendLoan, () => handleShowLoanClick(m)),
               buildCellD(m.pendingLoanAmount, () => handleShowLoanClick(m)),
               buildCellI(buildActions(m)),
             ],
@@ -243,12 +243,12 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
         buildCellD(totalPaidLoanInterestAmount),
         buildCellD(totalPaidLateFee),
         buildCellD(totalPaidOtherAmount),
-        buildCellD(totalLendLoanAmount),
         buildCellD(totalPaidShareAmount +
             totalPaidLoanAmount +
             totalPaidLoanInterestAmount +
             totalPaidLateFee +
             totalPaidOtherAmount),
+        buildCellD(totalLendLoanAmount),
         buildCellD(totalPendingLoanAmount),
         buildCellS(""),
       ],

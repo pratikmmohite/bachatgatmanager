@@ -29,6 +29,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
 
   late String trxPeriod;
   late String selectYear;
+  late double paidLoan = 0.0;
 
   @override
   void initState() {
@@ -47,13 +48,15 @@ class _MonthlyReportState extends State<MonthlyReport> {
       totalExpenditures: 0.0,
       remainingLoan: 0.0,
     );
+    paidLoan = 0.0;
   }
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Monthly Report'),
+        title: Text(local.lMReport),
       ),
       body: Center(
         child: Column(
@@ -81,6 +84,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             trxPeriod = '${picked.year}-${picked.month}';
                             selectYear = local.getHumanTrxPeriod(picked);
                             selectedDate = true;
+                            trxPeriod =
+                                '${picked.year}-${picked.month.toString().padLeft(2, '0')}';
                           });
                         }
                       },
@@ -98,20 +103,25 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     onPressed: () async {
                       final dao = GroupsDao();
                       String date = trxPeriod;
+                      print(date);
                       totalBankBalance =
                           await dao.getBankBalanceTillToday(_group.id, date);
-                      GroupBalanceSummary summary = await dao.getBalanceSummary(
+                      GroupBalanceSummary summary = await dao.getMonthlySummary(
                         _group.id.toString(),
                         date,
-                        date,
                       );
+                      print(summary.totalShares);
                       String remaining = await dao.getPreviousYearAmount(
                           _group.id.toString(), date);
+                      double _paidLoan =
+                          await dao.getPaidLoan(_group.id.toString(), date);
+                      print(_paidLoan);
                       if (totalBankBalance != '0') {
                         setState(() {
                           totalBankBalance = totalBankBalance;
                           balanceSummary = summary;
                           previousRemaining = remaining;
+                          paidLoan = _paidLoan;
                           // isVisible = !isVisible;
                         });
                       } else {
@@ -166,7 +176,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     ),
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 8, // Number of rows
+                      itemCount: 10, // Number of rows
                       itemBuilder: (BuildContext context, int index) {
                         String label = '';
                         String value = '';
@@ -174,34 +184,47 @@ class _MonthlyReportState extends State<MonthlyReport> {
                         // Assign labels and values based on index
                         switch (index) {
                           case 0:
-                            label = 'Previous Remaining:';
+                            label = local.lPrm;
                             value = previousRemaining.toString();
                             break;
                           case 1:
-                            label = 'Total Deposit:';
+                            label = local.lDeposit;
                             value = balanceSummary.totalDeposit.toString();
                             break;
                           case 2:
-                            label = 'Total Shares:';
+                            label = local.ltShares;
                             value = balanceSummary.totalShares.toString();
                             break;
                           case 3:
-                            label = 'Total Penalty:';
+                            label = local.lPenalty;
                             value = balanceSummary.totalPenalty.toString();
                             break;
                           case 4:
-                            label = 'Total Other Deposits:';
+                            label = local.ltOther;
                             value = balanceSummary.otherDeposit.toString();
                             break;
                           case 5:
-                            label = "Total Remaining Loan:";
-                            value = balanceSummary.remainingLoan.toString();
+                            label = local.lPaidLoan;
+                            value = paidLoan.toString();
+                            break;
                           case 6:
-                            label = "Total Bank Balance till today:";
-                            value = totalBankBalance.toString();
+                            label = local.lRmLoan;
+                            value = balanceSummary.remainingLoan.toString();
                           case 7:
-                            label = "Total Expenditures";
+                            label = local.ltBankBalance;
+                            value = totalBankBalance.toString();
+                          case 8:
+                            label = local.ltExpenditures;
                             value = balanceSummary.totalExpenditures.toString();
+                            break;
+                          case 9:
+                            label = local.ltGathered;
+                            value = (balanceSummary.otherDeposit +
+                                    balanceSummary.totalPenalty +
+                                    balanceSummary.totalShares +
+                                    balanceSummary.totalDeposit +
+                                    paidLoan)
+                                .toStringAsFixed(2);
                             break;
                         }
 

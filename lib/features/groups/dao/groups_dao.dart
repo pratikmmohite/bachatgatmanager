@@ -458,7 +458,7 @@ GROUP BY
 
   Future<String> getBankBalanceTillToday(
       String groupId, String trxPeriod) async {
-    var query = """SELECT IFNULL((SUM(t.cr)-Sum(t.dr)), 0) AS bankBalance
+    var query = """SELECT IFNULL((SUM(t.cr)-Sum(t.dr)), 0.0) AS bankBalance
     FROM transactions t
     WHERE t.groupId = ?
     AND t.trxPeriod <= ?;
@@ -552,7 +552,7 @@ GROUP BY
   SUM(CASE WHEN t.trxType = 'Share' THEN t.cr ELSE 0 END) AS totalShares,
   SUM(CASE WHEN t.trxType = 'LoanInterest' THEN t.cr ELSE 0 END) AS TotalLoanInterest,
   SUM(CASE WHEN t.trxType = 'LateFee' THEN t.cr ELSE 0 END) AS TotalPenalty,
-  SUM(CASE WHEN t.trxType = 'Others' THEN t.cr ELSE 0 END) AS OtherDeposit,
+  SUM(CASE WHEN t.trxType = 'Others' or t.trxType='BankInterest' THEN t.cr ELSE 0 END) AS OtherDeposit,
   SUM(CASE WHEN t.trxType = 'Expenditures' THEN t.dr ELSE 0 END) AS totalExpenditures,
    (select (sum(case when t1.trxType='Loan' then t1.dr else 0 end)-sum(case when t1.trxType="Loan" then t1.cr else 0 end))as Loan from transactions t1 where t1.groupId=? and t1.trxPeriod<=?) as remainingLoan
 FROM transactions t
@@ -577,5 +577,56 @@ WHERE
         otherDeposit: 0.0,
         totalExpenditures: 0.0,
         remainingLoan: 0.0);
+  }
+
+  Future<GroupBalanceSummary> getMonthlySummary(
+      String groupId, String startDate) async {
+    var query = """
+    SELECT
+  SUM(CASE WHEN t.trxType = 'Deposit' THEN t.cr ELSE 0 END) AS totalDeposit,
+  SUM(CASE WHEN t.trxType = 'Share' THEN t.cr ELSE 0 END) AS totalShares,
+  SUM(CASE WHEN t.trxType = 'LoanInterest' THEN t.cr ELSE 0 END) AS TotalLoanInterest,
+  SUM(CASE WHEN t.trxType = 'LateFee' THEN t.cr ELSE 0 END) AS TotalPenalty,
+  SUM(CASE WHEN (t.trxType = 'Others' or t.trxType='BankInterest') THEN t.cr ELSE 0 END) AS OtherDeposit,
+  SUM(CASE WHEN t.trxType = 'Expenditures' THEN t.dr ELSE 0 END) AS totalExpenditures,
+   (select (sum(case when t1.trxType='Loan' then t1.dr else 0 end)-sum(case when t1.trxType="Loan" then t1.cr else 0 end))as Loan from transactions t1 where t1.groupId=? and t1.trxPeriod<=?) as remainingLoan
+FROM transactions t
+WHERE
+  t.groupId = ? AND
+  t.trxPeriod = ?
+  """;
+
+    var result =
+        await dbService.read(query, [groupId, startDate, groupId, startDate]);
+
+    if (result.isNotEmpty) {
+      return GroupBalanceSummary.fromSqlResults(result.first);
+    }
+    return GroupBalanceSummary(
+        totalDeposit: 0.0,
+        totalShares: 0.0,
+        totalLoanInterest: 0.0,
+        totalPenalty: 0.0,
+        otherDeposit: 0.0,
+        totalExpenditures: 0.0,
+        remainingLoan: 0.0);
+  }
+
+  Future<double> getPaidLoan(String groupId, String trxPeriod) async {
+    var query =
+        """SELECT IFNULL(SUM(case when t.trxType='Loan' then t.cr else 0 end), 0) AS PaidLoan
+    FROM transactions t
+    WHERE t.groupId = ?
+    AND t.trxPeriod = ?;
+  """;
+
+    var result = await dbService.read(query, [groupId, trxPeriod]);
+
+    if (result.isNotEmpty) {
+      final bankInterest = (result.first["PaidLoan"] as int).toDouble();
+      return bankInterest;
+    }
+
+    return 0.0; // Default value if no result
   }
 }

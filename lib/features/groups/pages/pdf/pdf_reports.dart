@@ -1,6 +1,7 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/pdf/member_report.dart';
 import 'package:bachat_gat/features/groups/pages/pdf/yearly_report.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -46,9 +47,10 @@ class _PdfReportsState extends State<PdfReports> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Report"),
+          title: Text(local.lRecord),
         ),
         body: Column(
           children: [
@@ -82,12 +84,12 @@ class _PdfReportsState extends State<PdfReports> {
                   );
                 }
               },
-              title: const Text("Member Reports"),
+              title: Text(local.lmReport),
             )),
             Card(
               child: ListTile(
                 leading: const Icon(Icons.group),
-                title: const Text("Monthly Report (मासिक अहवाल)"),
+                title: Text(local.lMReport),
                 onTap: () {
                   Navigator.push(
                       context,
@@ -99,7 +101,7 @@ class _PdfReportsState extends State<PdfReports> {
             Card(
               child: ListTile(
                 leading: const Icon(Icons.picture_as_pdf),
-                title: const Text("Yearly Report"),
+                title: Text(local.lYReport),
                 onTap: () {
                   Navigator.push(
                     context,
