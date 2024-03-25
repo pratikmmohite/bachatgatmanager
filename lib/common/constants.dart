@@ -63,5 +63,6 @@ class AppConstants {
         ttBankInterest, ttBankInterest, ttBankInterest),
     CustomDropDownOption<String>(
         ttExpenditures, ttExpenditures, ttExpenditures),
+    CustomDropDownOption<String>(ttOthers, ttOthers, ttOthers),
   ];
 }

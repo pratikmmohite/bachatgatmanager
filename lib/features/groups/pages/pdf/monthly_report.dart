@@ -16,7 +16,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
   late Group _group;
   bool selectedDate = false;
   String? totalBankBalance = '0.0';
-  late GroupBalanceSummary balanceSummary = GroupBalanceSummary(
+  late MonthlyBalanceSummary balanceSummary = MonthlyBalanceSummary(
     totalDeposit: 0.0,
     totalShares: 0.0,
     totalLoanInterest: 0.0,
@@ -24,22 +24,25 @@ class _MonthlyReportState extends State<MonthlyReport> {
     otherDeposit: 0.0,
     totalExpenditures: 0.0,
     remainingLoan: 0.0,
+    paidLoan: 0.0,
+    givenLoan: 0.0,
+    peviousRemainigBalance: 0.0,
   );
-  String? previousRemaining;
+  // double previousRemaining = 0.0;
 
   late String trxPeriod;
   late String selectYear;
-  late double paidLoan = 0.0;
-
+  // late double paidLoan = 0.0;
+  late double monthlydeposit = 0.0;
   @override
   void initState() {
     super.initState();
     _group = widget.group;
-
+    // previousRemaining = 0.0;
     selectYear = '';
     totalBankBalance = '0.0';
-    previousRemaining = '0.0';
-    balanceSummary = GroupBalanceSummary(
+
+    balanceSummary = MonthlyBalanceSummary(
       totalDeposit: 0.0,
       totalShares: 0.0,
       totalLoanInterest: 0.0,
@@ -47,8 +50,11 @@ class _MonthlyReportState extends State<MonthlyReport> {
       otherDeposit: 0.0,
       totalExpenditures: 0.0,
       remainingLoan: 0.0,
+      paidLoan: 0.0,
+      givenLoan: 0.0,
+      peviousRemainigBalance: 0.0,
     );
-    paidLoan = 0.0;
+    // paidLoan = 0.0;
   }
 
   @override
@@ -89,7 +95,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           });
                         }
                       },
-                      label: Text(!selectedDate ? "Select Date" : selectYear),
+                      label: Text(
+                          !selectedDate ? "Select Date Range" : selectYear),
                     ),
                   ),
                 ],
@@ -103,25 +110,26 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     onPressed: () async {
                       final dao = GroupsDao();
                       String date = trxPeriod;
-                      print(date);
+
                       totalBankBalance =
                           await dao.getBankBalanceTillToday(_group.id, date);
-                      GroupBalanceSummary summary = await dao.getMonthlySummary(
+                      MonthlyBalanceSummary summary =
+                          await dao.getMonthlySummary(
                         _group.id.toString(),
                         date,
                       );
-                      print(summary.totalShares);
-                      String remaining = await dao.getPreviousYearAmount(
-                          _group.id.toString(), date);
-                      double _paidLoan =
-                          await dao.getPaidLoan(_group.id.toString(), date);
-                      print(_paidLoan);
+
+                      // double remaining = await dao.getPreviousYearAmount(
+                      //     _group.id.toString(), date);
+                      // double paidLoan =
+                      //     await dao.getPaidLoan(_group.id.toString(), date);
+
                       if (totalBankBalance != '0') {
                         setState(() {
                           totalBankBalance = totalBankBalance;
                           balanceSummary = summary;
-                          previousRemaining = remaining;
-                          paidLoan = _paidLoan;
+                          // previousRemaining = remaining;
+                          // paidLoan = paidLoan;
                           // isVisible = !isVisible;
                         });
                       } else {
@@ -155,7 +163,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                 child: Column(
                   children: [
                     Text(
-                      'Group Name:${_group.name.toString()}',
+                      '${local.tfGroupName}:${_group.name.toString()}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -167,7 +175,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                       height: 15,
                     ),
                     Text(
-                      'Time Period $selectYear ',
+                      '${local.period} $selectYear ',
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -176,56 +184,91 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     ),
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 10, // Number of rows
+                      itemCount: 13, // Number of rows
                       itemBuilder: (BuildContext context, int index) {
                         String label = '';
                         String value = '';
-
+                        monthlydeposit = balanceSummary.totalDeposit +
+                            balanceSummary.totalShares +
+                            balanceSummary.paidLoan +
+                            balanceSummary.totalLoanInterest +
+                            balanceSummary.totalPenalty +
+                            balanceSummary.otherDeposit;
                         // Assign labels and values based on index
                         switch (index) {
                           case 0:
                             label = local.lPrm;
-                            value = previousRemaining.toString();
+                            value = balanceSummary.peviousRemainigBalance
+                                .toString();
                             break;
                           case 1:
                             label = local.lDeposit;
-                            value = balanceSummary.totalDeposit.toString();
+                            value =
+                                balanceSummary.totalDeposit.toStringAsFixed(2);
                             break;
                           case 2:
                             label = local.ltShares;
-                            value = balanceSummary.totalShares.toString();
+                            value =
+                                balanceSummary.totalShares.toStringAsFixed(2);
                             break;
                           case 3:
-                            label = local.lPenalty;
-                            value = balanceSummary.totalPenalty.toString();
+                            label = local.lPaidLoan;
+                            value = balanceSummary.paidLoan.toStringAsFixed(2);
                             break;
                           case 4:
-                            label = local.ltOther;
-                            value = balanceSummary.otherDeposit.toString();
+                            label = local.lPaidInterest;
+                            value = balanceSummary.totalLoanInterest
+                                .toStringAsFixed(2);
                             break;
                           case 5:
-                            label = local.lPaidLoan;
-                            value = paidLoan.toString();
+                            label = local.lPenalty;
+                            value =
+                                balanceSummary.totalPenalty.toStringAsFixed(2);
                             break;
                           case 6:
-                            label = local.lRmLoan;
-                            value = balanceSummary.remainingLoan.toString();
+                            label = local.ltOther;
+                            value =
+                                balanceSummary.otherDeposit.toStringAsFixed(2);
+                            break;
                           case 7:
-                            label = local.ltBankBalance;
-                            value = totalBankBalance.toString();
+                            label = local.lmcr;
+                            value = (balanceSummary.totalDeposit +
+                                    balanceSummary.totalShares +
+                                    balanceSummary.paidLoan +
+                                    balanceSummary.totalLoanInterest +
+                                    balanceSummary.totalPenalty +
+                                    balanceSummary.otherDeposit)
+                                .toStringAsFixed(2);
+
+                            break;
                           case 8:
+                            label = local.ltcr;
+                            value = (monthlydeposit +
+                                    balanceSummary.peviousRemainigBalance)
+                                .toStringAsFixed(2);
+                            break;
+
+                          case 9:
+                            label = local.lGivenLoan;
+                            value = balanceSummary.givenLoan.toStringAsFixed(2);
+                            break;
+                          case 10:
                             label = local.ltExpenditures;
                             value = balanceSummary.totalExpenditures.toString();
                             break;
-                          case 9:
-                            label = local.ltGathered;
-                            value = (balanceSummary.otherDeposit +
-                                    balanceSummary.totalPenalty +
-                                    balanceSummary.totalShares +
-                                    balanceSummary.totalDeposit +
-                                    paidLoan)
-                                .toStringAsFixed(2);
+                          case 11:
+                            label = local.ltdr;
+                            value = (balanceSummary.givenLoan +
+                                    balanceSummary.totalExpenditures)
+                                .toString();
                             break;
+                          case 12:
+                            label = local.lcb;
+                            value = (monthlydeposit +
+                                    balanceSummary.peviousRemainigBalance -
+                                    balanceSummary.givenLoan -
+                                    balanceSummary.totalExpenditures)
+                                .toStringAsFixed(2);
                         }
 
                         return Row(
@@ -233,14 +276,31 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           children: [
                             Text(
                               label,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      (index == 8 || index == 11 || index == 12)
+                                          ? Colors.red
+                                          : Colors.black,
+                                  backgroundColor: (index == 8 ||
+                                          index == 11 ||
+                                          index == 12)
+                                      ? const Color.fromRGBO(221, 208, 200, 0.6)
+                                      : Colors.white),
                               textAlign: TextAlign.justify,
                             ),
                             Text(
                               value,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      (index == 8 || index == 11 || index == 12)
+                                          ? Colors.red
+                                          : Colors.black,
+                                  backgroundColor:
+                                      (index == 8 || index == 11 || index == 12)
+                                          ? Color.fromRGBO(221, 208, 200, 0.6)
+                                          : Colors.white),
                             ),
                           ],
                         );

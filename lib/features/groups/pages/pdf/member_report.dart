@@ -121,8 +121,8 @@ class _MemberReportState extends State<MemberReport> {
                         });
                       }
                     },
-                    label:
-                        Text(str == end ? "Select Date" : '${str} to ${end}'),
+                    label: Text(
+                        str == end ? "Select Date Range" : '${str} to ${end}'),
                   ),
                 ),
               ],
@@ -143,7 +143,10 @@ class _MemberReportState extends State<MemberReport> {
                           _formattDate(_endDate));
                       if (data.isNotEmpty) {
                         var bytes = await PdfApi.generateTable(
-                            data, selectedMemberName, _group.name.toString());
+                            data,
+                            selectedMemberName,
+                            _group.name.toString(),
+                            context);
                         await PdfApi.saveAsPDF(selectedMemberName, bytes);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +178,10 @@ class _MemberReportState extends State<MemberReport> {
                           _formattDate(_endDate));
                       if (data.isNotEmpty) {
                         var bytes = await PdfApi.generateTable(
-                            data, selectedMemberName, _group.name.toString());
+                            data,
+                            selectedMemberName,
+                            _group.name.toString(),
+                            context);
                         await PdfApi.previewPDF(bytes);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

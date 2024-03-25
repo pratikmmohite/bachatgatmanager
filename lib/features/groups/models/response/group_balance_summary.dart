@@ -4,45 +4,59 @@ part 'group_balance_summary.g.dart';
 
 @JsonSerializable()
 class GroupBalanceSummary {
-  @JsonKey(name: 'totalDeposit')
-  final double totalDeposit;
+  @JsonKey(name: 'previousRemaining')
+  final double previousRemaining;
 
-  @JsonKey(name: 'totalShares')
-  final double totalShares;
+  @JsonKey(name: 'paidLoan')
+  final double paidLoan;
 
-  @JsonKey(name: 'TotalLoanInterest')
-  final double totalLoanInterest;
+  @JsonKey(name: 'deposit')
+  final double deposit;
 
-  @JsonKey(name: 'TotalPenalty')
-  final double totalPenalty;
+  @JsonKey(name: 'shares')
+  final double shares;
 
-  @JsonKey(name: 'OtherDeposit')
+  @JsonKey(name: 'loanInterest')
+  final double loanInterest;
+
+  @JsonKey(name: 'penalty')
+  final double penalty;
+
+  @JsonKey(name: 'otherDeposit')
   final double otherDeposit;
 
-  @JsonKey(name: 'totalExpenditures')
-  final double totalExpenditures;
+  @JsonKey(name: 'expenditures')
+  final double expenditures;
+
+  @JsonKey(name: 'givenLoan')
+  final double givenLoan;
 
   @JsonKey(name: 'remainingLoan')
   final double remainingLoan;
 
-  GroupBalanceSummary({
-    required this.totalDeposit,
-    required this.totalShares,
-    required this.totalLoanInterest,
-    required this.totalPenalty,
-    required this.otherDeposit,
-    required this.totalExpenditures,
-    required this.remainingLoan,
-  });
+  GroupBalanceSummary(
+      {required this.previousRemaining,
+      required this.paidLoan,
+      required this.deposit,
+      required this.shares,
+      required this.loanInterest,
+      required this.penalty,
+      required this.otherDeposit,
+      required this.expenditures,
+      required this.givenLoan,
+      required this.remainingLoan});
 
   factory GroupBalanceSummary.fromSqlResults(Map<String, dynamic> json) {
     return GroupBalanceSummary(
-      totalDeposit: (json['totalDeposit'] as num?)?.toDouble() ?? 0.0,
-      totalShares: (json['totalShares'] as num?)?.toDouble() ?? 0.0,
-      totalLoanInterest: (json['TotalLoanInterest'] as num?)?.toDouble() ?? 0.0,
-      totalPenalty: (json['TotalPenalty'] as num?)?.toDouble() ?? 0.0,
-      otherDeposit: (json['OtherDeposit'] as num?)?.toDouble() ?? 0.0,
-      totalExpenditures: (json['totalExpenditures'] as num?)?.toDouble() ?? 0.0,
+      previousRemaining: (json['previousRemaining'] as num?)?.toDouble() ?? 0.0,
+      paidLoan: (json['paidLoan'] as num?)?.toDouble() ?? 0.0,
+      deposit: (json['deposit'] as num?)?.toDouble() ?? 0.0,
+      shares: (json['shares'] as num?)?.toDouble() ?? 0.0,
+      loanInterest: (json['loanInterest'] as num?)?.toDouble() ?? 0.0,
+      penalty: (json['penalty'] as num?)?.toDouble() ?? 0.0,
+      otherDeposit: (json['otherDeposit'] as num?)?.toDouble() ?? 0.0,
+      expenditures: (json['expenditures'] as num?)?.toDouble() ?? 0.0,
+      givenLoan: (json['givenLoan'] as num?)?.toDouble() ?? 0.0,
       remainingLoan: (json['remainingLoan'] as num?)?.toDouble() ?? 0.0,
     );
   }

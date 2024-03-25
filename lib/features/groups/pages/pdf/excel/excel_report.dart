@@ -15,7 +15,7 @@ class ExcelExample {
     var excel = Excel.createExcel();
     Sheet sheetObject = excel['Sheet1'];
     final dao = GroupsDao();
-    String previousYearData =
+    double previousYearData =
         await dao.getPreviousYearAmount(groupId, startDate);
 
     String expenditures = await dao.getExpenditures(groupId, startDate);
@@ -112,7 +112,7 @@ class ExcelExample {
     sheetObject.cell(CellIndex.indexByString('B${count++}')).value =
         const TextCellValue('मागील शिल्लक');
     sheetObject.cell(CellIndex.indexByString('C${count - 1}')).value =
-        TextCellValue(previousYearData);
+        TextCellValue(previousYearData.toStringAsFixed(2));
 
     //for displaying the expenditures of savings group
     sheetObject.cell(CellIndex.indexByString('B${count++}')).value =

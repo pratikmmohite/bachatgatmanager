@@ -86,6 +86,19 @@ abstract class AppLocalization {
     "lmReport": "Member Reports",
     "lMReport": "Monthly Reports",
     "lYReport": "Yearly Report",
+    "to": "To",
+    "period": "Period",
+    "type": "Type",
+    "ltcr": "Total Credit",
+    "ltdr": "Total Debit",
+    "sumr": "Totals",
+    "cr": "Credit",
+    "dr": "Debit",
+    "lmonth": "Month",
+    "ladd": "Added On",
+    "lmcr": "Monthly credit",
+    "lcb": " Monthly Closing balance",
+    "lcrdr": "Total Credit+ Bank Balance"
   };
   List<String> get months => [
         "Jan",
@@ -207,6 +220,19 @@ abstract class AppLocalization {
   String get lmReport => getValue("lmReport");
   String get lMReport => getValue("lMReport");
   String get lYReport => getValue("lYReport");
+  String get to => getValue("to");
+  String get period => getValue("period");
+  String get type => getValue("type");
+  String get ltcr => getValue("ltcr");
+  String get ltdr => getValue("ltdr");
+  String get sumr => getValue("sumr");
+  String get cr => getValue("cr");
+  String get dr => getValue("dr");
+  String get lmonth => getValue("lmonth");
+  String get ladd => getValue("ladd");
+  String get lmcr => getValue("lmcr");
+  String get lcb => getValue("lcb");
+  String get lcrdr => getValue("lcrdr");
 }
 
 class EnAppLocalization extends AppLocalization {
@@ -301,6 +327,19 @@ class MrAppLocalization extends AppLocalization {
         "lmReport": "सदस्य अहवाल",
         "lMReport": "मासिक अहवाल",
         "lYReport": "वार्षिक अहवाल",
+        "to": "ते",
+        "period": "कालावधी",
+        "type": "प्रकार",
+        "ltcr": "एकूण जमा",
+        "ltdr": "एकूण खर्च ",
+        "sumr": "सारांश",
+        "cr": "जमा",
+        "dr": "खर्च",
+        "lmonth": "महिना",
+        "ladd": "दिनांक",
+        "lmcr": "मासिक जमा",
+        "lcb": "चालू महिन्यातील शिल्लक",
+        "lcrdr": "एकूण खर्च+शिल्लक",
       };
 
   @override

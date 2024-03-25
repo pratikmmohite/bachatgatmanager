@@ -1,4 +1,5 @@
 import 'package:bachat_gat/features/groups/models/models_index.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../common/common_index.dart';
@@ -46,19 +47,19 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
     });
   }
 
-  Widget buildSummaryDetails() {
-    var columns = const [
+  Widget buildSummaryDetails(local) {
+    var columns = [
       DataColumn(
-        label: Text("Period"),
+        label: Text(local.period),
       ),
       DataColumn(
-        label: Text("Type"),
+        label: Text(local.type),
       ),
       DataColumn(
-        label: Text("Total Credit"),
+        label: Text(local.ltcr),
       ),
       DataColumn(
-        label: Text("Total Debit"),
+        label: Text(local.ltdr),
       ),
     ];
     List<DataRow> rows = groupSummary.map(
@@ -108,9 +109,10 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Group Summary"),
+        title: Text(local.lgSummary),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(20),
           child: InkWell(
@@ -130,7 +132,7 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
                     color: Colors.indigo,
                   ),
                 ),
-                const Text("To"),
+                Text(local.to),
                 Text(
                   AppUtils.getHumanReadableDt(filter.edt),
                   style: const TextStyle(
@@ -155,7 +157,7 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
         ],
       ),
       bottomSheet: ExpansionTile(
-        title: const Text("Totals"),
+        title: Text(local.sumr),
         initiallyExpanded: true,
         children: [
           GroupSummaryCard(
@@ -181,7 +183,7 @@ class _GroupMonthlySummaryState extends State<GroupMonthlySummary> {
                   scrollDirection: Axis.horizontal,
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 300.0),
-                    child: buildSummaryDetails(),
+                    child: buildSummaryDetails(local),
                   ),
                 ),
               ),

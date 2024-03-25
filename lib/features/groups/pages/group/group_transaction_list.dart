@@ -1,5 +1,6 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/transaction/add_group_transaction.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/dao_index.dart';
@@ -66,9 +67,10 @@ class _GroupTransactionListState extends State<GroupTransactionList> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Group Transactions"),
+        title: Text(local.lgTransaction),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(20),
           child: Column(
@@ -84,19 +86,26 @@ class _GroupTransactionListState extends State<GroupTransactionList> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Total"),
+            Text(local.lTotal),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text("Credit"),
-                Text(totalCr.toStringAsFixed(2))
+                Text(local.cr),
+                Text(
+                  totalCr.toStringAsFixed(2),
+                ),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [const Text("Debit"), Text(totalDr.toStringAsFixed(2))],
+              children: [
+                Text(local.dr),
+                Text(
+                  totalDr.toStringAsFixed(2),
+                ),
+              ],
             ),
           ],
         ),
@@ -170,27 +179,29 @@ class _GroupTransactionListState extends State<GroupTransactionList> {
                   );
                 },
               ).toList(),
-              columns: const [
+              columns: [
                 DataColumn(
-                  label: Text("Month"),
+                  label: Text(
+                    local.lmonth,
+                  ),
                 ),
                 DataColumn(
-                  label: Text("Type"),
+                  label: Text(local.type),
                 ),
                 DataColumn(
-                  label: Text("Credit"),
+                  label: Text(local.cr),
                 ),
                 DataColumn(
-                  label: Text("Debit"),
+                  label: Text(local.dr),
                 ),
                 DataColumn(
-                  label: Text("Note"),
+                  label: Text(local.lNote),
                 ),
                 DataColumn(
-                  label: Text("Added On"),
+                  label: Text(local.ladd),
                 ),
                 DataColumn(
-                  label: Text("Action"),
+                  label: Text(local.lActions),
                 ),
               ],
             ),
