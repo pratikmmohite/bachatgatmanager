@@ -654,4 +654,23 @@ WHERE
 
     return 0.0; // Default value if no result
   }
+
+  Future<double> getRemainingLoan(
+      String groupId, String memberId, String trxPeriod) async {
+    var query =
+        """SELECT IFNULL(SUM(case when t.trxType='Loan' then t.dr else 0 end)-SUM(case when t.trxType='Loan' then t.cr else 0 end), 0) AS remainingLoan
+    FROM transactions t
+    WHERE t.groupId = ? AND t.memberId=?
+    AND t.trxPeriod <?;
+  """;
+
+    var result = await dbService.read(query, [groupId, memberId, trxPeriod]);
+
+    if (result.isNotEmpty) {
+      final remainingLoan = (result.first["remainingLoan"] as num).toDouble();
+      return remainingLoan;
+    }
+
+    return 0.0; // Default value if no result
+  }
 }

@@ -14,6 +14,7 @@ class PdfApi {
       List<MemberTransactionDetails> memberData,
       String memberName,
       String groupName,
+      double remainingLoan,
       BuildContext context) async {
     // Create the Font object
     final rfont = await FontLoaders.loadFont(
@@ -34,7 +35,7 @@ class PdfApi {
     final pdf = pw.Document(
       theme: myTheme,
     );
-    var local = AppLocal.of(context as BuildContext);
+    var local = AppLocal.of(context);
     // var previouRemainigLoan = 0.0;
     final headers2 = [
       local.lmonth,
@@ -71,11 +72,15 @@ class PdfApi {
 
     final data = memberData.asMap().entries.map(
       (entry) {
-        final previousRemainingLoan =
-            entry.key > 0 ? memberData[entry.key - 1].remainingLoan : 0;
-        final paidLoan = entry.value.paidLoan ?? 0;
-        final remainingLoan =
-            entry.value.loanTaken! + previousRemainingLoan! - paidLoan;
+        // final previousRemainingLoan =
+        //     entry.key > 0 ? memberData[entry.key - 1].remainingLoan : 0;
+        // final paidLoan = entry.value.paidLoan ?? 0;
+        final currentRemainingLoan = (remainingLoan -
+            memberData[entry.key].paidLoan!.toDouble() +
+            memberData[entry.key].loanTaken!);
+        remainingLoan = currentRemainingLoan;
+        // final remainingLoan =
+        //     entry.value.loanTaken! + previousRemainingLoan! - paidLoan;
 
         return [
           entry.value.trxPeriod ?? '0.0',
@@ -86,7 +91,7 @@ class PdfApi {
           entry.value.paidOtherAmount?.toString() ?? '',
           totalPaid[entry.key].toString(),
           entry.value.loanTaken?.toString() ?? '0.0',
-          remainingLoan.toString(),
+          currentRemainingLoan.toString(),
 
           // Add totalPaid for each member
         ];
@@ -122,13 +127,13 @@ class PdfApi {
                 ),
                 data: data,
                 cellAlignment: pw.Alignment.centerLeft,
-                cellStyle: pw.TextStyle(fontSize: 10),
+                cellStyle: const pw.TextStyle(fontSize: 10),
                 // Setting equal width for each column
                 columnWidths: {
                   for (int columnIndex = 0;
                       columnIndex < headers2.length;
                       columnIndex++)
-                    columnIndex: pw.FixedColumnWidth(
+                    columnIndex: const pw.FixedColumnWidth(
                         40.0), // Adjust the width as per your requirement
                 },
               ),

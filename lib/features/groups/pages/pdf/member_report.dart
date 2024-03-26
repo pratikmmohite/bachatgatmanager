@@ -23,7 +23,7 @@ class _MemberReportState extends State<MemberReport> {
   late String selectedMemberName;
   late DateTime _startDate = DateTime.now();
   late DateTime _endDate = DateTime.now();
-
+  // late double remainingLoan = 0.0;
   late String str = '';
   late String end = '';
   String _formattDate(DateTime date) {
@@ -141,11 +141,17 @@ class _MemberReportState extends State<MemberReport> {
                           _group.id,
                           _formattDate(_startDate),
                           _formattDate(_endDate));
+                      final remainingLoan = await dao.getRemainingLoan(
+                          _group.id,
+                          selectedMemberId,
+                          _formattDate(_startDate));
+
                       if (data.isNotEmpty) {
                         var bytes = await PdfApi.generateTable(
                             data,
                             selectedMemberName,
                             _group.name.toString(),
+                            remainingLoan,
                             context);
                         await PdfApi.saveAsPDF(selectedMemberName, bytes);
                       } else {
@@ -171,16 +177,26 @@ class _MemberReportState extends State<MemberReport> {
                     icon: const Icon(Icons.download),
                     onPressed: () async {
                       final dao = GroupsDao();
-                      final data = await dao.getMemberDetailsByMemberId(
-                          selectedMemberId,
+                      final List<MemberTransactionDetails> data =
+                          await dao.getMemberDetailsByMemberId(
+                              selectedMemberId,
+                              _group.id,
+                              _formattDate(_startDate),
+                              _formattDate(_endDate));
+                      final remainingLoan = await dao.getRemainingLoan(
                           _group.id,
-                          _formattDate(_startDate),
-                          _formattDate(_endDate));
+                          selectedMemberId,
+                          _formattDate(_startDate));
+
+                      print(remainingLoan);
+                      //print(data);
+
                       if (data.isNotEmpty) {
                         var bytes = await PdfApi.generateTable(
                             data,
                             selectedMemberName,
                             _group.name.toString(),
+                            remainingLoan,
                             context);
                         await PdfApi.previewPDF(bytes);
                       } else {
