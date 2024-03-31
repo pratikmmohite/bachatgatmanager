@@ -21,14 +21,23 @@ class _MemberReportState extends State<MemberReport> {
   late String selectedMemberId;
   late List<MemberTransactionDetails> memberData;
   late String selectedMemberName;
-  late DateTime _startDate = DateTime.now();
-  late DateTime _endDate = DateTime.now();
+  DateTime _startDate = DateTime.now();
+  DateTime _endDate = DateTime.now();
+  DateTimeRange dtchnage =
+      DateTimeRange(start: DateTime.now(), end: DateTime.now());
   // late double remainingLoan = 0.0;
   late String str = '';
   late String end = '';
   String _formattDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}";
   }
+
+  String formatDt(DateTime dt) {
+    return dt.toString().split(" ")[0];
+  }
+
+  late TextEditingController _textController = TextEditingController(
+      text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
 
   @override
   void initState() {
@@ -41,6 +50,8 @@ class _MemberReportState extends State<MemberReport> {
     _endDate = DateTime.now();
     str = 'Jan-1';
     end = 'Jan-1';
+    _textController = TextEditingController(
+        text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
   }
 
   @override
@@ -63,6 +74,7 @@ class _MemberReportState extends State<MemberReport> {
                   color: Colors.black,
                   width: 0.5,
                 ),
+                color: Colors.blueGrey.shade50,
                 borderRadius: BorderRadius.circular(05),
               ),
               child: DropdownButton<String>(
@@ -94,38 +106,70 @@ class _MemberReportState extends State<MemberReport> {
             ),
             const SizedBox(height: 15),
             // Date Pickers for Start and End Dates
-            Row(
-              children: [
-                // Date Range Picker
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.date_range),
-                    onPressed: () async {
-                      final DateTimeRange? picked = await showDateRangePicker(
-                        context: context,
-                        initialDateRange: DateTimeRange(
-                          start: _startDate,
-                          end: _endDate,
-                        ),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                        initialEntryMode: DatePickerEntryMode.input,
-                      );
-
-                      if (picked != null) {
-                        setState(() {
-                          _startDate = picked.start;
-                          _endDate = picked.end;
-                          str = local.getHumanTrxPeriod(_startDate);
-                          end = local.getHumanTrxPeriod(_endDate);
-                        });
-                      }
-                    },
-                    label: Text(
-                        str == end ? "Select Date Range" : '${str} to ${end}'),
-                  ),
+            // Row(
+            //   children: [
+            //     // Date Range Picker
+            //     Expanded(
+            //       child: ElevatedButton.icon(
+            //         icon: const Icon(Icons.date_range),
+            //         onPressed: () async {
+            //           final DateTimeRange? picked = await showDateRangePicker(
+            //             context: context,
+            //             initialDateRange: DateTimeRange(
+            //               start: _startDate,
+            //               end: _endDate,
+            //             ),
+            //             firstDate: DateTime(2000),
+            //             lastDate: DateTime(2101),
+            //             initialEntryMode: DatePickerEntryMode.input,
+            //           );
+            //
+            //           if (picked != null) {
+            //             setState(() {
+            //               _startDate = picked.start;
+            //               _endDate = picked.end;
+            //               str = local.getHumanTrxPeriod(_startDate);
+            //               end = local.getHumanTrxPeriod(_endDate);
+            //             });
+            //           }
+            //         },
+            //         label: Text(
+            //             "${_startDate.day}/${_startDate.month}/${_startDate.year} to ${_endDate.day}/${_endDate.month}/${_endDate.year} "),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            Container(
+              margin: const EdgeInsets.all(2),
+              child: TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "Select Date (YYYY-MM-DD) to (YYYY-MM-DD)",
+                  hintText: "Enter ${local.tfStartDate}",
+                  filled: true,
                 ),
-              ],
+                controller: _textController,
+                onTap: () async {
+                  var dt = DateTimeRange(start: _startDate, end: _endDate);
+                  DateTimeRange? selectedRange = await showDateRangePicker(
+                    context: context,
+                    initialDateRange: dt,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2099),
+                  );
+                  if (selectedRange != null) {
+                    setState(() {
+                      _startDate = selectedRange.start;
+                      _endDate = selectedRange.end;
+                      str = local.getHumanTrxPeriod(_startDate);
+                      end = local.getHumanTrxPeriod(_endDate);
+                      _textController.text =
+                          "${formatDt(selectedRange.start)} to ${formatDt(selectedRange.end)}";
+                      dtchnage = selectedRange;
+                    });
+                  }
+                },
+              ),
             ),
             const SizedBox(height: 15),
             // Download Button
@@ -188,7 +232,7 @@ class _MemberReportState extends State<MemberReport> {
                           selectedMemberId,
                           _formattDate(_startDate));
 
-                      print(remainingLoan);
+                      // print(remainingLoan);
                       //print(data);
 
                       if (data.isNotEmpty) {

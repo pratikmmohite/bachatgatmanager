@@ -70,7 +70,7 @@ abstract class AppLocalization {
     "lDeposit": "Total Deposit (+)",
     "ltShares": "Total Shares (+)",
     "ltBankBalance": "Total Bank Balance",
-    "ltExpenditures": "Total Expenditures",
+    "ltExpenditures": "Other Expenditures",
     "ltOther": "Other Deposit(+)",
     "ltGathered": "Total Gathered",
     "lPrm": "Previous Remaining Balance",

@@ -29,19 +29,33 @@ class _MonthlyReportState extends State<MonthlyReport> {
     peviousRemainigBalance: 0.0,
   );
   // double previousRemaining = 0.0;
-
+  String str = "";
+  String end = "";
   late String trxPeriod;
   late String selectYear;
   // late double paidLoan = 0.0;
   late double monthlydeposit = 0.0;
+
+  DateTime _startDate = DateTime.now();
+  String formatDt(DateTime dt) {
+    return dt.toString().split(" ")[0];
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}";
+  }
+
+  late GroupsDao dao;
+  late TextEditingController _textController =
+      TextEditingController(text: "${formatDt(_startDate)}");
   @override
   void initState() {
     super.initState();
     _group = widget.group;
     // previousRemaining = 0.0;
+    dao = GroupsDao();
     selectYear = '';
     totalBankBalance = '0.0';
-
     balanceSummary = MonthlyBalanceSummary(
       totalDeposit: 0.0,
       totalShares: 0.0,
@@ -54,6 +68,11 @@ class _MonthlyReportState extends State<MonthlyReport> {
       givenLoan: 0.0,
       peviousRemainigBalance: 0.0,
     );
+    trxPeriod = _formatDate(_startDate);
+    // balanceSummary = dao.getMonthlySummary(
+    //   _group.id.toString(),
+    //   _formatDate(_startDate),
+    // ) as MonthlyBalanceSummary;
     // paidLoan = 0.0;
   }
 
@@ -68,47 +87,89 @@ class _MonthlyReportState extends State<MonthlyReport> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.calendar_today),
-                      onPressed: () async {
-                        var local = AppLocal.of(context);
-                        final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime(
-                                DateTime.now().year, DateTime.now().month, 1),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2101),
-                            initialDatePickerMode: DatePickerMode.year,
-                            initialEntryMode: DatePickerEntryMode.calendar);
-                        if (picked != null) {
-                          setState(() {
-                            trxPeriod = '${picked.year}-${picked.month}';
-                            selectYear = local.getHumanTrxPeriod(picked);
-                            selectedDate = true;
-                            trxPeriod =
-                                '${picked.year}-${picked.month.toString().padLeft(2, '0')}';
-                          });
-                        }
-                      },
-                      label: Text(
-                          !selectedDate ? "Select Date Range" : selectYear),
-                    ),
-                  ),
-                ],
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: ElevatedButton.icon(
+            //           icon: const Icon(Icons.calendar_today),
+            //           onPressed: () async {
+            //             var local = AppLocal.of(context);
+            //             final DateTime? picked = await showDatePicker(
+            //                 context: context,
+            //                 initialDate: DateTime(
+            //                     DateTime.now().year, DateTime.now().month, 1),
+            //                 firstDate: DateTime(2000),
+            //                 lastDate: DateTime(2101),
+            //                 initialDatePickerMode: DatePickerMode.year,
+            //                 initialEntryMode: DatePickerEntryMode.calendar);
+            //             if (picked != null) {
+            //               setState(() {
+            //                 // trxPeriod = '${picked.year}-${picked.month}';
+            //                 selectYear = local.getHumanTrxPeriod(picked);
+            //                 selectedDate = true;
+            //                 trxPeriod =
+            //                     '${picked.year}-${picked.month.toString().padLeft(2, '0')}';
+            //               });
+            //             }
+            //           },
+            //           label: Text(
+            //               !selectedDate ? "Select Date Range" : selectYear),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            Container(
+              margin: const EdgeInsets.all(4),
+              // padding: EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color.fromRGBO(0, 0, 0, 0.5),
+                ),
               ),
+
+              child: TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "Select Date (YYYY-MM-DD)",
+                  hintText: "Enter ${local.tfStartDate}",
+                  filled: true,
+                ),
+                controller: _textController,
+                onTap: () async {
+                  DateTime? selectedRange = await showDatePicker(
+                    context: context,
+                    initialDate: _startDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2099),
+                    initialEntryMode: DatePickerEntryMode.input,
+                  );
+                  if (selectedRange != null) {
+                    setState(() {
+                      _startDate = selectedRange;
+                      trxPeriod = _formatDate(_startDate);
+                      str = local.getHumanTrxPeriod(_startDate);
+                      _textController.text = "${formatDt(selectedRange)}";
+                    });
+                  }
+                },
+              ),
+            ),
+            const SizedBox(
+              height: 15,
             ),
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.summarize),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll<Color>(
+                          Colors.blueGrey.shade50),
+                    ),
                     onPressed: () async {
-                      final dao = GroupsDao();
                       String date = trxPeriod;
 
                       totalBankBalance =
@@ -152,6 +213,9 @@ class _MonthlyReportState extends State<MonthlyReport> {
                 ),
               ],
             ),
+            const SizedBox(
+              height: 15,
+            ),
             Visibility(
               visible: true,
               child: Container(
@@ -184,7 +248,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     ),
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 13, // Number of rows
+                      itemCount: 14, // Number of rows
                       itemBuilder: (BuildContext context, int index) {
                         String label = '';
                         String value = '';
@@ -254,7 +318,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             break;
                           case 10:
                             label = local.ltExpenditures;
-                            value = balanceSummary.totalExpenditures.toString();
+                            value = balanceSummary.totalExpenditures
+                                .toStringAsFixed(2);
                             break;
                           case 11:
                             label = local.ltdr;
@@ -268,6 +333,13 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                     balanceSummary.peviousRemainigBalance -
                                     balanceSummary.givenLoan -
                                     balanceSummary.totalExpenditures)
+                                .toStringAsFixed(2);
+                          case 13:
+                            label = local.lTotal;
+                            value = (monthlydeposit +
+                                    balanceSummary.givenLoan +
+                                    balanceSummary.totalExpenditures +
+                                    balanceSummary.peviousRemainigBalance)
                                 .toStringAsFixed(2);
                         }
 

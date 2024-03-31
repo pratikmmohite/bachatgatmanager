@@ -23,11 +23,18 @@ class _YearlyReportState extends State<YearlyReport> {
   late GroupBalanceSummary balanceSummary;
   String str = '';
   String end = '';
+  DateTimeRange dtchange =
+      DateTimeRange(start: DateTime.now(), end: DateTime.now());
   late String previousRemaining;
   String _formattDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}";
   }
 
+  String formatDt(DateTime dt) {
+    return dt.toString().split(" ")[0];
+  }
+
+  late TextEditingController _textController;
   @override
   void initState() {
     super.initState();
@@ -47,6 +54,8 @@ class _YearlyReportState extends State<YearlyReport> {
       previousRemaining: 0.0,
       givenLoan: 0.0,
     );
+    _textController = TextEditingController(
+        text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
   }
 
   @override
@@ -63,38 +72,73 @@ class _YearlyReportState extends State<YearlyReport> {
           children: [
             const SizedBox(height: 15),
             // Date Pickers for Start and End Dates
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.date_range),
-                    onPressed: () async {
-                      var local = AppLocal.of(context);
-                      final DateTimeRange? picked = await showDateRangePicker(
-                        context: context,
-                        initialDateRange: DateTimeRange(
-                          start: _startDate,
-                          end: _endDate,
-                        ),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                        initialEntryMode: DatePickerEntryMode.input,
-                      );
-
-                      if (picked != null) {
-                        setState(() {
-                          _startDate = picked.start;
-                          _endDate = picked.end;
-                          str = local.getHumanTrxPeriod(_startDate);
-                          end = local.getHumanTrxPeriod(_endDate);
-                        });
-                      }
-                    },
-                    label:
-                        Text(str == end ? "Select Date Range" : '$str to $end'),
-                  ),
-                )
-              ],
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: ElevatedButton.icon(
+            //         icon: const Icon(Icons.date_range),
+            //         onPressed: () async {
+            //           var local = AppLocal.of(context);
+            //           final DateTimeRange? picked = await showDateRangePicker(
+            //             context: context,
+            //             initialDateRange: DateTimeRange(
+            //               start: _startDate,
+            //               end: _endDate,
+            //             ),
+            //             firstDate: DateTime(2000),
+            //             lastDate: DateTime(2101),
+            //             initialEntryMode: DatePickerEntryMode.input,
+            //           );
+            //
+            //           if (picked != null) {
+            //             setState(() {
+            //               _startDate = picked.start;
+            //               _endDate = picked.end;
+            //               str = local.getHumanTrxPeriod(_startDate);
+            //               end = local.getHumanTrxPeriod(_endDate);
+            //             });
+            //           }
+            //         },
+            //         label:
+            //             Text(str == end ? "Select Date Range" : '$str to $end'),
+            //       ),
+            //     )
+            //   ],
+            // ),
+            Container(
+              margin: const EdgeInsets.all(2),
+              child: TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "Select Date (YYYY-MM-DD) to (YYYY-MM-DD)",
+                  hintText: "Enter ${local.tfStartDate}",
+                  filled: true,
+                ),
+                controller: _textController,
+                onTap: () async {
+                  var dt = DateTimeRange(start: _startDate, end: _endDate);
+                  DateTimeRange? selectedRange = await showDateRangePicker(
+                    context: context,
+                    initialDateRange: dt,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2099),
+                    initialEntryMode: DatePickerEntryMode.input,
+                  );
+                  if (selectedRange != null) {
+                    setState(
+                      () {
+                        _startDate = selectedRange.start;
+                        _endDate = selectedRange.end;
+                        str = local.getHumanTrxPeriod(_startDate);
+                        end = local.getHumanTrxPeriod(_endDate);
+                        _textController.text =
+                            "${formatDt(selectedRange.start)} to ${formatDt(selectedRange.end)}";
+                        dtchange = selectedRange;
+                      },
+                    );
+                  }
+                },
+              ),
             ),
             const SizedBox(height: 15),
             // Download Button
@@ -110,7 +154,7 @@ class _YearlyReportState extends State<YearlyReport> {
                           _formattDate(_startDate),
                           _formattDate(_endDate));
                     },
-                    label: const Text('Download Excel File'),
+                    label: const Text('Download Excel'),
                   ),
                 ),
                 Expanded(
@@ -150,15 +194,16 @@ class _YearlyReportState extends State<YearlyReport> {
                         );
                       }
                     },
-                    label: Text(
-                        isVisible == false ? 'Fetch Summary' : 'Close Summary'),
+                    label: Text(isVisible == false
+                        ? 'Fetch Summary'
+                        : 'Refresh Summary'),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
             Visibility(
-              visible: isVisible,
+              visible: true,
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
