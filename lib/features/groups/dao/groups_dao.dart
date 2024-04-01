@@ -146,7 +146,8 @@ class GroupsDao {
     String updateQuery = "update loans set "
         "paidLoanAmount = paidLoanAmount + ?, "
         "paidInterestAmount = paidInterestAmount + ?, "
-        "status = iif(paidLoanAmount >= loanAmount, '${AppConstants.lsComplete}', '${AppConstants.lsActive}') "
+        "status=case when paidLoanAmount>=loanAmount then ${AppConstants.lsComplete} else ${AppConstants.lsActive} end"
+        // "status = iif(paidLoanAmount >= loanAmount, '${AppConstants.lsComplete}', '${AppConstants.lsActive}') "
         "where id = ?";
     var row = await dbService.write(
       updateQuery,
@@ -333,8 +334,9 @@ class GroupsDao {
         "count(1) as memberCount "
         "from $memberTableName m "
         "where m.groupId = ? ";
+//sum(trx.cr + iif(trx.trxType = '${AppConstants.ttExpenditures}', -1, 1) * trx.dr) as totalSaving
     String totalGroupAmountQuery = "select "
-        "sum(trx.cr + iif(trx.trxType = '${AppConstants.ttExpenditures}', -1, 1) * trx.dr) as totalSaving "
+        "SUM(trx.cr +CASE WHEN trx.trxType = '${AppConstants.ttExpenditures}' THEN -1 * trx.dr ELSE trx.dr END) AS totalSaving "
         "from $transactionTableName trx "
         "where trx.groupId = ? "
         "and (trx.trxType in ${AppConstants.dbCreditFilter} "

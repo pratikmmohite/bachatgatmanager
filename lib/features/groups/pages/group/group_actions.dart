@@ -120,7 +120,6 @@ class _GroupActionsState extends State<GroupActions> {
                   ? const CircularProgressIndicator()
                   : ListTile(title: buildSummary()),
             ),
-            const Divider(),
             Card(
               child: ListTile(
                 title: Text(local.lgRecord),
