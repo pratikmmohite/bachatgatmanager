@@ -1,5 +1,6 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/models/models_index.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -54,7 +55,9 @@ class PdfApi {
   static Future<Uint8List> generateTable(
       List<List<MemberTransactionDetails>> memberData,
       List<String> memberName,
-      String groupName) async {
+      String groupName,
+      double remainingLoan,
+      BuildContext context) async {
     // Create the Font object
     final rfont = await FontLoaders.loadFont(
         'assets/fonts/NotoSansDevanagari-Regular.ttf');
