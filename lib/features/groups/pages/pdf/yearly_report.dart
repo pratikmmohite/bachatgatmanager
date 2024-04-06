@@ -23,6 +23,7 @@ class _YearlyReportState extends State<YearlyReport> {
   late GroupBalanceSummary balanceSummary;
   String str = '';
   String end = '';
+  double bankBalance = 0.0;
   DateTimeRange dtchange =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
   late String previousRemaining;
@@ -310,23 +311,30 @@ class _YearlyReportState extends State<YearlyReport> {
                               value = balanceSummary.expenditures
                                   .toStringAsFixed(2);
                             case 9:
-                              label = local.lRmLoan;
-                              value = balanceSummary.remainingLoan
-                                  .toStringAsFixed(2);
-                            case 10:
-                              label = local.ltBankBalance;
-                              value = balanceSummary.expenditures.toString();
-                              break;
-                            case 11:
                               label = local.lGivenLoan;
                               value =
                                   balanceSummary.givenLoan.toStringAsFixed(2);
                               break;
-                            case 12:
-                              label = local.lcrdr;
+
+                            case 10:
+                              label = local.ltBankBalance;
                               value = (totalcredit -
                                       balanceSummary.givenLoan -
                                       balanceSummary.expenditures)
+                                  .toStringAsFixed(2);
+                              bankBalance = totalcredit -
+                                  balanceSummary.givenLoan -
+                                  balanceSummary.expenditures;
+                              break;
+                            case 11:
+                              label = local.lRmLoan;
+                              value = balanceSummary.remainingLoan
+                                  .toStringAsFixed(2);
+                            case 12:
+                              label = local.lcrdr;
+                              value = (balanceSummary.expenditures +
+                                      bankBalance +
+                                      balanceSummary.givenLoan)
                                   .toStringAsFixed(2);
                               break;
                           }

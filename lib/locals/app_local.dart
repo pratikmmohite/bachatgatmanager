@@ -98,7 +98,7 @@ abstract class AppLocalization {
     "ladd": "Added On",
     "lmcr": "Monthly credit",
     "lcb": " Monthly Closing balance",
-    "lcrdr": "Total Credit+ Bank Balance"
+    "lcrdr": "Total"
   };
   List<String> get months => [
         "Jan",
@@ -339,7 +339,7 @@ class MrAppLocalization extends AppLocalization {
         "ladd": "दिनांक",
         "lmcr": "मासिक जमा",
         "lcb": "चालू महिन्यातील शिल्लक",
-        "lcrdr": "एकूण खर्च+शिल्लक",
+        "lcrdr": "एकूण ",
       };
 
   @override
