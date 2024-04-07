@@ -441,9 +441,9 @@ GROUP BY
     return 0.0; // Default value if no result
   }
 
-  Future<String> getExpenditures(String groupId, String trxPeriod) async {
+  Future<double> getExpenditures(String groupId, String trxPeriod) async {
     var query =
-        """SELECT IFNULL(SUM(case when t.trxType='Expenditures' then t.dr else 0 end), 0) AS Expenditures
+        """SELECT SUM(case when t.trxType='Expenditures' then t.dr else 0.0 end) AS Expenditures
     FROM transactions t
     WHERE t.groupId = ?
     AND t.trxPeriod < ?;
@@ -452,11 +452,11 @@ GROUP BY
     var result = await dbService.read(query, [groupId, trxPeriod]);
 
     if (result.isNotEmpty) {
-      final expenditures = result.first["Expenditures"];
-      return expenditures.toString();
+      final expenditures = (result.first["Expenditures"] as num?)?.toDouble();
+      return expenditures!;
     }
 
-    return "0"; // Default value if no result
+    return 0.0; // Default value if no result
   }
 
   Future<String> getBankBalanceTillToday(
@@ -477,7 +477,7 @@ GROUP BY
     return "0.0"; // Default value if no result
   }
 
-  Future<String> getBankDepositInterest(
+  Future<double> getBankDepositInterest(
       String groupId, String trxPeriod) async {
     var query =
         """SELECT IFNULL(SUM(t.trxType='BankInterest'), 0) AS BankInterest
@@ -489,11 +489,11 @@ GROUP BY
     var result = await dbService.read(query, [groupId, trxPeriod]);
 
     if (result.isNotEmpty) {
-      final bankInterest = result.first["BankInterest"];
-      return bankInterest.toString();
+      final bankInterest = (result.first["BankInterest"] as num?)?.toDouble();
+      return bankInterest!;
     }
 
-    return "0.0"; // Default value if no result
+    return 0.00; // Default value if no result
   }
 
   Future<List<MemberTransactionSummary>> getYearlySummary(

@@ -111,7 +111,7 @@ class _PdfReportsState extends State<PdfReports> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ));
   }

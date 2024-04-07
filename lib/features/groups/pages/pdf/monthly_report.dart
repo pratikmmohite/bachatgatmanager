@@ -231,6 +231,11 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                   ],
                                 ),
                               ),
+                              const Divider(
+                                color: Colors.black54,
+                                indent: 10.0,
+                                endIndent: 10.0,
+                              ),
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8.0),
@@ -352,7 +357,11 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const Divider(
+                                color: Colors.black,
+                                indent: 10.0,
+                                endIndent: 10.0,
+                              ),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Colors.yellowAccent,
@@ -367,7 +376,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                     children: [
                                       Text(
                                         local.ltcr,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.red,
                                         ),
@@ -375,7 +384,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                       Text(
                                         monthlySummary.totalCredit
                                             .toStringAsFixed(2),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.red,
                                         ),
@@ -384,7 +393,12 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const Divider(
+                                color: Colors.black,
+                                indent: 10.0,
+                                endIndent: 10.0,
+                                thickness: 4.0,
+                              ),
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8.0),
@@ -446,7 +460,12 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 10.0),
+                              const Divider(
+                                color: Colors.black,
+                                indent: 10.0,
+                                endIndent: 10.0,
+                                thickness: 4.0,
+                              ),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Colors.yellowAccent,
@@ -466,6 +485,12 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                           color: Colors.red,
                                         ),
                                       ),
+                                      const Divider(
+                                        color: Colors.black,
+                                        indent: 10.0,
+                                        endIndent: 10.0,
+                                        thickness: 4.0,
+                                      ),
                                       Text(
                                         monthlySummary.monthlyClosingBalance
                                             .toStringAsFixed(2),
@@ -478,8 +503,11 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 10.0,
+                              const Divider(
+                                color: Colors.black,
+                                indent: 10.0,
+                                endIndent: 10.0,
+                                thickness: 4.0,
                               ),
                               Container(
                                 decoration: BoxDecoration(
@@ -511,6 +539,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 10.0),
                             ],
                           ),
                         ),

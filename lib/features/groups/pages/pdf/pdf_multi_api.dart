@@ -20,38 +20,6 @@ class PdfApi {
     'Others',
     'Total Paid'
   ];
-  static pw.Page page(String groupName, String memberName, dynamic data) {
-    return pw.Page(
-      build: (context) {
-        return pw.Column(
-          children: [
-            pw.Text(groupName,
-                style: pw.TextStyle(
-                  fontSize: 20,
-                  fontWeight: pw.FontWeight.bold,
-                )),
-            pw.SizedBox(height: 20),
-            pw.Column(
-              children: [
-                pw.Text("Member Name: $memberName",
-                    style: pw.TextStyle(
-                      fontSize: 15,
-                      fontWeight: pw.FontWeight.normal,
-                      fontStyle: pw.FontStyle.normal,
-                    ))
-              ],
-            ),
-            pw.SizedBox(height: 15),
-            pw.TableHelper.fromTextArray(
-              headers: headers,
-              data: data,
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   static Future<Uint8List> generateTable(
       List<List<MemberTransactionDetails>> memberData,
       List<String> memberName,
@@ -77,18 +45,8 @@ class PdfApi {
     final pdf = pw.Document(
       theme: myTheme,
     );
-    // final headers = [
-    //   'Month',
-    //   'Paid Shares',
-    //   'Loan Taken',
-    //   'Paid Interest',
-    //   'Paid Loan',
-    //   'Remaining Loan',
-    //   'Late Fee',
-    //   'Others',
-    //   'Total Paid'
-    // ];
-    List<pw.Widget> datal = [];
+    var data1;
+    List<pw.Page> datal = [];
     List<double> totalPaid = [];
     int i = 0;
     for (var member in memberData) {
@@ -116,30 +74,78 @@ class PdfApi {
                     .toString(), // Add totalPaid for each member
               ])
           .toList();
-      datal.add(page(groupName, memberName[i], data) as pw.Widget);
+      data1 = data;
+      datal.add(pw.Page(build: (context) {
+        return pw.Column(
+          children: [
+            pw.Text(groupName,
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                )),
+            pw.SizedBox(height: 20),
+            pw.Column(
+              children: [
+                pw.Text("Member Name: ${memberName[i]}",
+                    style: pw.TextStyle(
+                      fontSize: 15,
+                      fontWeight: pw.FontWeight.normal,
+                      fontStyle: pw.FontStyle.normal,
+                    ))
+              ],
+            ),
+            pw.SizedBox(height: 15),
+            pw.TableHelper.fromTextArray(
+              headers: headers,
+              data: data,
+            ),
+          ],
+        );
+      }));
       i += 1;
     }
 
-    // final data = memberData
-    //     .asMap()
-    //     .entries
-    //     .map((entry) => [
-    //           entry.value.trxPeriod ?? '',
-    //           entry.value.paidShares?.toString() ?? '',
-    //           entry.value.loanTaken?.toString() ?? '',
-    //           entry.value.paidInterest?.toString() ?? '',
-    //           entry.value.paidLoan?.toString() ?? '',
-    //           entry.value.remainingLoan?.toString() ?? '',
-    //           entry.value.paidLateFee?.toString() ?? '',
-    //           entry.value.paidOtherAmount?.toString() ?? '',
-    //           totalPaid[entry.key].toString(), // Add totalPaid for each member
-    //         ])
-    //     .toList();
-
     pdf.addPage(
-      pw.MultiPage(
+      pw.Page(
         build: (context) {
-          return datal;
+          return pw.Column(
+            children: [
+              pw.Text(groupName,
+                  style: pw.TextStyle(
+                    fontSize: 20,
+                    fontWeight: pw.FontWeight.bold,
+                  )),
+              pw.SizedBox(height: 20),
+              pw.Column(
+                children: [
+                  pw.Text("Member Name: $memberName",
+                      style: pw.TextStyle(
+                        fontSize: 15,
+                        fontWeight: pw.FontWeight.normal,
+                        fontStyle: pw.FontStyle.normal,
+                      ))
+                ],
+              ),
+              pw.SizedBox(height: 15),
+              pw.TableHelper.fromTextArray(
+                headers: headers,
+                headerStyle: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                ),
+                data: data1,
+                cellAlignment: pw.Alignment.centerLeft,
+                cellStyle: const pw.TextStyle(fontSize: 10),
+                // Setting equal width for each column
+                columnWidths: {
+                  for (int columnIndex = 0;
+                      columnIndex < headers.length;
+                      columnIndex++)
+                    columnIndex: const pw.FixedColumnWidth(
+                        40.0), // Adjust the width as per your requirement
+                },
+              ),
+            ],
+          );
         },
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
@@ -74,43 +76,7 @@ class _MultiMemberReportState extends State<MultiMemberReport> {
             children: [
               // Dropdown for Member List
               const Divider(color: Colors.black),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 0.5,
-                  ),
-                  color: Colors.blueGrey.shade50,
-                  borderRadius: BorderRadius.circular(05),
-                ),
-                child: DropdownButton<String>(
-                  menuMaxHeight: 300,
-                  hint: const Text("Select Member"),
-                  icon: const Icon(Icons.group),
-                  iconSize: 20,
-                  isExpanded: true,
-                  value: selectedMemberId,
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedMemberId = newValue!;
-                      selectedMemberName = _members
-                          .firstWhere((member) => member.id == newValue)
-                          .name;
-                    });
-                  },
-                  items: _members.map((valueItem) {
-                    return DropdownMenuItem<String>(
-                      value: valueItem.id,
-                      child: Text(
-                        valueItem.name,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.normal, fontSize: 15),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
+
               const SizedBox(height: 15),
               Container(
                 margin: const EdgeInsets.all(2),
@@ -153,7 +119,7 @@ class _MultiMemberReportState extends State<MultiMemberReport> {
                       icon: const Icon(Icons.download),
                       onPressed: () async {
                         final dao = GroupsDao();
-                        List<List<MemberTransactionDetails>>? datal;
+                        List<List<MemberTransactionDetails>> datal = [];
                         for (var member in _members) {
                           final data = await dao.getMemberDetailsByMemberId(
                               selectedMemberId,
@@ -161,7 +127,7 @@ class _MultiMemberReportState extends State<MultiMemberReport> {
                               _formattDate(_startDate),
                               _formattDate(_endDate));
 
-                          datal!.add(data);
+                          datal.add(data);
                         }
 
                         final remainingLoan = await dao.getRemainingLoan(
@@ -170,13 +136,10 @@ class _MultiMemberReportState extends State<MultiMemberReport> {
                             _formattDate(_startDate));
 
                         if (datal!.isNotEmpty) {
-                          var bytes = await PdfApi.generateTable(
-                              datal,
-                              memberNames,
-                              _group.name.toString(),
-                              remainingLoan,
-                              context);
-                          await PdfApi.saveAsPDF(selectedMemberName, bytes);
+                          var bytes = PdfApi.generateTable(datal, memberNames,
+                              _group.name.toString(), remainingLoan, context);
+                          await PdfApi.saveAsPDF(
+                              selectedMemberName, bytes as Uint8List);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

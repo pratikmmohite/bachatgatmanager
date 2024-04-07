@@ -25,9 +25,7 @@ class _MemberReportState extends State<MemberReport> {
   DateTime _endDate = DateTime.now();
   DateTimeRange dtchnage =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
-  // late double remainingLoan = 0.0;
-  late String str = '';
-  late String end = '';
+
   String _formattDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}";
   }
@@ -48,8 +46,7 @@ class _MemberReportState extends State<MemberReport> {
     selectedMemberName = _members.isEmpty ? " " : _members[0].name;
     _startDate = DateTime.now();
     _endDate = DateTime.now();
-    str = 'Jan-1';
-    end = 'Jan-1';
+
     _textController = TextEditingController(
         text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
   }
@@ -107,40 +104,6 @@ class _MemberReportState extends State<MemberReport> {
                 ),
               ),
               const SizedBox(height: 15),
-              // Date Pickers for Start and End Dates
-              // Row(
-              //   children: [
-              //     // Date Range Picker
-              //     Expanded(
-              //       child: ElevatedButton.icon(
-              //         icon: const Icon(Icons.date_range),
-              //         onPressed: () async {
-              //           final DateTimeRange? picked = await showDateRangePicker(
-              //             context: context,
-              //             initialDateRange: DateTimeRange(
-              //               start: _startDate,
-              //               end: _endDate,
-              //             ),
-              //             firstDate: DateTime(2000),
-              //             lastDate: DateTime(2101),
-              //             initialEntryMode: DatePickerEntryMode.input,
-              //           );
-              //
-              //           if (picked != null) {
-              //             setState(() {
-              //               _startDate = picked.start;
-              //               _endDate = picked.end;
-              //               str = local.getHumanTrxPeriod(_startDate);
-              //               end = local.getHumanTrxPeriod(_endDate);
-              //             });
-              //           }
-              //         },
-              //         label: Text(
-              //             "${_startDate.day}/${_startDate.month}/${_startDate.year} to ${_endDate.day}/${_endDate.month}/${_endDate.year} "),
-              //       ),
-              //     ),
-              //   ],
-              // ),
               Container(
                 margin: const EdgeInsets.all(2),
                 child: TextFormField(
@@ -163,8 +126,6 @@ class _MemberReportState extends State<MemberReport> {
                       setState(() {
                         _startDate = selectedRange.start;
                         _endDate = selectedRange.end;
-                        str = local.getHumanTrxPeriod(_startDate);
-                        end = local.getHumanTrxPeriod(_endDate);
                         _textController.text =
                             "${formatDt(selectedRange.start)} to ${formatDt(selectedRange.end)}";
                         dtchnage = selectedRange;
