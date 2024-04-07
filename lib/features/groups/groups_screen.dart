@@ -45,8 +45,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.import_export),
-            onPressed: () {
-              AppUtils.navigateTo(context, const ImportExportPage());
+            onPressed: () async {
+              await AppUtils.navigateTo(context, const ImportExportPage());
+              refreshGroupList();
             },
           )
         ],
