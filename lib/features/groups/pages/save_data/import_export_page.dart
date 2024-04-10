@@ -42,6 +42,7 @@ class _ImportExportPageState extends State<ImportExportPage> {
         newFile.copySync(oldDbFile);
         AppUtils.toast(context, "Coppied new file");
         dbService.initDb();
+        AppUtils.close(context);
       }
     } catch (e) {
       AppUtils.toast(context, e.toString());
