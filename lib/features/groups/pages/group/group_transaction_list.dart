@@ -43,7 +43,7 @@ class _GroupTransactionListState extends State<GroupTransactionList> {
     totalDr = 0;
     for (var trx in transactions) {
       totalCr += trx.cr;
-      totalDr += trx.cr;
+      totalDr += trx.dr;
     }
   }
 

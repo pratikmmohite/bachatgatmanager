@@ -356,20 +356,21 @@ class GroupsDao {
     return total;
   }
 
-  Future<double> getCurrentMonthBalance(GroupTotalFilter filter) async {
+  Future<double?> getCurrentMonthBalance(GroupTotalFilter filter) async {
     DateTime currentMonth = DateTime.now();
-    String date = '${currentMonth.year}-${currentMonth.month}';
+
+    String date = AppUtils.getTrxPeriodFromDt(currentMonth);
     var query = """SELECT IFNULL(SUM(t.cr), 0.0) AS total
-    FROM transactions t
+   FROM transactions t
     WHERE t.groupId = ?
-    AND t.trxPeriod =$date;
+    AND t.trxPeriod =?;
   """;
 
-    var result = await dbService.read(query, [filter.groupId]);
+    var result = await dbService.read(query, [filter.groupId, date]);
 
     if (result.isNotEmpty) {
-      final total = result.first["total"];
-      return total as double;
+      final total = (result.first["total"] as num?)?.toDouble();
+      return total;
     }
 
     return 0.0; // Default value if no result

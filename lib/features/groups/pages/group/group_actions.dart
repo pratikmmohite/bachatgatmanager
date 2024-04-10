@@ -21,7 +21,7 @@ class _GroupActionsState extends State<GroupActions> {
   late Group group;
   late GroupsDao groupDao;
   GroupTotal groupTotal = GroupTotal();
-  late double currentMonth;
+  late double? currentMonth;
   bool isLoading = false;
   @override
   void initState() {
@@ -96,7 +96,7 @@ class _GroupActionsState extends State<GroupActions> {
         TableRow(children: [
           TableCell(child: Text(local.lmCollecton)),
           TableCell(
-            child: Text(currentMonth.toStringAsFixed(2)),
+            child: Text(currentMonth!.toStringAsFixed(2)),
           ),
         ])
       ],
