@@ -55,7 +55,7 @@ class _AddGroupTransactionState extends State<AddGroupTransaction> {
 
   Future<void> addTransaction() async {
     try {
-      var res = await groupDao.addTransaction(trx);
+       await groupDao.addTransaction(trx);
       AppUtils.toast(context, "Transaction Recorded Successfully");
       AppUtils.close(context);
     } catch (e) {
