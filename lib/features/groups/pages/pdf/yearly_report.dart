@@ -17,8 +17,8 @@ class _YearlyReportState extends State<YearlyReport> {
   late Group _group;
   late DateTime _startDate = DateTime.now();
   late DateTime _endDate = DateTime.now();
-  bool isVisible = false;
-  late String totalBankBalance;
+  bool isLoading = false;
+
   double totalcredit = 0.0;
   late GroupBalanceSummary balanceSummary;
   String str = '';
@@ -26,7 +26,7 @@ class _YearlyReportState extends State<YearlyReport> {
   double bankBalance = 0.0;
   DateTimeRange dtchange =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
-  late String previousRemaining;
+
   String _formattDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}";
   }
@@ -40,8 +40,6 @@ class _YearlyReportState extends State<YearlyReport> {
   void initState() {
     super.initState();
     _group = widget.group;
-    totalBankBalance = '0';
-    previousRemaining = '0';
 
     balanceSummary = GroupBalanceSummary(
       deposit: 0.0,
@@ -76,40 +74,7 @@ class _YearlyReportState extends State<YearlyReport> {
                 color: Colors.black,
               ),
               const SizedBox(height: 15),
-              // Date Pickers for Start and End Dates
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: ElevatedButton.icon(
-              //         icon: const Icon(Icons.date_range),
-              //         onPressed: () async {
-              //           var local = AppLocal.of(context);
-              //           final DateTimeRange? picked = await showDateRangePicker(
-              //             context: context,
-              //             initialDateRange: DateTimeRange(
-              //               start: _startDate,
-              //               end: _endDate,
-              //             ),
-              //             firstDate: DateTime(2000),
-              //             lastDate: DateTime(2101),
-              //             initialEntryMode: DatePickerEntryMode.input,
-              //           );
-              //
-              //           if (picked != null) {
-              //             setState(() {
-              //               _startDate = picked.start;
-              //               _endDate = picked.end;
-              //               str = local.getHumanTrxPeriod(_startDate);
-              //               end = local.getHumanTrxPeriod(_endDate);
-              //             });
-              //           }
-              //         },
-              //         label:
-              //             Text(str == end ? "Select Date Range" : '$str to $end'),
-              //       ),
-              //     )
-              //   ],
-              // ),
+
               Container(
                 margin: const EdgeInsets.all(2),
                 child: TextFormField(
@@ -157,11 +122,8 @@ class _YearlyReportState extends State<YearlyReport> {
                       ),
                       icon: const Icon(Icons.download),
                       onPressed: () async {
-                        ExcelExample.createAndSaveExcel(
-                            _group.id.toString(),
-                            _group.name.toString(),
-                            _formattDate(_startDate),
-                            _formattDate(_endDate));
+                        ExcelExample.createAndSaveExcel(_group.id.toString(),
+                            _group.name.toString(), _startDate, _endDate);
                       },
                       label: const Text('Download Excel'),
                     ),
@@ -178,49 +140,32 @@ class _YearlyReportState extends State<YearlyReport> {
                       icon: const Icon(Icons.summarize),
                       onPressed: () async {
                         final dao = GroupsDao();
-                        totalBankBalance = await dao.getBankBalanceTillToday(
-                            _group.id, _formattDate(_endDate));
+                        setState(() {
+                          isLoading = true;
+                        });
                         GroupBalanceSummary summary =
                             await dao.getBalanceSummary(
                           _group.id.toString(),
                           _formattDate(_startDate),
                           _formattDate(_endDate),
                         );
-                        double remaining = await dao.getPreviousYearAmount(
-                            _group.id.toString(), _formattDate(_startDate));
-                        if (totalBankBalance != '0') {
-                          setState(() {
-                            totalBankBalance = totalBankBalance;
 
-                            balanceSummary = summary;
-                            previousRemaining = remaining.toStringAsFixed(2);
-                            isVisible = !isVisible;
-                          });
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "There are no transaction between this period for the member please change the time period",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        }
+                        setState(() {
+                          balanceSummary = summary;
+
+                          isLoading = false;
+                        });
                       },
-                      label: Text(
-                          isVisible == false ? 'Fetch Summary' : 'Refresh'),
+                      label: const Text('Refresh'),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              Visibility(
-                visible: true,
-                child: Container(
+              if (isLoading) const CircularProgressIndicator(),
+
+              if (!isLoading)
+                Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
@@ -374,7 +319,6 @@ class _YearlyReportState extends State<YearlyReport> {
                     ],
                   ),
                 ),
-              ),
             ],
           ),
         ),

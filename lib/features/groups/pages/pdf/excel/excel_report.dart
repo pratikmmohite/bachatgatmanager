@@ -11,25 +11,42 @@ class ExcelExample {
   }
 
   static Future<void> createAndSaveExcel(String groupId, String groupName,
-      String startDate, String endDate) async {
+      DateTime startDate, DateTime endDate) async {
     var excel = Excel.createExcel();
     Sheet sheetObject = excel['Sheet1'];
     final dao = GroupsDao();
+    GroupSummaryFilter filter = GroupSummaryFilter(groupId);
+    filter.sdt = startDate;
+    filter.edt = endDate;
 
-    double previousYearData =
-        await dao.getPreviousYearAmount(groupId, startDate);
+    var balances = await dao.getBalances(filter);
 
-    double? expenditures = await dao.getExpenditures(groupId, startDate);
+    filter.type = AppConstants.fRange;
+    var summary = await dao.getGroupSummary(filter);
 
-    double bankInterst = await dao.getBankDepositInterest(groupId, startDate);
+    double totalExpenditures = 0;
+    double totalBankInterest = 0;
+
+    double previousYearBalance = balances[0].totalCr - balances[0].totalDr;
+
+    for (var s in summary) {
+      switch (s.trxType) {
+        case AppConstants.ttExpenditures:
+          totalExpenditures += s.totalDr;
+          break;
+        case AppConstants.ttBankInterest:
+          totalBankInterest += s.totalCr;
+          break;
+      }
+    }
 
     double totalGivenLoan = 0;
     sheetObject.merge(
         CellIndex.indexByString('A1'), CellIndex.indexByString('I1'),
-        customValue:
-            TextCellValue('जमाखर्च पुस्तक  कालावधी ($startDate - $endDate)'));
-    List<double> loanTillToday =
-        await dao.getLoanTakenTillToday(groupId, endDate);
+        customValue: TextCellValue(
+            'जमाखर्च पुस्तक  कालावधी (${AppUtils.getHumanReadableDt(startDate)} -${AppUtils.getHumanReadableDt(endDate)})'));
+    List<double> loanTillToday = await dao.getLoanTakenTillToday(
+        groupId, AppUtils.getTrxPeriodFromDt(endDate));
     sheetObject.merge(
         CellIndex.indexByString('A2'), CellIndex.indexByString('A3'),
         customValue: const TextCellValue("अ. क्र."));
@@ -73,16 +90,17 @@ class ExcelExample {
     sheetObject.merge(
         CellIndex.indexByString('J2'), CellIndex.indexByString('J3'),
         customValue: const TextCellValue('दिलेले शेअर्स'));
-
-    List<MemberTransactionSummary> dummyData =
-        await dao.getYearlySummary(groupId, startDate, endDate);
-    List<double> totalDeposit = List<double>.filled(dummyData.length, 0.0);
+    String str = AppUtils.getTrxPeriodFromDt(startDate);
+    String end = AppUtils.getTrxPeriodFromDt(endDate);
+    List<MemberTransactionSummary> yearlyData =
+        await dao.getYearlySummary(groupId, str, end);
+    List<double> totalDeposit = List<double>.filled(yearlyData.length, 0.0);
     double totalcredit = 0.0;
-    for (int i = 0; i < dummyData.length; i++) {
-      totalDeposit[i] = (dummyData[i].totalSharesDeposit.toDouble() +
-          dummyData[i].totalLoanInterest.toDouble() +
-          dummyData[i].totalPenalty.toDouble() +
-          dummyData[i].otherDeposit.toDouble());
+    for (int i = 0; i < yearlyData.length; i++) {
+      totalDeposit[i] = (yearlyData[i].totalSharesDeposit.toDouble() +
+          yearlyData[i].totalLoanInterest.toDouble() +
+          yearlyData[i].totalPenalty.toDouble() +
+          yearlyData[i].otherDeposit.toDouble());
       totalcredit += totalDeposit[i];
       totalGivenLoan += loanTillToday[i];
     }
@@ -92,19 +110,19 @@ class ExcelExample {
     double totalOthers = 0.0;
     double totalLoanReturn = 0.0;
     double remainingLoan = 0.0;
-    for (int i = 0; i < dummyData.length; i++) {
-      MemberTransactionSummary member = dummyData[i];
-      List<String> rowData = [
-        (i + 1).toString(),
-        member.name,
-        member.totalSharesDeposit.toString(),
-        member.totalLoanInterest.toString(),
-        member.totalPenalty.toString(),
-        member.otherDeposit.toString(),
-        totalDeposit[i].toString(),
-        (loanTillToday[i]).toString(),
-        member.loanReturn.toString(),
-        (member.loanTakenTillDate - member.loanReturn).toString(),
+    for (int i = 0; i < yearlyData.length; i++) {
+      MemberTransactionSummary member = yearlyData[i];
+      List<CellValue> rowCells = [
+        IntCellValue(i + 1),
+        TextCellValue(member.name),
+        DoubleCellValue(member.totalSharesDeposit),
+        DoubleCellValue(member.totalLoanInterest),
+        DoubleCellValue(member.totalPenalty),
+        DoubleCellValue(member.otherDeposit),
+        DoubleCellValue(totalDeposit[i]),
+        DoubleCellValue((loanTillToday[i])),
+        DoubleCellValue(member.loanReturn),
+        DoubleCellValue((member.loanTakenTillDate - member.loanReturn)),
       ];
       totalShares += member.totalSharesDeposit;
       totalInterest += member.totalLoanInterest;
@@ -112,15 +130,12 @@ class ExcelExample {
       totalOthers += member.otherDeposit;
       totalLoanReturn += member.loanReturn;
       remainingLoan += (member.loanTakenTillDate - member.loanReturn);
-      List<CellValue?> rowCells = rowData.map((cellData) {
-        return (TextCellValue(cellData.toString()));
-      }).toList();
 
       sheetObject.insertRowIterables(
           rowCells, 4 + i); // Start appending data after 4th row
     }
     List<CellValue?> rowCell = [
-      TextCellValue((dummyData.length + 1).toString()),
+      TextCellValue((yearlyData.length + 1).toString()),
       const TextCellValue("एकूण"),
       DoubleCellValue(totalShares),
       DoubleCellValue(totalInterest),
@@ -131,61 +146,62 @@ class ExcelExample {
       DoubleCellValue(totalLoanReturn),
       DoubleCellValue(remainingLoan),
     ];
-    sheetObject.insertRowIterables(rowCell, 4 + dummyData.length);
-    var count = 4 + dummyData.length + 4;
+    sheetObject.insertRowIterables(rowCell, 4 + yearlyData.length);
+    var count = 4 + yearlyData.length + 4;
     //for displaying the previous remaining amount in savings group
-
-    sheetObject.cell(CellIndex.indexByString('B${count}')).value =
+    var rowNumber = count;
+    sheetObject.cell(CellIndex.indexByString('B$rowNumber')).value =
         const TextCellValue('मागील शिल्लक');
-    var count2 = count;
-    sheetObject.cell(CellIndex.indexByString('C${count++}')).value =
-        DoubleCellValue(previousYearData);
+    sheetObject.cell(CellIndex.indexByString('C$rowNumber')).value =
+        DoubleCellValue(previousYearBalance);
 
-    sheetObject.cell(CellIndex.indexByString('E${count2}')).value =
+    sheetObject.cell(CellIndex.indexByString('E$rowNumber')).value =
         const TextCellValue('दिलेले कर्ज');
-    sheetObject.cell(CellIndex.indexByString('F${count2}')).value =
+    sheetObject.cell(CellIndex.indexByString('F$rowNumber')).value =
         DoubleCellValue(totalGivenLoan);
-
-    sheetObject.cell(CellIndex.indexByString('B${count}')).value =
+    rowNumber++;
+    sheetObject.cell(CellIndex.indexByString('B$rowNumber')).value =
         const TextCellValue('आज अखेर जमा');
-    count2 = count;
-    sheetObject.cell(CellIndex.indexByString('C${count++}')).value =
+
+    sheetObject.cell(CellIndex.indexByString('C$rowNumber')).value =
         DoubleCellValue(totalcredit);
 
     //for displaying the expenditures of savings group
-    sheetObject.cell(CellIndex.indexByString('E${count2}')).value =
+    sheetObject.cell(CellIndex.indexByString('E$rowNumber')).value =
         const TextCellValue('इतर खर्च');
-    count2 = count;
-    sheetObject.cell(CellIndex.indexByString('F${count2}')).value =
-        DoubleCellValue(expenditures!);
-
+    sheetObject.cell(CellIndex.indexByString('F$rowNumber')).value =
+        DoubleCellValue(totalExpenditures);
+    rowNumber++;
     //displays the total bank interest deposited by bank
-    sheetObject.cell(CellIndex.indexByString('B${count}')).value =
+    sheetObject.cell(CellIndex.indexByString('B$rowNumber')).value =
         const TextCellValue("बँक मधून मिळालेले व्याज");
-    count2 = count;
-    sheetObject.cell(CellIndex.indexByString('C${count++}')).value =
-        DoubleCellValue(bankInterst);
+
+    sheetObject.cell(CellIndex.indexByString('C$rowNumber')).value =
+        DoubleCellValue(totalBankInterest);
     //display total given loan till date
-    double totalsum = previousYearData + totalcredit + bankInterst;
-    sheetObject.cell(CellIndex.indexByString('E${count2}')).value =
+    double totalsum = previousYearBalance + totalcredit + totalBankInterest;
+    sheetObject.cell(CellIndex.indexByString('E$rowNumber')).value =
         const TextCellValue("अखेरची शिल्लक");
-    sheetObject.cell(CellIndex.indexByString('F${count2}')).value =
-        DoubleCellValue(totalsum - totalGivenLoan - expenditures!);
-
-    sheetObject.cell(CellIndex.indexByString('B${count}')).value =
+    sheetObject.cell(CellIndex.indexByString('F$rowNumber')).value =
+        DoubleCellValue(totalsum - totalGivenLoan - totalExpenditures);
+    rowNumber++;
+    sheetObject.cell(CellIndex.indexByString('B$rowNumber')).value =
         const TextCellValue("एकूण जमा");
-    count2 = count;
-    sheetObject.cell(CellIndex.indexByString('C${count++}')).value =
+
+    sheetObject.cell(CellIndex.indexByString('C$rowNumber')).value =
         DoubleCellValue(totalsum);
 
-    sheetObject.cell(CellIndex.indexByString('E${count2}')).value =
+    sheetObject.cell(CellIndex.indexByString('E$rowNumber')).value =
         const TextCellValue("एकूण खर्च");
-    sheetObject.cell(CellIndex.indexByString('F${count2}')).value =
+    sheetObject.cell(CellIndex.indexByString('F$rowNumber')).value =
         DoubleCellValue(totalsum);
 
-    final fileBytes = excel.save() as Uint8List;
+    final fileBytes = excel.save();
+    if (fileBytes != null) {
+      AppUtils.saveAndOpenFile(fileBytes);
+    }
 
-    saveAsExcel(groupName, fileBytes);
+    // saveAsExcel(groupName, fileBytes);
     // await previewExcel(fileBytes);
     // saveFile("YearReport.xlsx", fileBytes!);
   }

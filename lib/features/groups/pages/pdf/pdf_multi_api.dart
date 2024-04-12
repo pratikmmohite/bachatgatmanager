@@ -24,7 +24,6 @@ class PdfApi {
       List<List<MemberTransactionDetails>> memberData,
       List<String> memberName,
       String groupName,
-      double remainingLoan,
       BuildContext context) async {
     // Create the Font object
     final rfont = await FontLoaders.loadFont(

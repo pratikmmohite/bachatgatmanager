@@ -97,12 +97,15 @@ class _AddGroupTransactionState extends State<AddGroupTransaction> {
               label: "Date",
               field: "trxDt",
               value: trx.trxDt,
+              futureDataDisable: false,
               onChange: (dt) {
-                trx.trxDt = dt;
-                trx.trxPeriod = AppUtils.getTrxPeriodFromDt(dt);
+                setState(() {
+                  trx.trxDt = dt;
+                  trx.trxPeriod = AppUtils.getTrxPeriodFromDt(dt);
+                });
               },
             ),
-            if (trx.trxType == AppConstants.ttBankInterest)
+            if (AppConstants.uiCrGroupTrxTypes.contains(trx.trxType))
               CustomTextField(
                 label: "Enter Amount",
                 field: "cr",
@@ -111,7 +114,7 @@ class _AddGroupTransactionState extends State<AddGroupTransaction> {
                   trx.cr = double.tryParse(val) ?? 0;
                 },
               ),
-            if (trx.trxType == AppConstants.ttExpenditures)
+            if (AppConstants.uidrGroupTrxTypes.contains(trx.trxType))
               CustomTextField(
                 label: "Enter Amount",
                 field: "dr",

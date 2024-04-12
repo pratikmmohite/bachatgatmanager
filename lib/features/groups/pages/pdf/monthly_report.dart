@@ -15,19 +15,6 @@ class MonthlyReport extends StatefulWidget {
 class _MonthlyReportState extends State<MonthlyReport> {
   late Group _group;
   bool selectedDate = false;
-  String? totalBankBalance = '0.0';
-  MonthlyBalanceSummary balanceSummary = MonthlyBalanceSummary(
-    totalDeposit: 0.0,
-    totalShares: 0.0,
-    totalLoanInterest: 0.0,
-    totalPenalty: 0.0,
-    otherDeposit: 0.0,
-    totalExpenditures: 0.0,
-    remainingLoan: 0.0,
-    paidLoan: 0.0,
-    givenLoan: 0.0,
-    peviousRemainigBalance: 0.0,
-  );
 
   // double previousRemaining = 0.0;
   String str = "";
@@ -67,20 +54,6 @@ class _MonthlyReportState extends State<MonthlyReport> {
     _group = widget.group;
     // previousRemaining = 0.0;
     dao = GroupsDao();
-
-    totalBankBalance = '0.0';
-    balanceSummary = MonthlyBalanceSummary(
-      totalDeposit: 0.0,
-      totalShares: 0.0,
-      totalLoanInterest: 0.0,
-      totalPenalty: 0.0,
-      otherDeposit: 0.0,
-      totalExpenditures: 0.0,
-      remainingLoan: 0.0,
-      paidLoan: 0.0,
-      givenLoan: 0.0,
-      peviousRemainigBalance: 0.0,
-    );
 
     trxPeriod = _formatDate(_startDate);
   }
@@ -140,38 +113,15 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             Colors.blueGrey.shade50),
                       ),
                       onPressed: () async {
-                        String date = trxPeriod;
-
-                        totalBankBalance =
-                            await dao.getBankBalanceTillToday(_group.id, date);
-                        MonthlyBalanceSummary summary =
+                        CalculatedMonthlySummary summary =
                             await dao.getMonthlySummary(
                           _group.id.toString(),
-                          date,
+                          trxPeriod,
                         );
 
-                        CalculatedMonthlySummary sumary2 =
-                            CalculatedMonthlySummary(summary);
-                        if (totalBankBalance != '0') {
-                          setState(() {
-                            totalBankBalance = totalBankBalance;
-                            balanceSummary = summary;
-                            monthlySummary = sumary2;
-                          });
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "There are no transaction between this period for the member please change the time period",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        }
+                        setState(() {
+                          monthlySummary = summary;
+                        });
                       },
                       label: const Text('Refresh Summary'),
                     ),

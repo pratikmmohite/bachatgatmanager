@@ -130,14 +130,9 @@ class _MultiMemberReportState extends State<MultiMemberReport> {
                           datal.add(data);
                         }
 
-                        final remainingLoan = await dao.getRemainingLoan(
-                            _group.id,
-                            selectedMemberId,
-                            _formattDate(_startDate));
-
                         if (datal!.isNotEmpty) {
                           var bytes = PdfApi.generateTable(datal, memberNames,
-                              _group.name.toString(), remainingLoan, context);
+                              _group.name.toString(), context);
                           await PdfApi.saveAsPDF(
                               selectedMemberName, bytes as Uint8List);
                         } else {
@@ -173,21 +168,13 @@ class _MultiMemberReportState extends State<MultiMemberReport> {
 
                           datal.add(data);
                         }
-                        final remainingLoan = await dao.getRemainingLoan(
-                            _group.id,
-                            selectedMemberId,
-                            _formattDate(_startDate));
 
                         // print(remainingLoan);
                         //print(data);
 
                         if (datal.isNotEmpty) {
-                          var bytes = await PdfApi.generateTable(
-                              datal,
-                              memberNames,
-                              _group.name.toString(),
-                              remainingLoan,
-                              context);
+                          var bytes = await PdfApi.generateTable(datal,
+                              memberNames, _group.name.toString(), context);
                           await PdfApi.previewPDF(bytes);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(

@@ -7,14 +7,32 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../../dao/groups_dao.dart';
 import 'getFontLoad.dart';
 
 class PdfApi {
+  static Future<Uint8List> generatePdf(
+      {required String memberId,
+      required String groupId,
+      required DateTime startDate,
+      required DateTime endDate,
+      required String memberName,
+      required String groupName,
+      required BuildContext context}) async {
+    final dao = GroupsDao();
+    final data = await dao.getMemberDetailsByMemberId(
+        memberId,
+        groupId,
+        AppUtils.getTrxPeriodFromDt(startDate),
+        AppUtils.getTrxPeriodFromDt(endDate));
+
+    return generateTable(data, memberName, groupName, context);
+  }
+
   static Future<Uint8List> generateTable(
       List<MemberTransactionDetails> memberData,
       String memberName,
       String groupName,
-      double remainingLoan,
       BuildContext context) async {
     // Create the Font object
     final rfont = await FontLoaders.loadFont(
@@ -37,7 +55,7 @@ class PdfApi {
     );
     var local = AppLocal.of(context);
     // var previouRemainigLoan = 0.0;
-    final headers2 = [
+    final headers = [
       local.lmonth,
       local.lShare,
       local.lPaidLoan,
@@ -48,17 +66,6 @@ class PdfApi {
       local.lGivenLoan,
       local.lRmLoan,
     ];
-    // final headers = [
-    //   'Month',
-    //   'Shares',
-    //   'Loan Taken',
-    //   'Paid Interest',
-    //   'Paid Loan',
-    //   'Remaining Loan',
-    //   'Late Fee',
-    //   'Others',
-    //   'Total Paid'
-    // ];
 
     List<double> totalPaid = [];
     for (var m in memberData) {
@@ -72,16 +79,6 @@ class PdfApi {
 
     final data = memberData.asMap().entries.map(
       (entry) {
-        // final previousRemainingLoan =
-        //     entry.key > 0 ? memberData[entry.key - 1].remainingLoan : 0;
-        // final paidLoan = entry.value.paidLoan ?? 0;
-        final currentRemainingLoan = (remainingLoan -
-            memberData[entry.key].paidLoan!.toDouble() +
-            memberData[entry.key].loanTaken!);
-        remainingLoan = currentRemainingLoan;
-        // final remainingLoan =
-        //     entry.value.loanTaken! + previousRemainingLoan! - paidLoan;
-
         return [
           entry.value.trxPeriod ?? '0.0',
           entry.value.paidShares?.toString() ?? '0.0',
@@ -91,8 +88,7 @@ class PdfApi {
           entry.value.paidOtherAmount?.toString() ?? '',
           totalPaid[entry.key].toString(),
           entry.value.loanTaken?.toString() ?? '0.0',
-          currentRemainingLoan.toString(),
-
+          entry.value.remainingLoan?.toString() ?? '0.0',
           // Add totalPaid for each member
         ];
       },
@@ -121,7 +117,7 @@ class PdfApi {
               ),
               pw.SizedBox(height: 15),
               pw.TableHelper.fromTextArray(
-                headers: headers2,
+                headers: headers,
                 headerStyle: pw.TextStyle(
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -131,7 +127,7 @@ class PdfApi {
                 // Setting equal width for each column
                 columnWidths: {
                   for (int columnIndex = 0;
-                      columnIndex < headers2.length;
+                      columnIndex < headers.length;
                       columnIndex++)
                     columnIndex: const pw.FixedColumnWidth(
                         40.0), // Adjust the width as per your requirement
@@ -145,11 +141,16 @@ class PdfApi {
     return pdf.save();
   }
 
-  static Future<void> previewPDF(Uint8List bytes) async {
-    await Printing.layoutPdf(onLayout: (PdfPageFormat format) => bytes);
+  static Future<void> previewPDF(Uint8List bytes, String filename) async {
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) => bytes, name: filename);
   }
 
-  static Future<void> saveAsPDF(String fileName, Uint8List bytes) async {
+  static Future<void> sharePDF(Uint8List bytes, String filename) async {
+    await Printing.sharePdf(bytes: bytes, filename: filename);
+  }
+
+  static Future<void> saveAsPDF(Uint8List bytes, String fileName) async {
     await AppUtils.saveAsBytes(fileName, "pdf", bytes);
   }
 }

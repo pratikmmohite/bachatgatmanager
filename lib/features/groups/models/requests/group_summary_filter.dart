@@ -8,6 +8,7 @@ class GroupSummaryFilter {
   DateTime edt = DateTime(2030);
   DateTime sdt = DateTime(2010);
   String dateMode = "trxPeriod";
+  String type = "monthly";
   GroupSummaryFilter([this.groupId = ""]);
 
   factory GroupSummaryFilter.fromJson(Map<String, dynamic> json) =>
