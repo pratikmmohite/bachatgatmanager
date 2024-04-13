@@ -22,4 +22,12 @@ class GroupMemberDetails {
       _$GroupMemberDetailsFromJson(json);
 
   Map<String, dynamic> toJson() => _$GroupMemberDetailsToJson(this);
+
+  double calculateTotalPaid() {
+    return paidLoanAmount +
+        paidLoanInterestAmount +
+        paidShareAmount +
+        paidLateFee +
+        paidOtherAmount;
+  }
 }

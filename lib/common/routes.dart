@@ -10,8 +10,8 @@ class Routes {
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {
-      rHome: (context) => HomeScreen(),
-      rGroups: (context) => GroupsScreen(),
+      rHome: (context) => const HomeScreen(),
+      rGroups: (context) => const GroupsScreen(),
     };
   }
 }

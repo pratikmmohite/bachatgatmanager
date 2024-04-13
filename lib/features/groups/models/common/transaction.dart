@@ -59,5 +59,6 @@ class Transaction extends ComFields {
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 }
