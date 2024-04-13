@@ -92,7 +92,7 @@ class _MembersListState extends State<MembersList> {
       appBar: AppBar(
         title: Text(local.abMemberList),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -101,15 +101,16 @@ class _MembersListState extends State<MembersList> {
           );
           await getMembers();
         },
-        child: const Icon(Icons.add),
+        label: Text(local.bAddMember),
+        icon: const Icon(Icons.add),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
           await getMembers();
         },
         child: members.isEmpty
-            ? const Center(
-                child: Text("Click + to add members"),
+            ? Center(
+                child: Text(local.mAddMemberMsg),
               )
             : ListView.builder(
                 padding: const EdgeInsets.only(bottom: 300.0),

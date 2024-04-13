@@ -74,7 +74,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
           );
           await refreshGroupList();
         },
-        label: Text(local.abAddGroup),
+        label: Text(local.bAddGroup),
         icon: const Icon(Icons.add),
       ),
     );

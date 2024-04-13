@@ -1,5 +1,6 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/group/group_actions.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/groups_dao.dart';
@@ -79,12 +80,16 @@ class GroupsListPageState extends State<GroupsListPage> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return RefreshIndicator(
       onRefresh: () async {
         await getGroups();
       },
       child: groups.isEmpty
-          ? const Center(child: Text("Click + to add group"))
+          ? Center(
+              child: Text(
+              local.mAddGroupMsg,
+            ))
           : ListView.builder(
               itemBuilder: (ctx, index) {
                 var group = groups[index];
