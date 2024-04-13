@@ -21,6 +21,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -30,16 +31,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
               AppConstants.imgAppIcon,
               height: 50,
             ),
-            Text(AppLocal.of(context).appTitle),
+            Text(local.appTitle),
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () async {
-              refreshGroupList();
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.import_export),
             onPressed: () async {
@@ -70,7 +65,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
       body: GroupsListPage(
         key: groupKey,
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -79,7 +74,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
           );
           await refreshGroupList();
         },
-        child: const Icon(Icons.add),
+        label: Text(local.abAddGroup),
+        icon: const Icon(Icons.add),
       ),
     );
   }
