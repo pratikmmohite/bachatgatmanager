@@ -256,6 +256,11 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   }
 
   Widget buildView() {
+    if (groupMemberDetails.isEmpty) {
+      return const Center(
+        child: Text("Add members to record transactions"),
+      );
+    }
     if (viewMode == "list") {
       return buildDetailsList();
     }
@@ -281,7 +286,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       children: [
         IconButton(
           onPressed: () => handleBothTrxClick(m),
-          icon: const Icon(Icons.attach_money),
+          icon: const Icon(Icons.receipt_long_outlined),
           tooltip: local.bAddShare,
         ),
         // IconButton(

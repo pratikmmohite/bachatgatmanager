@@ -2,6 +2,7 @@ import 'package:bachat_gat/common/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'app_theme.dart';
 import 'locals/app_local_delegate.dart';
 
 class AppRoot extends StatelessWidget {
@@ -26,7 +27,7 @@ class AppRoot extends StatelessWidget {
             Locale('mr'),
           ],
           debugShowCheckedModeBanner: false,
-          // theme: ThemeData.light(useMaterial3: true),
+          theme: AppTheme.of(context),
           initialRoute: Routes.rGroups,
           routes: Routes.getRoutes(),
         );
@@ -45,7 +46,7 @@ class AppRoot extends StatelessWidget {
           Locale('mr'),
         ],
         debugShowCheckedModeBanner: false,
-        // theme: ThemeData.light(useMaterial3: true),
+        theme: AppTheme.of(context),
         initialRoute: Routes.rGroups,
         routes: Routes.getRoutes(),
       ),

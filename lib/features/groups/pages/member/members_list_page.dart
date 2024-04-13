@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../dao/groups_dao.dart';
 import '../../models/models_index.dart';
 import 'add_member_page.dart';
+import 'member_transactions_list.dart';
 
 class MembersList extends StatefulWidget {
   final Group group;
@@ -42,6 +43,21 @@ class _MembersListState extends State<MembersList> {
     groupDao = GroupsDao();
     getMembers();
     super.initState();
+  }
+
+  handleShowTransactionListClick(GroupMember member) async {
+    GroupMemberDetails m = GroupMemberDetails();
+    m.name = member.name;
+    m.memberId = member.id;
+    m.groupId = member.groupId;
+    await AppUtils.navigateTo(
+      context,
+      MemberTransactionsList(
+        _group,
+        groupMemberDetails: m,
+        trxPeriodDt: DateTime.now(),
+      ),
+    );
   }
 
   void editMember(GroupMember member) async {
@@ -91,43 +107,53 @@ class _MembersListState extends State<MembersList> {
         onRefresh: () async {
           await getMembers();
         },
-        child: ListView.builder(
-          padding: const EdgeInsets.only(bottom: 300.0),
-          itemBuilder: (ctx, index) {
-            var member = members[index];
-            return Card(
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(
-                  member.name,
-                ),
-                subtitle: Text(member.mobileNo),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () async {
+        child: members.isEmpty
+            ? const Center(
+                child: Text("Click + to add members"),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.only(bottom: 300.0),
+                itemBuilder: (ctx, index) {
+                  var member = members[index];
+                  return Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.person),
+                      title: Text(
+                        member.name,
+                      ),
+                      subtitle: Text(member.mobileNo),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () async {
+                              editMember(member);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.remove_red_eye_outlined),
+                            onPressed: () async {
+                              handleShowTransactionListClick(member);
+                            },
+                          ),
+                          CustomDeleteIcon<GroupMember>(
+                            item: member,
+                            content: Text("Member: ${member.name}"),
+                            onAccept: (m) {
+                              deleteMember(m);
+                            },
+                          ),
+                        ],
+                      ),
+                      onTap: () async {
                         editMember(member);
                       },
                     ),
-                    CustomDeleteIcon<GroupMember>(
-                      item: member,
-                      content: Text("Member: ${member.name}"),
-                      onAccept: (m) {
-                        deleteMember(m);
-                      },
-                    ),
-                  ],
-                ),
-                onTap: () async {
-                  editMember(member);
+                  );
                 },
+                itemCount: members.length,
               ),
-            );
-          },
-          itemCount: members.length,
-        ),
       ),
     );
   }
