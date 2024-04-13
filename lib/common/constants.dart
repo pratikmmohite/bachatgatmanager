@@ -1,6 +1,7 @@
 import 'package:bachat_gat/common/common_index.dart';
 
 class AppConstants {
+  static const String imgAppIcon = "assets/images/app_icon.png";
   // Trx Types
   // Credit
   static const String ttShare = "Share";
@@ -56,6 +57,7 @@ class AppConstants {
   static const String sUser = "User";
 
   static const String sfViewMode = "sfViewMode";
+  static const String sfLanguage = "sfLanguage";
 
   static const List<String> cEnMonthsStr = [
     "Jan",

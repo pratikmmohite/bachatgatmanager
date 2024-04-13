@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
+import '../common/storage_service.dart';
 import 'app_local.dart';
 
 class AppLocalDelegate extends LocalizationsDelegate<AppLocalization> {
@@ -34,6 +35,7 @@ class AppLocal {
 
   static void c(String code) {
     _instance.currentLocal.value = Locale(code);
+    StorageService.saveLocal(code);
   }
 
   ValueNotifier<Locale> currentLocal =

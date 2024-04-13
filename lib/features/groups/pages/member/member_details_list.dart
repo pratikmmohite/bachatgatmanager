@@ -56,18 +56,20 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
     group = widget.group;
     trxPeriodDt = widget.trxPeriodDt;
     viewMode = widget.viewMode;
-    // initDefault();
+    initDefault();
     getGroupMembers();
     super.initState();
   }
 
   Future<void> initDefault() async {
-    viewMode = await StorageService.read(AppConstants.sfViewMode);
-    setState(() {});
+    viewMode = await StorageService.getViewMode(viewMode ?? "table");
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> saveViewMode() async {
-    await StorageService.write(AppConstants.sfViewMode, viewMode);
+    await StorageService.saveViewMode(viewMode);
   }
 
   Future<void> handleAddTrxClick(GroupMemberDetails memberDetails) async {
@@ -321,7 +323,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
               viewMode = "table";
               break;
           }
-          // saveViewMode();
+          saveViewMode();
           setState(() {});
         },
         child: const Icon(Icons.view_agenda_outlined),

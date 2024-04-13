@@ -23,11 +23,27 @@ class _GroupsScreenState extends State<GroupsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocal.of(context).appTitle),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              AppConstants.imgAppIcon,
+              height: 50,
+            ),
+            Text(AppLocal.of(context).appTitle),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () async {
+              refreshGroupList();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.import_export),
+            onPressed: () async {
+              await AppUtils.navigateTo(context, const ImportExportPage());
               refreshGroupList();
             },
           ),
@@ -48,13 +64,6 @@ class _GroupsScreenState extends State<GroupsScreen> {
               },
               child: const Text("en"),
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.import_export),
-            onPressed: () async {
-              await AppUtils.navigateTo(context, const ImportExportPage());
-              refreshGroupList();
-            },
           ),
         ],
       ),
