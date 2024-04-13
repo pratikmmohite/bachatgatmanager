@@ -83,56 +83,58 @@ class GroupsListPageState extends State<GroupsListPage> {
       onRefresh: () async {
         await getGroups();
       },
-      child: ListView.builder(
-        itemBuilder: (ctx, index) {
-          var group = groups[index];
-          return Card(
-            child: ListTile(
-              leading: const Icon(Icons.card_membership_rounded),
-              title: Text(
-                group.name,
-              ),
-              subtitle: Text(getDateRangeStr(group.sdt, group.edt)),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (ct) => GroupAddPage(
-                            group: group,
-                            key: ValueKey(group.id),
-                          ),
+      child: groups.isEmpty
+          ? const Center(child: Text("Click + to add group"))
+          : ListView.builder(
+              itemBuilder: (ctx, index) {
+                var group = groups[index];
+                return Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.card_membership_rounded),
+                    title: Text(
+                      group.name,
+                    ),
+                    subtitle: Text(getDateRangeStr(group.sdt, group.edt)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ct) => GroupAddPage(
+                                  group: group,
+                                  key: ValueKey(group.id),
+                                ),
+                              ),
+                            );
+                            await getGroups();
+                          },
+                        ),
+                        CustomDeleteIcon<Group>(
+                          item: group,
+                          content: Text("Group: ${group.name}"),
+                          onAccept: (g) {
+                            deleteGroup(g);
+                          },
+                        )
+                      ],
+                    ),
+                    onTap: () async {
+                      AppUtils.navigateTo(
+                        context,
+                        GroupActions(
+                          key: ValueKey(group.id),
+                          group: group,
                         ),
                       );
-                      await getGroups();
                     },
-                  ),
-                  CustomDeleteIcon<Group>(
-                    item: group,
-                    content: Text("Group: ${group.name}"),
-                    onAccept: (g) {
-                      deleteGroup(g);
-                    },
-                  )
-                ],
-              ),
-              onTap: () async {
-                AppUtils.navigateTo(
-                  context,
-                  GroupActions(
-                    key: ValueKey(group.id),
-                    group: group,
                   ),
                 );
               },
+              itemCount: groups.length,
             ),
-          );
-        },
-        itemCount: groups.length,
-      ),
     );
   }
 }

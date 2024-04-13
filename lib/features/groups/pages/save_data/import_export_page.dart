@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/locals/app_local_delegate.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart' as sqlite;
 
 class ImportExportPage extends StatefulWidget {
   const ImportExportPage({super.key});
@@ -12,13 +14,15 @@ class ImportExportPage extends StatefulWidget {
 }
 
 class _ImportExportPageState extends State<ImportExportPage> {
-  void exportFile() {
+  Future<void> exportFile() async {
     try {
       var dbService = DbService();
-      AppUtils.toast(context, dbService.db.path);
+      var dbFilePath = dbService.dbPath;
       var dt = DateTime.now();
       String fileName = "${dt.year}_${dt.month}_${dt.day}_bachat_db";
-      AppUtils.saveFile(fileName, dbService.db.path);
+      AppUtils.toast(context, dbFilePath);
+      print(dbFilePath);
+      var x = await AppUtils.saveAsFile(fileName, dbFilePath);
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -26,24 +30,23 @@ class _ImportExportPageState extends State<ImportExportPage> {
 
   Future<void> importFile() async {
     try {
-      var newDbFilePath = await AppUtils.pickFile(["sqlite"]);
-      if (!newDbFilePath.endsWith(".sqlite")) {
+      var selectedFile = await AppUtils.pickFile(["sqlite"]);
+      if (selectedFile == null ||
+          selectedFile.bytes == null ||
+          !AppUtils.isSQLiteFile(selectedFile.bytes)) {
         AppUtils.toast(context, "Select supported file with ext .sqlite");
         return;
       }
-      if (newDbFilePath.isNotEmpty) {
-        var appDbName = "app_db.sqlite";
-        var dbService = DbService();
-        String oldDbFile = dbService.db.path;
-        dbService.closeDb();
-        changeFileNameOnlySync(oldDbFile, "$appDbName.bkp");
-        AppUtils.toast(context, "Renamed old file");
-        var newFile = File(newDbFilePath);
-        newFile.copySync(oldDbFile);
-        AppUtils.toast(context, "Coppied new file");
-        dbService.initDb();
-        AppUtils.close(context);
+      var dbService = DbService();
+      if (!kIsWeb) {
+        await dbService.bkpDb();
       }
+      await dbService.closeDb();
+      await sqlite.databaseFactory
+          .writeDatabaseBytes(dbService.dbPath, selectedFile.bytes!);
+      await dbService.initDb();
+      AppUtils.toast(context, "Data imported successfully");
+      AppUtils.close(context);
     } catch (e) {
       AppUtils.toast(context, e.toString());
     }
@@ -66,8 +69,8 @@ class _ImportExportPageState extends State<ImportExportPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ButtonBar(
-          alignment: MainAxisAlignment.center,
+        child: OverflowBar(
+          alignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton.icon(
               onPressed: () {
@@ -76,7 +79,6 @@ class _ImportExportPageState extends State<ImportExportPage> {
               icon: const Icon(Icons.upload),
               label: Text(local.bImportFile),
             ),
-            const Divider(),
             ElevatedButton.icon(
               onPressed: () {
                 exportFile();

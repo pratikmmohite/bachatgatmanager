@@ -23,15 +23,13 @@ Group _$GroupFromJson(Map<String, dynamic> json) => Group(
     )
       ..id = json['id'] as String
       ..sysCreated = DateTime.parse(json['sysCreated'] as String)
-      ..sysUpdated = DateTime.parse(json['sysUpdated'] as String)
-      ..installmentDate = json['installmentDate'] as int;
+      ..sysUpdated = DateTime.parse(json['sysUpdated'] as String);
 
 Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
       'id': instance.id,
       'sysCreated': instance.sysCreated.toIso8601String(),
       'sysUpdated': instance.sysUpdated.toIso8601String(),
       'name': instance.name,
-      'installmentDate': instance.installmentDate,
       'sdt': instance.sdt.toIso8601String(),
       'edt': instance.edt.toIso8601String(),
       'accountOpeningDate': instance.accountOpeningDate.toIso8601String(),

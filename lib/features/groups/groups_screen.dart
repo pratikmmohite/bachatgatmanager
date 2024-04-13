@@ -25,6 +25,12 @@ class _GroupsScreenState extends State<GroupsScreen> {
       appBar: AppBar(
         title: Text(AppLocal.of(context).appTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () async {
+              refreshGroupList();
+            },
+          ),
           ValueListenableBuilder(
             valueListenable: AppLocal.l(),
             builder: (context, local, child) {
@@ -49,7 +55,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
               await AppUtils.navigateTo(context, const ImportExportPage());
               refreshGroupList();
             },
-          )
+          ),
         ],
       ),
       body: GroupsListPage(

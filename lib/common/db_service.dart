@@ -5,6 +5,8 @@ import 'package:sqflite/sqflite.dart' as sqlite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as desktopSqflite;
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart' as webSqflite;
 
+import 'utils.dart';
+
 class DbService {
   static final DbService _instance = DbService._internal();
 
@@ -17,27 +19,57 @@ class DbService {
 
   DbService._internal();
 
+  String get dbPath => db.path ?? "";
+
   void initDbFactory() {
     if (kIsWeb) {
       sqlite.databaseFactory = webSqflite.databaseFactoryFfiWeb;
-    } else if (Platform.isWindows | Platform.isLinux | Platform.isMacOS) {
+    } else if (Platform.isWindows || Platform.isLinux) {
       sqlite.databaseFactory = desktopSqflite.databaseFactoryFfi;
+      desktopSqflite.sqfliteFfiInit();
     }
   }
 
-  Future<void> initDb({String? path}) async {
+  Future<bool> initDb({String? path}) async {
     var dbPath = path ?? "app_db.sqlite";
     initDbFactory();
     db = await sqlite.openDatabase(dbPath, version: version,
         onCreate: (dbC, version) async {
       await _createTables(dbC);
     });
+    return true;
   }
 
-  Future<void> closeDb() async {
+  Future<bool> closeDb() async {
     if (db.isOpen) {
       await db.close();
+      return true;
     }
+    return false;
+  }
+
+  Future<String> bkpDb() async {
+    String dbPath = db.path;
+    String bkpPath = "$dbPath.bkp";
+    // Delete old backup
+    await deleteDb(path: bkpPath);
+    // Copy old db
+    await AppUtils.copyFile(dbPath, bkpPath);
+    return bkpPath;
+  }
+
+  Future<bool> deleteDb({String? path}) async {
+    String dbPath = path ?? db.path;
+    bool dbExist = await dbExists(dbPath);
+    if (dbExist) {
+      await sqlite.deleteDatabase(dbPath);
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> dbExists(String path) async {
+    return await sqlite.databaseExists(path);
   }
 
   Future<List<Map<String, Object?>>> read(String sql,
