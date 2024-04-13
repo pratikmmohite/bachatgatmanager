@@ -54,7 +54,8 @@ class _YearlyReportState extends State<YearlyReport> {
       givenLoan: 0.0,
     );
     _textController = TextEditingController(
-        text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
+        text:
+            "${formatDt(DateTime(_startDate.year - 1, _startDate.month, _startDate.day))} to ${formatDt(_endDate)}");
   }
 
   @override
@@ -80,13 +81,16 @@ class _YearlyReportState extends State<YearlyReport> {
                 child: TextFormField(
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: "Select Date (YYYY-MM-DD) to (YYYY-MM-DD)",
+                    labelText: "Select Date",
                     hintText: "Enter ${local.tfStartDate}",
                     filled: true,
                   ),
                   controller: _textController,
                   onTap: () async {
-                    var dt = DateTimeRange(start: _startDate, end: _endDate);
+                    var dt = DateTimeRange(
+                        start: DateTime(_startDate.year - 1, _startDate.month,
+                            _startDate.day),
+                        end: _endDate);
                     DateTimeRange? selectedRange = await showDateRangePicker(
                       context: context,
                       initialDateRange: dt,
