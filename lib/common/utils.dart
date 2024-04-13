@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -126,5 +129,36 @@ class AppUtils {
       return result.files.single.path!;
     }
     return "";
+  }
+
+  static Future<Uint8List> pickFileBytes(
+      [List<String>? allowedExtensions]) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: [],
+      allowMultiple: false,
+      type: FileType.any,
+    );
+    if (result != null) {
+      return result.files.single.bytes!;
+    }
+    return Uint8List(0);
+  }
+
+  static Future<bool> renameFile(String path, String renamePath) async {
+    var file = File(path);
+    if (file.existsSync()) {
+      await file.rename(path);
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> copyFile(String path, String renamePath) async {
+    var file = File(path);
+    if (file.existsSync()) {
+      await file.copy(path);
+      return true;
+    }
+    return false;
   }
 }
