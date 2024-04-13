@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart' as path;
 import 'package:uuid/uuid.dart';
 
 import 'constants.dart';
@@ -111,9 +116,32 @@ class AppUtils {
 
   static Future<String?> saveFile(String name, String filePath) async {
     String ext = filePath.split(".").last;
-    var s = await FileSaver.instance.saveAs(
+    var path = await FileSaver.instance.saveAs(
         filePath: filePath, name: name, ext: ext, mimeType: MimeType.other);
-    return s;
+    return path;
+  }
+
+  static Future<String?> saveAsBytes(
+    String name,
+    String ext,
+    Uint8List bytes,
+  ) async {
+    var path = await FileSaver.instance
+        .saveAs(bytes: bytes, name: name, ext: ext, mimeType: MimeType.other);
+    return path;
+  }
+
+  static saveAndOpenFile(List<int> bytes, {String ext = "xlsx"}) async {
+    var directory = await getTempDirectory();
+
+    var id = "x${AppUtils.getUUID()}";
+    String filePath = [directory, "$id.$ext"].join(Platform.pathSeparator);
+
+    File(filePath)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(bytes);
+
+    OpenFilex.open(filePath);
   }
 
   static Future<String> pickFile([List<String>? allowedExtensions]) async {
@@ -126,5 +154,15 @@ class AppUtils {
       return result.files.single.path!;
     }
     return "";
+  }
+
+  static Future<String> getDocumentDirectory() async {
+    final directory = await path.getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  static Future<String> getTempDirectory() async {
+    final directory = await path.getTemporaryDirectory();
+    return directory.path;
   }
 }

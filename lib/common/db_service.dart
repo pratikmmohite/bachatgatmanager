@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sqlite;
-import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' as desktopSqflite;
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart' as webSqflite;
 
 class DbService {
   static final DbService _instance = DbService._internal();
@@ -14,12 +17,17 @@ class DbService {
 
   DbService._internal();
 
-  Future<void> initDb() async {
-    var dbPath = "app_db.sqlite";
+  void initDbFactory() {
     if (kIsWeb) {
-      sqlite.databaseFactory = databaseFactoryFfiWeb;
-      dbPath = "app_db.sqlite";
+      sqlite.databaseFactory = webSqflite.databaseFactoryFfiWeb;
+    } else if (Platform.isWindows | Platform.isLinux | Platform.isMacOS) {
+      sqlite.databaseFactory = desktopSqflite.databaseFactoryFfi;
     }
+  }
+
+  Future<void> initDb({String? path}) async {
+    var dbPath = path ?? "app_db.sqlite";
+    initDbFactory();
     db = await sqlite.openDatabase(dbPath, version: version,
         onCreate: (dbC, version) async {
       await _createTables(dbC);
@@ -27,10 +35,9 @@ class DbService {
   }
 
   Future<void> closeDb() async {
-    if (kIsWeb) {
-      sqlite.databaseFactory = databaseFactoryFfiWeb;
+    if (db.isOpen) {
+      await db.close();
     }
-    db.close();
   }
 
   Future<List<Map<String, Object?>>> read(String sql,

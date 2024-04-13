@@ -107,30 +107,6 @@ class _CustomDropDownState<T> extends State<CustomDropDown<T>> {
   @override
   Widget build(BuildContext context) {
     return buildMenuDropDown();
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            onPressed: () async {
-              var option = await showOptions();
-              try {
-                if (option != null && widget.onChange != null) {
-                  setState(() {
-                    selectedOptionObject = option;
-                  });
-                  widget.onChange!(option);
-                }
-              } catch (e) {
-                print(e);
-              }
-            },
-            child: selectedOptionObject != null
-                ? Text(selectedOptionObject?.label ?? "")
-                : Text(widget.label),
-          ),
-        ),
-      ],
-    );
   }
 }
 

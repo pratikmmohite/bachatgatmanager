@@ -66,7 +66,39 @@ abstract class AppLocalization {
     "lInterest": "Interest(+)",
     "lPenalty": "Penalty(+)",
     "lOthers": "Others(+)",
-    "lActions": "Actions"
+    "lActions": "Actions",
+    "lDeposit": "Total Deposit (+)",
+    "ltShares": "Total Shares (+)",
+    "ltBankBalance": "Total Bank Balance",
+    "ltExpenditures": "Other Expenditures",
+    "ltOther": "Other Deposit(+)",
+    "ltGathered": "Total Gathered",
+    "lPrm": "Previous Remaining Balance",
+    "lTSaving": "Total Saving",
+    "lMcount": "Member Count",
+    "lmPortion": "Member Portion",
+    "lmCollection": "Month Collection",
+    "lgSummary": "Group Summary",
+    "lgRecord": "Record Statement",
+    "lgTransaction": "Group Transaction",
+    "lmList": "Member List",
+    "lRecord": "Reports",
+    "lmReport": "Member Reports",
+    "lMReport": "Monthly Reports",
+    "lYReport": "Yearly Report",
+    "to": "To",
+    "period": "Period",
+    "type": "Type",
+    "ltcr": "Total Credit",
+    "ltdr": "Total Debit",
+    "sumr": "Totals",
+    "cr": "Credit",
+    "dr": "Debit",
+    "lmonth": "Month",
+    "ladd": "Added On",
+    "lmcr": "Monthly credit",
+    "lcb": " Monthly Closing balance",
+    "lcrdr": "Total"
   };
   List<String> get months => [
         "Jan",
@@ -169,6 +201,38 @@ abstract class AppLocalization {
   String get lShareAmount => getValue("lShareAmount");
   String get lRmLoan => getValue("lRmLoan");
   String get lNote => getValue("lNote");
+  String get lDeposit => getValue("lDeposit");
+  String get ltShares => getValue("ltShares");
+  String get ltBankBalance => getValue("ltBankBalance");
+  String get ltExpenditures => getValue("ltExpenditures");
+  String get ltOther => getValue("ltOther");
+  String get ltGathered => getValue("ltGathered");
+  String get lPrm => getValue("lPrm");
+  String get lTSaving => getValue("lTSaving");
+  String get lMcount => getValue("lMcount");
+  String get lmPortion => getValue("lmPortion");
+  String get lmCollecton => getValue("lmCollection");
+  String get lgSummary => getValue("lgSummary");
+  String get lgRecord => getValue("lgRecord");
+  String get lgTransaction => getValue("lgTransaction");
+  String get lmList => getValue("lmList");
+  String get lRecord => getValue("lRecord");
+  String get lmReport => getValue("lmReport");
+  String get lMReport => getValue("lMReport");
+  String get lYReport => getValue("lYReport");
+  String get to => getValue("to");
+  String get period => getValue("period");
+  String get type => getValue("type");
+  String get ltcr => getValue("ltcr");
+  String get ltdr => getValue("ltdr");
+  String get sumr => getValue("sumr");
+  String get cr => getValue("cr");
+  String get dr => getValue("dr");
+  String get lmonth => getValue("lmonth");
+  String get ladd => getValue("ladd");
+  String get lmcr => getValue("lmcr");
+  String get lcb => getValue("lcb");
+  String get lcrdr => getValue("lcrdr");
 }
 
 class EnAppLocalization extends AppLocalization {
@@ -242,7 +306,40 @@ class MrAppLocalization extends AppLocalization {
         "lInterest": "व्याज",
         "lPenalty": "दंड",
         "lOthers": "इतर",
-        "lActions": "क्रिया"
+        "lActions": "क्रिया",
+        "lGivenLoan": "दिलेले कर्ज",
+        "lDeposit": "एकूण ठेव (+)",
+        "ltShares": "एकूण शेअर(+)",
+        "ltBankBalance": "आज अखेर  शिल्लक रक्कम",
+        "ltExpenditures": "इतर खर्च",
+        "ltOther": "इतर जमा",
+        "ltGathered": "एकूण जमा",
+        "lPrm": "मागील शिल्लक",
+        "lTSaving": "एकूण बचत",
+        "lMcount": "एकूण सदस्य",
+        "lmPortion": "सदस्य भाग",
+        "lmCollection": "महिन्याचा संग्रह",
+        "lgSummary": "गट सारांश",
+        "lgRecord": "माहेवार'जमापत्रक",
+        "lgTransaction": "गट व्यवहार",
+        "lmList": "सदस्य सूची",
+        "lRecord": "बचत अहवाल",
+        "lmReport": "सदस्य अहवाल",
+        "lMReport": "मासिक अहवाल",
+        "lYReport": "वार्षिक अहवाल",
+        "to": "ते",
+        "period": "कालावधी",
+        "type": "प्रकार",
+        "ltcr": "एकूण जमा",
+        "ltdr": "एकूण खर्च ",
+        "sumr": "सारांश",
+        "cr": "जमा",
+        "dr": "खर्च",
+        "lmonth": "महिना",
+        "ladd": "दिनांक",
+        "lmcr": "मासिक जमा",
+        "lcb": "चालू महिन्यातील शिल्लक",
+        "lcrdr": "एकूण ",
       };
 
   @override

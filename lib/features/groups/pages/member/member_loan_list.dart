@@ -20,6 +20,7 @@ class MembersLoanList extends StatefulWidget {
 
 class _MembersLoanListState extends State<MembersLoanList> {
   bool isLoading = false;
+
   List<Loan> loans = [];
   late GroupsDao groupDao;
   late Group _group;
@@ -153,7 +154,7 @@ class _MembersLoanListState extends State<MembersLoanList> {
                           onPressed: () {
                             recalculateLoan(loan);
                           },
-                          icon: Icon(Icons.calculate_sharp),
+                          icon: const Icon(Icons.calculate_sharp),
                         ),
                         CustomDeleteIcon<Loan>(
                           item: loan,
