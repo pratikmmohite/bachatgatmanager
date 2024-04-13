@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:open_filex/open_filex.dart';
@@ -114,7 +115,7 @@ class AppUtils {
     return monthStrings;
   }
 
-  static Future<String?> saveFile(String name, String filePath) async {
+  static Future<String?> saveAsFile(String name, String filePath) async {
     String ext = filePath.split(".").last;
     var path = await FileSaver.instance.saveAs(
         filePath: filePath, name: name, ext: ext, mimeType: MimeType.other);
@@ -144,7 +145,7 @@ class AppUtils {
     OpenFilex.open(filePath);
   }
 
-  static Future<String> pickFile([List<String>? allowedExtensions]) async {
+  static Future<String> pickFilePath([List<String>? allowedExtensions]) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowedExtensions: [],
       allowMultiple: false,
@@ -156,6 +157,37 @@ class AppUtils {
     return "";
   }
 
+  static Future<PlatformFile?> pickFile(
+      [List<String>? allowedExtensions]) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: [],
+      allowMultiple: false,
+      type: FileType.any,
+    );
+    if (result != null) {
+      return result.files.single;
+    }
+    return null;
+  }
+
+  static Future<bool> renameFile(String path, String renamePath) async {
+    var file = File(path);
+    if (file.existsSync()) {
+      await file.rename(path);
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> copyFile(String path, String renamePath) async {
+    var file = File(path);
+    if (file.existsSync()) {
+      await file.copy(renamePath);
+      return true;
+    }
+    return false;
+  }
+
   static Future<String> getDocumentDirectory() async {
     final directory = await path.getApplicationDocumentsDirectory();
     return directory.path;
@@ -164,5 +196,22 @@ class AppUtils {
   static Future<String> getTempDirectory() async {
     final directory = await path.getTemporaryDirectory();
     return directory.path;
+  }
+
+  static bool isSQLiteFile(Uint8List? fileBytes) {
+    try {
+      if (fileBytes == null || fileBytes.length < 16) {
+        return false;
+      }
+      // Read the first 16 bytes of the file
+      List<int> bytes = fileBytes.sublist(0, 16);
+      // SQLite databases start with the ASCII string "SQLite format 3"
+      String signature = String.fromCharCodes(bytes);
+      bool res = signature.contains("SQLite format 3");
+      return res;
+    } catch (e) {
+      // Error reading the file or file is too small
+      return false;
+    }
   }
 }

@@ -14,6 +14,10 @@ abstract class AppLocalization {
     "mSelectLoan": "Please select loan",
     "mEnterLoanAmount": "Please enter loan amount",
     "mEnterShareAmount": "Please enter share amount",
+    "mAddGroupMsg": "Click + to add members",
+    "mAddMemberMsg": "Click + to add groups",
+    "bAddGroup": "Add Group",
+    "bAddMember": "Add Member",
     "bImportFile": "Import Data",
     "bExportFile": "Export Data",
     "bSave": "Save",
@@ -98,7 +102,7 @@ abstract class AppLocalization {
     "ladd": "Added On",
     "lmcr": "Monthly credit",
     "lcb": " Monthly Closing balance",
-    "lcrdr": "Total"
+    "lcrdr": "Total",
   };
   List<String> get months => [
         "Jan",
@@ -134,8 +138,11 @@ abstract class AppLocalization {
   String get abMemberList => getValue("abMemberList");
   String get abLoanList => getValue("abLoanList");
   String get abAddGroup => getValue("abAddGroup");
+
   String get abImportExport => getValue("abImportExport");
   // Messages
+  String get mAddMemberMsg => getValue("mAddMemberMsg");
+  String get mAddGroupMsg => getValue("mAddGroupMsg");
   String get mLoanSuccess => getValue("mLoanSuccess");
   String get mRecordedLoanPaymentSuccess =>
       getValue("mRecordedLoanPaymentSuccess");
@@ -147,6 +154,8 @@ abstract class AppLocalization {
   String get mEnterLoanAmount => getValue("mEnterLoanAmount");
   String get mEnterShareAmount => getValue("mEnterShareAmount");
   // Buttons
+  String get bAddGroup => getValue("bAddGroup");
+  String get bAddMember => getValue("bAddMember");
   String get bGiveLoan => getValue("bGiveLoan");
   String get bImportFile => getValue("bImportFile");
   String get bExportFile => getValue("bExportFile");
@@ -256,6 +265,10 @@ class MrAppLocalization extends AppLocalization {
         "mSelectLoan": "कृपया कर्ज निवडा",
         "mEnterLoanAmount": "कृपया कर्ज रक्कम प्रविष्ट करा",
         "mEnterShareAmount": "कृपया शेअर रक्कम प्रविष्ट करा",
+        "mAddGroupMsg": "गट जोडण्यासाठी + वर क्लिक करा",
+        "mAddMemberMsg": "सदस्य जोडण्यासाठी + वर क्लिक करा",
+        "bAddGroup": "समूह जोडा",
+        "bAddMember": "सदस्य जोडा",
         "bImportFile": "डेटा आयात करा",
         "bExportFile": "डेटा निर्यात करा",
         "bSave": "सेव्ह",

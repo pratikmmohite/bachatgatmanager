@@ -12,7 +12,8 @@ GroupSummaryFilter _$GroupSummaryFilterFromJson(Map<String, dynamic> json) =>
     )
       ..edt = DateTime.parse(json['edt'] as String)
       ..sdt = DateTime.parse(json['sdt'] as String)
-      ..dateMode = json['dateMode'] as String;
+      ..dateMode = json['dateMode'] as String
+      ..type = json['type'] as String;
 
 Map<String, dynamic> _$GroupSummaryFilterToJson(GroupSummaryFilter instance) =>
     <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$GroupSummaryFilterToJson(GroupSummaryFilter instance) =>
       'edt': instance.edt.toIso8601String(),
       'sdt': instance.sdt.toIso8601String(),
       'dateMode': instance.dateMode,
+      'type': instance.type,
     };

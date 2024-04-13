@@ -1,5 +1,6 @@
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/group/group_actions.dart';
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 import '../../dao/groups_dao.dart';
@@ -79,60 +80,66 @@ class GroupsListPageState extends State<GroupsListPage> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return RefreshIndicator(
       onRefresh: () async {
         await getGroups();
       },
-      child: ListView.builder(
-        itemBuilder: (ctx, index) {
-          var group = groups[index];
-          return Card(
-            child: ListTile(
-              leading: const Icon(Icons.card_membership_rounded),
-              title: Text(
-                group.name,
-              ),
-              subtitle: Text(getDateRangeStr(group.sdt, group.edt)),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (ct) => GroupAddPage(
-                            group: group,
-                            key: ValueKey(group.id),
-                          ),
+      child: groups.isEmpty
+          ? Center(
+              child: Text(
+              local.mAddGroupMsg,
+            ))
+          : ListView.builder(
+              itemBuilder: (ctx, index) {
+                var group = groups[index];
+                return Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.card_membership_rounded),
+                    title: Text(
+                      group.name,
+                    ),
+                    subtitle: Text(getDateRangeStr(group.sdt, group.edt)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ct) => GroupAddPage(
+                                  group: group,
+                                  key: ValueKey(group.id),
+                                ),
+                              ),
+                            );
+                            await getGroups();
+                          },
+                        ),
+                        CustomDeleteIcon<Group>(
+                          item: group,
+                          content: Text("Group: ${group.name}"),
+                          onAccept: (g) {
+                            deleteGroup(g);
+                          },
+                        )
+                      ],
+                    ),
+                    onTap: () async {
+                      AppUtils.navigateTo(
+                        context,
+                        GroupActions(
+                          key: ValueKey(group.id),
+                          group: group,
                         ),
                       );
-                      await getGroups();
                     },
-                  ),
-                  CustomDeleteIcon<Group>(
-                    item: group,
-                    content: Text("Group: ${group.name}"),
-                    onAccept: (g) {
-                      deleteGroup(g);
-                    },
-                  )
-                ],
-              ),
-              onTap: () async {
-                AppUtils.navigateTo(
-                  context,
-                  GroupActions(
-                    key: ValueKey(group.id),
-                    group: group,
                   ),
                 );
               },
+              itemCount: groups.length,
             ),
-          );
-        },
-        itemCount: groups.length,
-      ),
     );
   }
 }

@@ -1,11 +1,32 @@
-import 'package:bachat_gat/common/routes.dart';
+import 'package:bachat_gat/common/common_index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'app_theme.dart';
 import 'locals/app_local_delegate.dart';
 
-class AppRoot extends StatelessWidget {
+class AppRoot extends StatefulWidget {
   const AppRoot({super.key});
+
+  @override
+  State<AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<AppRoot> {
+  @override
+  void initState() {
+    loadLocal();
+    super.initState();
+  }
+
+  Future<void> loadLocal() async {
+    try {
+      var code = await StorageService.getLocal();
+      AppLocal.c(code);
+    } catch (e) {
+      // do nothing
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +47,7 @@ class AppRoot extends StatelessWidget {
             Locale('mr'),
           ],
           debugShowCheckedModeBanner: false,
-          // theme: ThemeData.light(useMaterial3: true),
+          theme: AppTheme.of(context),
           initialRoute: Routes.rGroups,
           routes: Routes.getRoutes(),
         );
@@ -45,7 +66,7 @@ class AppRoot extends StatelessWidget {
           Locale('mr'),
         ],
         debugShowCheckedModeBanner: false,
-        // theme: ThemeData.light(useMaterial3: true),
+        theme: AppTheme.of(context),
         initialRoute: Routes.rGroups,
         routes: Routes.getRoutes(),
       ),
