@@ -3,14 +3,12 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Dart
+name: Flutter Web Build
 
 on:
   push:
-    branches: [ "live" ]
-  pull_request:
-    branches: [ "live" ]
-
+    tags:        
+      - w1.*
 jobs:
   build:
     runs-on: ubuntu-latest
