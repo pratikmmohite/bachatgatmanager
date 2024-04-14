@@ -14,10 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Flutter SDK
         uses: flutter-actions/setup-flutter@v2
+        with:
+          channel: stable
+          version: 3.19.5
 
       - name: Install dependencies
         run: flutter pub get 
