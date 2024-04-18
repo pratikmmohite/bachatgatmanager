@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 abstract class AppLocalization {
   Map<String, String> defaultLocalMap = {
     "appTitle": "Saving Group",
@@ -108,6 +114,7 @@ abstract class AppLocalization {
     "lcb": " Monthly Closing balance",
     "lcrdr": "Total",
   };
+
   List<String> get months => [
         "Jan",
         "Feb",

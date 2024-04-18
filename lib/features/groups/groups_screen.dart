@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/save_data/import_export_page.dart';
 import 'package:flutter/material.dart';
