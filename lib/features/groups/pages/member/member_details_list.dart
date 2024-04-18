@@ -258,9 +258,12 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   }
 
   Widget buildView() {
+    var locale = AppLocal.of(context);
     if (groupMemberDetails.isEmpty) {
-      return const Center(
-        child: Text("Add members to record transactions"),
+      return Center(
+        child: Text(
+          locale.mEmptyMemberDetails,
+        ),
       );
     }
     if (viewMode == "list") {

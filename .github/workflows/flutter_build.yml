@@ -31,7 +31,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: dev.pratikm.saving_group
+          name: ${{ github.run_number }}.web
           path: ./build/web
 
           

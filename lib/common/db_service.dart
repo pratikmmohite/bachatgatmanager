@@ -10,7 +10,7 @@ import 'utils.dart';
 class DbService {
   static final DbService _instance = DbService._internal();
 
-  int version = 2;
+  int version = 1;
   late sqlite.Database db;
 
   factory DbService() {
@@ -107,6 +107,13 @@ class DbService {
     var updatedRows =
         await db.delete(table, where: where, whereArgs: whereArgs);
     return updatedRows;
+  }
+
+  Future<String> getDbVersion() async {
+    var res = await db.rawQuery("select sqlite_version() as version ");
+    var dbVersion = res.first["version"].toString();
+    var userVersion = await db.getVersion();
+    return "DB Version: $dbVersion     Schema Version: $userVersion";
   }
 
   Future<void> _createTables(sqlite.Database dbC) async {

@@ -14,6 +14,16 @@ class ImportExportPage extends StatefulWidget {
 }
 
 class _ImportExportPageState extends State<ImportExportPage> {
+  String dbVersion = "";
+
+  Future<void> fetchDbVersion() async {
+    var dbService = DbService();
+    dbVersion = await dbService.getDbVersion();
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   Future<void> exportFile() async {
     try {
       var dbService = DbService();
@@ -31,9 +41,10 @@ class _ImportExportPageState extends State<ImportExportPage> {
   Future<void> importFile() async {
     try {
       var selectedFile = await AppUtils.pickFile(["sqlite"]);
+      var bytes = await selectedFile?.readAsBytes();
       if (selectedFile == null ||
-          selectedFile.bytes == null ||
-          !AppUtils.isSQLiteFile(selectedFile.bytes)) {
+          bytes == null ||
+          !AppUtils.isSQLiteFile(bytes)) {
         AppUtils.toast(context, "Select supported file with ext .sqlite");
         return;
       }
@@ -42,8 +53,7 @@ class _ImportExportPageState extends State<ImportExportPage> {
         await dbService.bkpDb();
       }
       await dbService.closeDb();
-      await sqlite.databaseFactory
-          .writeDatabaseBytes(dbService.dbPath, selectedFile.bytes!);
+      await sqlite.databaseFactory.writeDatabaseBytes(dbService.dbPath, bytes);
       await dbService.initDb();
       AppUtils.toast(context, "Data imported successfully");
       AppUtils.close(context);
@@ -61,11 +71,26 @@ class _ImportExportPageState extends State<ImportExportPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fetchDbVersion();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(local.abImportExport),
+      ),
+      bottomSheet: BottomSheet(
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(dbVersion),
+          );
+        },
+        onClosing: () {},
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

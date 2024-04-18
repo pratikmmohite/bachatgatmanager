@@ -1,3 +1,4 @@
+import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 
 typedef CustomDeleteIconChangeFunc<T> = void Function(T option);
@@ -24,12 +25,13 @@ class _CustomDeleteIconState<T> extends State<CustomDeleteIcon<T>> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
+        var local = AppLocal.of(context);
         return AlertDialog(
-          title: const Text('Are you sure to delete this?'),
+          title: Text(local.mConfirmDeleteMsg),
           content: widget.content,
           actions: <Widget>[
             TextButton(
-              child: const Text('No'),
+              child: Text(local.bNo),
               onPressed: () {
                 if (widget.onCancel != null) {
                   widget.onCancel!(widget.item);
@@ -38,9 +40,7 @@ class _CustomDeleteIconState<T> extends State<CustomDeleteIcon<T>> {
               },
             ),
             TextButton(
-              child: const Text(
-                'Yes',
-              ),
+              child: Text(local.bYes),
               onPressed: () {
                 try {
                   if (widget.onAccept != null) {

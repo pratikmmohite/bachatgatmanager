@@ -11,6 +11,8 @@ abstract class AppLocalization {
     "mRecordedLoanPaymentSuccess": "Recorded loan payment successfully",
     "mRecordedSharePaymentSuccess": "Recorded share payment successfully",
     "mRecordedTrxPaymentSuccess": "Recorded transaction successfully",
+    "mConfirmDeleteMsg": "Are you sure you want to delete this?",
+    "mEmptyMemberDetails": "Add members to record transactions",
     "mSelectLoan": "Please select loan",
     "mEnterLoanAmount": "Please enter loan amount",
     "mEnterShareAmount": "Please enter share amount",
@@ -27,6 +29,8 @@ abstract class AppLocalization {
     "bAddLoan": "Give new loan",
     "bShowLoans": "Show Loans",
     "bShowTransactions": "Show transactions",
+    "bYes": "Yes",
+    "bNo": "No",
     "tfEnterLoanAmt": "Enter loan amount",
     "tfEnterLoanInterest": "Enter loan interest",
     "tfEnterNote": "Enter note",
@@ -153,6 +157,8 @@ abstract class AppLocalization {
   String get mSelectLoan => getValue("mSelectLoan");
   String get mEnterLoanAmount => getValue("mEnterLoanAmount");
   String get mEnterShareAmount => getValue("mEnterShareAmount");
+  String get mConfirmDeleteMsg => getValue("mConfirmDeleteMsg");
+  String get mEmptyMemberDetails => getValue("mEmptyMemberDetails");
   // Buttons
   String get bAddGroup => getValue("bAddGroup");
   String get bAddMember => getValue("bAddMember");
@@ -165,6 +171,8 @@ abstract class AppLocalization {
   String get bAddLoan => getValue("bAddLoan");
   String get bShowLoans => getValue("bShowLoans");
   String get bShowTransactions => getValue("bShowTransactions");
+  String get bYes => getValue("bYes");
+  String get bNo => getValue("bNo");
   // Input Fields
   String get tfEnterLoanAmt => getValue("tfEnterLoanAmt");
   String get tfEnterLoanInterest => getValue("tfEnterLoanInterest");
@@ -267,6 +275,8 @@ class MrAppLocalization extends AppLocalization {
         "mEnterShareAmount": "कृपया शेअर रक्कम प्रविष्ट करा",
         "mAddGroupMsg": "गट जोडण्यासाठी + वर क्लिक करा",
         "mAddMemberMsg": "सदस्य जोडण्यासाठी + वर क्लिक करा",
+        "mConfirmDeleteMsg": 'तुमची खात्री आहे की तुम्ही हे हटवू इच्छिता?',
+        "mEmptyMemberDetails": "व्यवहार रेकॉर्ड करण्यासाठी सदस्य जोडा",
         "bAddGroup": "समूह जोडा",
         "bAddMember": "सदस्य जोडा",
         "bImportFile": "डेटा आयात करा",
@@ -277,6 +287,8 @@ class MrAppLocalization extends AppLocalization {
         "bAddShare": "शेअर जोडा",
         "bAddLoan": "कर्ज जोडा",
         "bShowLoans": "कर्ज दाखवा",
+        "bYes": "होय",
+        "bNo": "नाही",
         "tfEnterLoanAmt": "कर्ज रक्कम प्रविष्ट करा",
         "tfEnterLoanInterest": "कर्ज व्याज प्रविष्ट करा",
         "tfEnterNote": "टीप प्रविष्ट करा",

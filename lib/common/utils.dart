@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
@@ -157,15 +158,15 @@ class AppUtils {
     return "";
   }
 
-  static Future<PlatformFile?> pickFile(
-      [List<String>? allowedExtensions]) async {
+  static Future<XFile?> pickFile([List<String>? allowedExtensions]) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowedExtensions: [],
       allowMultiple: false,
+      withData: true,
       type: FileType.any,
     );
     if (result != null) {
-      return result.files.single;
+      return result.xFiles.first;
     }
     return null;
   }
