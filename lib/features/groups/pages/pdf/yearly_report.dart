@@ -15,8 +15,9 @@ class YearlyReport extends StatefulWidget {
 
 class _YearlyReportState extends State<YearlyReport> {
   late Group _group;
-  late DateTime _startDate = DateTime.now();
-  late DateTime _endDate = DateTime.now();
+  DateTime currentDate = DateTime.now();
+  late DateTime _startDate;
+  late DateTime _endDate;
   bool isLoading = false;
 
   double totalcredit = 0.0;
@@ -24,7 +25,7 @@ class _YearlyReportState extends State<YearlyReport> {
   String str = '';
   String end = '';
   double bankBalance = 0.0;
-  DateTimeRange dtchange =
+  late DateTimeRange dtchange =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
   String _formattDate(DateTime date) {
@@ -40,7 +41,13 @@ class _YearlyReportState extends State<YearlyReport> {
   void initState() {
     super.initState();
     _group = widget.group;
-
+    _startDate = currentDate.subtract(const Duration(days: 365));
+    _endDate = currentDate;
+    dtchange = DateTimeRange(
+        start: DateTime(
+          _startDate.year - 1,
+        ),
+        end: DateTime.now());
     balanceSummary = GroupBalanceSummary(
       deposit: 0.0,
       shares: 0.0,
@@ -71,9 +78,7 @@ class _YearlyReportState extends State<YearlyReport> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Divider(
-                color: Colors.black,
-              ),
+              const Divider(),
               const SizedBox(height: 15),
 
               Container(

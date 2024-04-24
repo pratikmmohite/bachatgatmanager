@@ -60,6 +60,7 @@ class _MemberReportState extends State<MemberReport> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Dropdown for Member List
+            const Divider(),
             CustomDropDown<GroupMember>(
               value: selectedMemberId,
               onChange: (newValue) {
