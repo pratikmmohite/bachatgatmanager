@@ -93,8 +93,8 @@ class _YearlyReportState extends State<YearlyReport> {
                   controller: _textController,
                   onTap: () async {
                     var dt = DateTimeRange(
-                        start: DateTime(_startDate.year - 1, _startDate.month,
-                            _startDate.day),
+                        start: DateTime(
+                            _startDate.year, _startDate.month, _startDate.day),
                         end: _endDate);
                     DateTimeRange? selectedRange = await showDateRangePicker(
                       context: context,
