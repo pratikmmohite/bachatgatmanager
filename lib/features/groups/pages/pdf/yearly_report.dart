@@ -45,7 +45,7 @@ class _YearlyReportState extends State<YearlyReport> {
     _endDate = currentDate;
     dtchange = DateTimeRange(
         start: DateTime(
-          _startDate.year - 1,
+          _startDate.year,
         ),
         end: DateTime.now());
     balanceSummary = GroupBalanceSummary(
@@ -62,7 +62,7 @@ class _YearlyReportState extends State<YearlyReport> {
     );
     _textController = TextEditingController(
         text:
-            "${formatDt(DateTime(_startDate.year - 1, _startDate.month, _startDate.day))} to ${formatDt(_endDate)}");
+            "${formatDt(DateTime(_startDate.year, _startDate.month, _startDate.day))} to ${formatDt(_endDate)}");
   }
 
   @override
