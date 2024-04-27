@@ -1,5 +1,5 @@
-name: bachat_gat
-description: Saving Group Application
+name: saving_group
+description: Manage Saving Group (बचत गट) transactions
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
