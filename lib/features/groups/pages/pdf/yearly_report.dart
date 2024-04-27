@@ -34,7 +34,7 @@ class _YearlyReportState extends State<YearlyReport> {
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
   String _formattDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}";
+    return "${date.month.toString().padLeft(2, "0")}/${date.year}";
   }
 
   String formatDt(DateTime dt) {
@@ -73,15 +73,10 @@ class _YearlyReportState extends State<YearlyReport> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Divider(
-                color: Colors.black,
-              ),
-              const SizedBox(height: 15),
-
               Container(
                 margin: const EdgeInsets.all(2),
                 child: TextFormField(
@@ -130,12 +125,12 @@ class _YearlyReportState extends State<YearlyReport> {
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                             const EdgeInsets.all(10)),
                       ),
-                      icon: const Icon(Icons.download),
+                      icon: const Icon(Icons.table_view),
                       onPressed: () async {
                         ExcelExample.createAndSaveExcel(_group.id.toString(),
                             _group.name.toString(), _startDate, _endDate);
                       },
-                      label: const Text('Download Excel'),
+                      label: const Text('Download'),
                     ),
                   ),
                   const SizedBox(
@@ -147,7 +142,7 @@ class _YearlyReportState extends State<YearlyReport> {
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                             const EdgeInsets.all(10)),
                       ),
-                      icon: const Icon(Icons.summarize),
+                      icon: const Icon(Icons.refresh),
                       onPressed: () async {
                         final dao = GroupsDao();
                         setState(() {
@@ -175,158 +170,144 @@ class _YearlyReportState extends State<YearlyReport> {
               if (isLoading) const CircularProgressIndicator(),
 
               if (!isLoading)
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Group Name:${_group.name.toString()}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Group Name : ${_group.name.toString()}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueAccent,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Text(
-                        'Time Period ${_formattDate(_startDate)} to ${_formattDate(_endDate)} ',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: 13, // Number of rows
-                        itemBuilder: (BuildContext context, int index) {
-                          String label = '';
-                          String value = '';
+                        Text(
+                          '${_formattDate(_startDate)} to ${_formattDate(_endDate)} ',
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                        const Divider(),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: 13, // Number of rows
+                          itemBuilder: (BuildContext context, int index) {
+                            String label = '';
+                            String value = '';
+                            // Assign labels and values based on index
+                            switch (index) {
+                              case 0:
+                                label = local.lPrm;
+                                value = balanceSummary.previousRemaining
+                                    .toStringAsFixed(2);
+                                break;
+                              case 1:
+                                label = local.lDeposit;
+                                value =
+                                    balanceSummary.deposit.toStringAsFixed(2);
+                                break;
+                              case 2:
+                                label = local.ltShares;
+                                value =
+                                    balanceSummary.shares.toStringAsFixed(2);
+                                break;
+                              case 3:
+                                label = local.lPaidInterest;
+                                value = balanceSummary.loanInterest
+                                    .toStringAsFixed(2);
+                                break;
+                              case 4:
+                                label = local.lPaidLoan;
+                                value =
+                                    balanceSummary.paidLoan.toStringAsFixed(2);
+                                break;
+                              case 5:
+                                label = local.lPenalty;
+                                value = balanceSummary.penalty.toString();
+                                break;
+                              case 6:
+                                label = local.ltOther;
+                                value = balanceSummary.otherDeposit.toString();
+                                break;
+                              case 7:
+                                label = local.ltcr;
+                                value = (balanceSummary.previousRemaining +
+                                        balanceSummary.deposit +
+                                        balanceSummary.loanInterest +
+                                        balanceSummary.penalty +
+                                        balanceSummary.otherDeposit +
+                                        balanceSummary.shares +
+                                        balanceSummary.paidLoan)
+                                    .toStringAsFixed(2);
+                                totalcredit = balanceSummary.previousRemaining +
+                                    balanceSummary.deposit +
+                                    balanceSummary.loanInterest +
+                                    balanceSummary.penalty +
+                                    balanceSummary.otherDeposit +
+                                    balanceSummary.shares +
+                                    balanceSummary.paidLoan;
+                                break;
+                              case 8:
+                                label = local.ltExpenditures;
+                                value = balanceSummary.expenditures
+                                    .toStringAsFixed(2);
+                              case 9:
+                                label = local.lGivenLoan;
+                                value =
+                                    balanceSummary.givenLoan.toStringAsFixed(2);
+                                break;
 
-                          // Assign labels and values based on index
-                          switch (index) {
-                            case 0:
-                              label = local.lPrm;
-                              value = balanceSummary.previousRemaining
-                                  .toStringAsFixed(2);
-                              break;
-                            case 1:
-                              label = local.lDeposit;
-                              value = balanceSummary.deposit.toStringAsFixed(2);
-                              break;
-                            case 2:
-                              label = local.ltShares;
-                              value = balanceSummary.shares.toStringAsFixed(2);
-                              break;
-                            case 3:
-                              label = local.lPaidInterest;
-                              value = balanceSummary.loanInterest
-                                  .toStringAsFixed(2);
-                              break;
-                            case 4:
-                              label = local.lPaidLoan;
-                              value =
-                                  balanceSummary.paidLoan.toStringAsFixed(2);
-                              break;
-                            case 5:
-                              label = local.lPenalty;
-                              value = balanceSummary.penalty.toString();
-                              break;
-                            case 6:
-                              label = local.ltOther;
-                              value = balanceSummary.otherDeposit.toString();
-                              break;
-                            case 7:
-                              label = local.ltcr;
-                              value = (balanceSummary.previousRemaining +
-                                      balanceSummary.deposit +
-                                      balanceSummary.loanInterest +
-                                      balanceSummary.penalty +
-                                      balanceSummary.otherDeposit +
-                                      balanceSummary.shares +
-                                      balanceSummary.paidLoan)
-                                  .toStringAsFixed(2);
-                              totalcredit = balanceSummary.previousRemaining +
-                                  balanceSummary.deposit +
-                                  balanceSummary.loanInterest +
-                                  balanceSummary.penalty +
-                                  balanceSummary.otherDeposit +
-                                  balanceSummary.shares +
-                                  balanceSummary.paidLoan;
-                              break;
-                            case 8:
-                              label = local.ltExpenditures;
-                              value = balanceSummary.expenditures
-                                  .toStringAsFixed(2);
-                            case 9:
-                              label = local.lGivenLoan;
-                              value =
-                                  balanceSummary.givenLoan.toStringAsFixed(2);
-                              break;
+                              case 10:
+                                label = local.ltBankBalance;
+                                value = (totalcredit -
+                                        balanceSummary.givenLoan -
+                                        balanceSummary.expenditures)
+                                    .toStringAsFixed(2);
+                                bankBalance = totalcredit -
+                                    balanceSummary.givenLoan -
+                                    balanceSummary.expenditures;
+                                break;
+                              case 11:
+                                label = local.lRmLoan;
+                                value = balanceSummary.remainingLoan
+                                    .toStringAsFixed(2);
+                              case 12:
+                                label = local.lcrdr;
+                                value = (balanceSummary.expenditures +
+                                        bankBalance +
+                                        balanceSummary.givenLoan)
+                                    .toStringAsFixed(2);
+                                break;
+                            }
 
-                            case 10:
-                              label = local.ltBankBalance;
-                              value = (totalcredit -
-                                      balanceSummary.givenLoan -
-                                      balanceSummary.expenditures)
-                                  .toStringAsFixed(2);
-                              bankBalance = totalcredit -
-                                  balanceSummary.givenLoan -
-                                  balanceSummary.expenditures;
-                              break;
-                            case 11:
-                              label = local.lRmLoan;
-                              value = balanceSummary.remainingLoan
-                                  .toStringAsFixed(2);
-                            case 12:
-                              label = local.lcrdr;
-                              value = (balanceSummary.expenditures +
-                                      bankBalance +
-                                      balanceSummary.givenLoan)
-                                  .toStringAsFixed(2);
-                              break;
-                          }
-
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                label,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  label,
+                                  style: TextStyle(
                                     color: (index == 7 || index == 12)
                                         ? Colors.red
                                         : Colors.black,
-                                    backgroundColor: (index == 7 || index == 12)
-                                        ? const Color.fromRGBO(
-                                            221, 208, 200, 0.6)
-                                        : Colors.white),
-                                textAlign: TextAlign.justify,
-                              ),
-                              Text(
-                                value,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.justify,
+                                ),
+                                Text(
+                                  value,
+                                  style: TextStyle(
                                     color: (index == 7 || index == 12)
                                         ? Colors.red
                                         : Colors.black,
-                                    backgroundColor: (index == 7 || index == 12)
-                                        ? const Color.fromRGBO(
-                                            221, 208, 200, 0.6)
-                                        : Colors.white),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
             ],

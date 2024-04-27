@@ -61,7 +61,7 @@ class _MemberReportState extends State<MemberReport> {
         title: Text(local.lmReport),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -111,9 +111,8 @@ class _MemberReportState extends State<MemberReport> {
               },
             ),
             const SizedBox(height: 15),
-            OverflowBar(
-              spacing: 5.0,
-              alignment: MainAxisAlignment.spaceBetween,
+            ButtonBar(
+              alignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton.icon(
                   icon: const Icon(Icons.download),

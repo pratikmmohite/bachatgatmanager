@@ -111,7 +111,7 @@ abstract class AppLocalization {
     "lmonth": "Month",
     "ladd": "Added On",
     "lmcr": "Monthly credit",
-    "lcb": " Monthly Closing balance",
+    "lcb": "Monthly Closing balance",
     "lcrdr": "Total",
   };
 
