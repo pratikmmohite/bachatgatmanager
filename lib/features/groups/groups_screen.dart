@@ -68,8 +68,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
           ),
         ],
       ),
-      body: GroupsListPage(
-        key: groupKey,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: GroupsListPage(
+          key: groupKey,
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {

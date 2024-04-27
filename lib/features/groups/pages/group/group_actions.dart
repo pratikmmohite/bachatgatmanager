@@ -117,89 +117,91 @@ class _GroupActionsState extends State<GroupActions> {
         title: Text(group.name),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Card(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: isLoading
-                  ? const CircularProgressIndicator()
-                  : ListTile(title: buildSummary()),
-            ),
-            Card(
-              child: ListTile(
-                title: Text(local.lgRecord),
-                leading: const Icon(Icons.money),
-                onTap: () async {
-                  await AppUtils.navigateTo(
-                    context,
-                    GroupDetailsScreen(
-                      key: ValueKey(group.id),
-                      group: group,
-                    ),
-                  );
-                  getGroupTotals();
-                },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Card(
+                child: isLoading
+                    ? const CircularProgressIndicator()
+                    : ListTile(title: buildSummary()),
               ),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.summarize_outlined),
-                onTap: () {
-                  AppUtils.navigateTo(
-                    context,
-                    GroupMonthlySummary(
-                      group: group,
-                    ),
-                  );
-                },
-                title: Text(local.lgSummary),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.account_balance),
-                onTap: () async {
-                  await AppUtils.navigateTo(
-                    context,
-                    GroupTransactionList(
-                      group: group,
-                    ),
-                  );
-                  getGroupTotals();
-                },
-                title: Text(local.lgTransaction),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.people),
-                onTap: () {
-                  AppUtils.navigateTo(
-                    context,
-                    MembersList(
-                      group,
-                    ),
-                  );
-                },
-                title: Text(local.lmList),
-              ),
-            ),
-            Card(
+              Card(
                 child: ListTile(
-              leading: const Icon(Icons.picture_as_pdf),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PdfReports(
-                            group,
-                          )),
-                );
-              },
-              title: Text(local.lRecord),
-            )),
-          ],
+                  title: Text(local.lgRecord),
+                  leading: const Icon(Icons.money),
+                  onTap: () async {
+                    await AppUtils.navigateTo(
+                      context,
+                      GroupDetailsScreen(
+                        key: ValueKey(group.id),
+                        group: group,
+                      ),
+                    );
+                    getGroupTotals();
+                  },
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.summarize_outlined),
+                  onTap: () {
+                    AppUtils.navigateTo(
+                      context,
+                      GroupMonthlySummary(
+                        group: group,
+                      ),
+                    );
+                  },
+                  title: Text(local.lgSummary),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.account_balance),
+                  onTap: () async {
+                    await AppUtils.navigateTo(
+                      context,
+                      GroupTransactionList(
+                        group: group,
+                      ),
+                    );
+                    getGroupTotals();
+                  },
+                  title: Text(local.lgTransaction),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.people),
+                  onTap: () {
+                    AppUtils.navigateTo(
+                      context,
+                      MembersList(
+                        group,
+                      ),
+                    );
+                  },
+                  title: Text(local.lmList),
+                ),
+              ),
+              Card(
+                  child: ListTile(
+                leading: const Icon(Icons.picture_as_pdf),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PdfReports(
+                              group,
+                            )),
+                  );
+                },
+                title: Text(local.lRecord),
+              )),
+            ],
+          ),
         ),
       ),
     );

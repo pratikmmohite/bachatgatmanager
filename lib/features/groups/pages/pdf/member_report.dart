@@ -39,6 +39,72 @@ class _MemberReportState extends State<MemberReport> {
   late TextEditingController _textController = TextEditingController(
       text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
 
+  Widget getButtons() {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      alignment: WrapAlignment.spaceAround,
+      children: [
+        ElevatedButton.icon(
+          icon: const Icon(Icons.picture_as_pdf),
+          onPressed: () async {
+            try {
+              var bytes = await PdfApi.generatePdf(
+                  memberId: selectedMemberId,
+                  groupId: _group.id,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  memberName: selectedMemberName,
+                  groupName: _group.name,
+                  context: context);
+              await PdfApi.saveAsPDF(bytes, selectedMemberName);
+            } catch (e) {
+              AppUtils.toast(context, "Failed to generate Pdf");
+            }
+          },
+          label: const Text('Download'),
+        ),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.download),
+          onPressed: () async {
+            try {
+              var bytes = await PdfApi.generatePdf(
+                  memberId: selectedMemberId,
+                  groupId: _group.id,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  memberName: selectedMemberName,
+                  groupName: _group.name,
+                  context: context);
+              await PdfApi.previewPDF(bytes, selectedMemberName);
+            } catch (e) {
+              AppUtils.toast(context, "Failed to generate Pdf");
+            }
+          },
+          label: const Text('Preview'),
+        ),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.share),
+          onPressed: () async {
+            try {
+              var bytes = await PdfApi.generatePdf(
+                  memberId: selectedMemberId,
+                  groupId: _group.id,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  memberName: selectedMemberName,
+                  groupName: _group.name,
+                  context: context);
+              await PdfApi.sharePDF(bytes, selectedMemberName + ".pdf");
+            } catch (e) {
+              AppUtils.toast(context, "Failed to generate Pdf");
+            }
+          },
+          label: const Text('Share'),
+        )
+      ],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,9 +127,10 @@ class _MemberReportState extends State<MemberReport> {
         title: Text(local.lmReport),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Dropdown for Member List
             CustomDropDown<GroupMember>(
@@ -110,69 +177,10 @@ class _MemberReportState extends State<MemberReport> {
                 }
               },
             ),
-            const SizedBox(height: 15),
-            ButtonBar(
-              alignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.download),
-                  onPressed: () async {
-                    try {
-                      var bytes = await PdfApi.generatePdf(
-                          memberId: selectedMemberId,
-                          groupId: _group.id,
-                          startDate: _startDate,
-                          endDate: _endDate,
-                          memberName: selectedMemberName,
-                          groupName: _group.name,
-                          context: context);
-                      await PdfApi.saveAsPDF(bytes, selectedMemberName);
-                    } catch (e) {
-                      AppUtils.toast(context, "Failed to generate Pdf");
-                    }
-                  },
-                  label: const Text('Download'),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.download),
-                  onPressed: () async {
-                    try {
-                      var bytes = await PdfApi.generatePdf(
-                          memberId: selectedMemberId,
-                          groupId: _group.id,
-                          startDate: _startDate,
-                          endDate: _endDate,
-                          memberName: selectedMemberName,
-                          groupName: _group.name,
-                          context: context);
-                      await PdfApi.previewPDF(bytes, selectedMemberName);
-                    } catch (e) {
-                      AppUtils.toast(context, "Failed to generate Pdf");
-                    }
-                  },
-                  label: const Text('Preview'),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.share),
-                  onPressed: () async {
-                    try {
-                      var bytes = await PdfApi.generatePdf(
-                          memberId: selectedMemberId,
-                          groupId: _group.id,
-                          startDate: _startDate,
-                          endDate: _endDate,
-                          memberName: selectedMemberName,
-                          groupName: _group.name,
-                          context: context);
-                      await PdfApi.sharePDF(bytes, selectedMemberName + ".pdf");
-                    } catch (e) {
-                      AppUtils.toast(context, "Failed to generate Pdf");
-                    }
-                  },
-                  label: const Text('Share'),
-                )
-              ],
-            )
+            const SizedBox(
+              height: 10,
+            ),
+            getButtons()
           ],
         ),
       ),

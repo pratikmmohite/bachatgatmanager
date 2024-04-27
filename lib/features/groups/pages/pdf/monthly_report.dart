@@ -73,9 +73,10 @@ class _MonthlyReportState extends State<MonthlyReport> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 readOnly: true,
@@ -103,25 +104,20 @@ class _MonthlyReportState extends State<MonthlyReport> {
                   }
                 },
               ),
-              ButtonBar(
-                alignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () async {
-                      CalculatedMonthlySummary summary =
-                          await dao.getMonthlySummary(
-                        _group.id.toString(),
-                        trxPeriod,
-                      );
+              ElevatedButton.icon(
+                icon: const Icon(Icons.refresh),
+                onPressed: () async {
+                  CalculatedMonthlySummary summary =
+                      await dao.getMonthlySummary(
+                    _group.id.toString(),
+                    trxPeriod,
+                  );
 
-                      setState(() {
-                        monthlySummary = summary;
-                      });
-                    },
-                    label: const Text('Refresh'),
-                  ),
-                ],
+                  setState(() {
+                    monthlySummary = summary;
+                  });
+                },
+                label: const Text('Refresh'),
               ),
               const SizedBox(
                 height: 15,
