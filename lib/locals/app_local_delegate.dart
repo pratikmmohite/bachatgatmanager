@@ -1,6 +1,13 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
+import '../common/storage_service.dart';
 import 'app_local.dart';
 
 class AppLocalDelegate extends LocalizationsDelegate<AppLocalization> {
@@ -34,6 +41,7 @@ class AppLocal {
 
   static void c(String code) {
     _instance.currentLocal.value = Locale(code);
+    StorageService.saveLocal(code);
   }
 
   ValueNotifier<Locale> currentLocal =

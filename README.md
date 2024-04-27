@@ -1,16 +1,12 @@
-# bachat_gat
+# Saving Group (बचत गट)
 
-Bachat gat applicatioon
+Saving Group (बचत गट) is an application which manges transactions to self help group.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Features
+- Multiple groups can managed from single app
+- Summary view for selected period
+- Manage loan, bank deposits, late fees, other expenses
+- Offline - No internet required
+- Export PDF, Excel reports
+- Localization support (English,   Marathi)
+- Backup and restore your data

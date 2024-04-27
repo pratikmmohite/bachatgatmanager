@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/member/member_details_card.dart';
 import 'package:bachat_gat/features/groups/pages/member/member_transactions_list.dart';
@@ -56,18 +62,20 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
     group = widget.group;
     trxPeriodDt = widget.trxPeriodDt;
     viewMode = widget.viewMode;
-    // initDefault();
+    initDefault();
     getGroupMembers();
     super.initState();
   }
 
   Future<void> initDefault() async {
-    viewMode = await StorageService.read(AppConstants.sfViewMode);
-    setState(() {});
+    viewMode = await StorageService.getViewMode(viewMode ?? "table");
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> saveViewMode() async {
-    await StorageService.write(AppConstants.sfViewMode, viewMode);
+    await StorageService.saveViewMode(viewMode);
   }
 
   Future<void> handleAddTrxClick(GroupMemberDetails memberDetails) async {
@@ -256,6 +264,14 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
   }
 
   Widget buildView() {
+    var locale = AppLocal.of(context);
+    if (groupMemberDetails.isEmpty) {
+      return Center(
+        child: Text(
+          locale.mEmptyMemberDetails,
+        ),
+      );
+    }
     if (viewMode == "list") {
       return buildDetailsList();
     }
@@ -281,7 +297,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
       children: [
         IconButton(
           onPressed: () => handleBothTrxClick(m),
-          icon: const Icon(Icons.attach_money),
+          icon: const Icon(Icons.receipt_long_outlined),
           tooltip: local.bAddShare,
         ),
         // IconButton(
@@ -316,7 +332,7 @@ class _MemberDetailsListState extends State<MemberDetailsList> {
               viewMode = "table";
               break;
           }
-          // saveViewMode();
+          saveViewMode();
           setState(() {});
         },
         child: const Icon(Icons.view_agenda_outlined),

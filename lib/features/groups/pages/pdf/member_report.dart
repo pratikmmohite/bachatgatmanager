@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +39,72 @@ class _MemberReportState extends State<MemberReport> {
   late TextEditingController _textController = TextEditingController(
       text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
 
+  Widget getButtons() {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      alignment: WrapAlignment.spaceAround,
+      children: [
+        ElevatedButton.icon(
+          icon: const Icon(Icons.picture_as_pdf),
+          onPressed: () async {
+            try {
+              var bytes = await PdfApi.generatePdf(
+                  memberId: selectedMemberId,
+                  groupId: _group.id,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  memberName: selectedMemberName,
+                  groupName: _group.name,
+                  context: context);
+              await PdfApi.saveAsPDF(bytes, selectedMemberName);
+            } catch (e) {
+              AppUtils.toast(context, "Failed to generate Pdf");
+            }
+          },
+          label: const Text('Download'),
+        ),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.download),
+          onPressed: () async {
+            try {
+              var bytes = await PdfApi.generatePdf(
+                  memberId: selectedMemberId,
+                  groupId: _group.id,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  memberName: selectedMemberName,
+                  groupName: _group.name,
+                  context: context);
+              await PdfApi.previewPDF(bytes, selectedMemberName);
+            } catch (e) {
+              AppUtils.toast(context, "Failed to generate Pdf");
+            }
+          },
+          label: const Text('Preview'),
+        ),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.share),
+          onPressed: () async {
+            try {
+              var bytes = await PdfApi.generatePdf(
+                  memberId: selectedMemberId,
+                  groupId: _group.id,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  memberName: selectedMemberName,
+                  groupName: _group.name,
+                  context: context);
+              await PdfApi.sharePDF(bytes, selectedMemberName + ".pdf");
+            } catch (e) {
+              AppUtils.toast(context, "Failed to generate Pdf");
+            }
+          },
+          label: const Text('Share'),
+        )
+      ],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +129,8 @@ class _MemberReportState extends State<MemberReport> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Dropdown for Member List
             const Divider(),
@@ -105,70 +178,10 @@ class _MemberReportState extends State<MemberReport> {
                 }
               },
             ),
-            const SizedBox(height: 15),
-            OverflowBar(
-              spacing: 5.0,
-              alignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.download),
-                  onPressed: () async {
-                    try {
-                      var bytes = await PdfApi.generatePdf(
-                          memberId: selectedMemberId,
-                          groupId: _group.id,
-                          startDate: _startDate,
-                          endDate: _endDate,
-                          memberName: selectedMemberName,
-                          groupName: _group.name,
-                          context: context);
-                      await PdfApi.saveAsPDF(bytes, selectedMemberName);
-                    } catch (e) {
-                      AppUtils.toast(context, "Failed to generate Pdf");
-                    }
-                  },
-                  label: const Text('Download'),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.download),
-                  onPressed: () async {
-                    try {
-                      var bytes = await PdfApi.generatePdf(
-                          memberId: selectedMemberId,
-                          groupId: _group.id,
-                          startDate: _startDate,
-                          endDate: _endDate,
-                          memberName: selectedMemberName,
-                          groupName: _group.name,
-                          context: context);
-                      await PdfApi.previewPDF(bytes, selectedMemberName);
-                    } catch (e) {
-                      AppUtils.toast(context, "Failed to generate Pdf");
-                    }
-                  },
-                  label: const Text('Preview'),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.share),
-                  onPressed: () async {
-                    try {
-                      var bytes = await PdfApi.generatePdf(
-                          memberId: selectedMemberId,
-                          groupId: _group.id,
-                          startDate: _startDate,
-                          endDate: _endDate,
-                          memberName: selectedMemberName,
-                          groupName: _group.name,
-                          context: context);
-                      await PdfApi.sharePDF(bytes, selectedMemberName + ".pdf");
-                    } catch (e) {
-                      AppUtils.toast(context, "Failed to generate Pdf");
-                    }
-                  },
-                  label: const Text('Share'),
-                )
-              ],
-            )
+            const SizedBox(
+              height: 10,
+            ),
+            getButtons()
           ],
         ),
       ),

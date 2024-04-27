@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/pdf/member_report.dart';
 import 'package:bachat_gat/features/groups/pages/pdf/yearly_report.dart';
@@ -52,67 +58,71 @@ class _PdfReportsState extends State<PdfReports> {
         appBar: AppBar(
           title: Text(local.lRecord),
         ),
-        body: Column(
-          children: [
-            Card(
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Card(
                 child: ListTile(
-              leading: const Icon(Icons.picture_as_pdf),
-              onTap: () {
-                if (members.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Add Members for displaying list",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.normal,
+                  leading: const Icon(Icons.group),
+                  onTap: () {
+                    if (members.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Add Members for displaying list",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          duration: Duration(seconds: 2),
                         ),
-                      ),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MemberReport(
-                        widget.group,
-                        members,
-                        members[0].name,
-                      ),
-                    ),
-                  );
-                }
-              },
-              title: Text(local.lmReport),
-            )),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.group),
-                title: Text(local.lMReport),
-                onTap: () {
-                  Navigator.push(
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MemberReport(
+                            widget.group,
+                            members,
+                            members[0].name,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  title: Text(local.lmReport),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.calendar_month),
+                  title: Text(local.lMReport),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MonthlyReport(widget.group)));
+                  },
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.table_view),
+                  title: Text(local.lYReport),
+                  onTap: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MonthlyReport(widget.group)));
-                },
+                        builder: (context) => YearlyReport(widget.group),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.picture_as_pdf),
-                title: Text(local.lYReport),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => YearlyReport(widget.group),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ));
   }
 }

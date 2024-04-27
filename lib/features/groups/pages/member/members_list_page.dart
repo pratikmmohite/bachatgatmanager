@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +11,7 @@ import 'package:flutter/material.dart';
 import '../../dao/groups_dao.dart';
 import '../../models/models_index.dart';
 import 'add_member_page.dart';
+import 'member_transactions_list.dart';
 
 class MembersList extends StatefulWidget {
   final Group group;
@@ -44,6 +51,21 @@ class _MembersListState extends State<MembersList> {
     super.initState();
   }
 
+  handleShowTransactionListClick(GroupMember member) async {
+    GroupMemberDetails m = GroupMemberDetails();
+    m.name = member.name;
+    m.memberId = member.id;
+    m.groupId = member.groupId;
+    await AppUtils.navigateTo(
+      context,
+      MemberTransactionsList(
+        _group,
+        groupMemberDetails: m,
+        trxPeriodDt: DateTime.now(),
+      ),
+    );
+  }
+
   void editMember(GroupMember member) async {
     await AppUtils.navigateTo(
       context,
@@ -76,7 +98,7 @@ class _MembersListState extends State<MembersList> {
       appBar: AppBar(
         title: Text(local.abMemberList),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -85,49 +107,60 @@ class _MembersListState extends State<MembersList> {
           );
           await getMembers();
         },
-        child: const Icon(Icons.add),
+        label: Text(local.bAddMember),
+        icon: const Icon(Icons.add),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
           await getMembers();
         },
-        child: ListView.builder(
-          padding: const EdgeInsets.only(bottom: 300.0),
-          itemBuilder: (ctx, index) {
-            var member = members[index];
-            return Card(
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(
-                  member.name,
-                ),
-                subtitle: Text(member.mobileNo),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () async {
+        child: members.isEmpty
+            ? Center(
+                child: Text(local.mAddMemberMsg),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.only(bottom: 300.0),
+                itemBuilder: (ctx, index) {
+                  var member = members[index];
+                  return Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.person),
+                      title: Text(
+                        member.name,
+                      ),
+                      subtitle: Text(member.mobileNo),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () async {
+                              editMember(member);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.remove_red_eye_outlined),
+                            onPressed: () async {
+                              handleShowTransactionListClick(member);
+                            },
+                          ),
+                          CustomDeleteIcon<GroupMember>(
+                            item: member,
+                            content: Text("Member: ${member.name}"),
+                            onAccept: (m) {
+                              deleteMember(m);
+                            },
+                          ),
+                        ],
+                      ),
+                      onTap: () async {
                         editMember(member);
                       },
                     ),
-                    CustomDeleteIcon<GroupMember>(
-                      item: member,
-                      content: Text("Member: ${member.name}"),
-                      onAccept: (m) {
-                        deleteMember(m);
-                      },
-                    ),
-                  ],
-                ),
-                onTap: () async {
-                  editMember(member);
+                  );
                 },
+                itemCount: members.length,
               ),
-            );
-          },
-          itemCount: members.length,
-        ),
       ),
     );
   }

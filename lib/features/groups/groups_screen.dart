@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/pages/save_data/import_export_page.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +27,27 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var local = AppLocal.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocal.of(context).appTitle),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              AppConstants.imgAppIcon,
+              height: 50,
+            ),
+            Text(local.appTitle),
+          ],
+        ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.import_export),
+            onPressed: () async {
+              await AppUtils.navigateTo(context, const ImportExportPage());
+              refreshGroupList();
+            },
+          ),
           ValueListenableBuilder(
             valueListenable: AppLocal.l(),
             builder: (context, local, child) {
@@ -43,19 +66,15 @@ class _GroupsScreenState extends State<GroupsScreen> {
               child: const Text("en"),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.import_export),
-            onPressed: () async {
-              await AppUtils.navigateTo(context, const ImportExportPage());
-              refreshGroupList();
-            },
-          )
         ],
       ),
-      body: GroupsListPage(
-        key: groupKey,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: GroupsListPage(
+          key: groupKey,
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -64,7 +83,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
           );
           await refreshGroupList();
         },
-        child: const Icon(Icons.add),
+        label: Text(local.bAddGroup),
+        icon: const Icon(Icons.add),
       ),
     );
   }

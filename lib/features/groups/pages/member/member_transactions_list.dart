@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Author: Pratik Mohite <dev.pratikm@gmail.com>
+*/
 import 'package:bachat_gat/features/groups/models/models_index.dart';
 import 'package:flutter/material.dart';
 
@@ -64,7 +70,7 @@ class _MemberTransactionsListState extends State<MemberTransactionsList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Transactions"),
+        title: const Text("Member Transactions"),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(20),
           child: Column(
@@ -127,8 +133,41 @@ class _MemberTransactionsListState extends State<MemberTransactionsList> {
                       DataCell(
                         CustomDeleteIcon<Transaction>(
                           item: trx,
-                          content:
-                              Text("Trx: ${trx.trxType} \nAmount ${trx.cr}"),
+                          content: Table(
+                            children: [
+                              TableRow(
+                                children: [
+                                  const TableCell(
+                                    child: Text("Transaction Date:"),
+                                  ),
+                                  TableCell(
+                                    child: Text(trx.trxPeriod),
+                                  )
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const TableCell(
+                                    child: Text("Transaction Type:"),
+                                  ),
+                                  TableCell(
+                                    child: Text(trx.trxType),
+                                  )
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const TableCell(
+                                    child: Text("Amount"),
+                                  ),
+                                  TableCell(
+                                    child:
+                                        Text("${trx.cr > 0 ? trx.cr : trx.dr}"),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                           onAccept: (t) {
                             deleteTransaction(t);
                           },
