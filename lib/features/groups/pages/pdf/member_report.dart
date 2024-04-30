@@ -27,7 +27,7 @@ class _MemberReportState extends State<MemberReport> {
   late String selectedMemberId;
   late List<MemberTransactionDetails> memberData;
   late String selectedMemberName;
-  DateTime _startDate = DateTime.now();
+  late DateTime _startDate;
   DateTime _endDate = DateTime.now();
   DateTimeRange dtchnage =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
@@ -112,8 +112,7 @@ class _MemberReportState extends State<MemberReport> {
     _members = widget.members;
     selectedMemberId = _members.isEmpty ? "" : _members[0].id;
     selectedMemberName = _members.isEmpty ? " " : _members[0].name;
-    _startDate = DateTime.now();
-    _endDate = DateTime.now();
+    _startDate = DateTime(_endDate.year, _endDate.month - 1, _endDate.day);
 
     _textController = TextEditingController(
         text: "${formatDt(_startDate)} to ${formatDt(_endDate)}");
