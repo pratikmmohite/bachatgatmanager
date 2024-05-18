@@ -179,7 +179,7 @@ class _YearlyReportState extends State<YearlyReport> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${AppUtils.getHumanReadableMonthhDt(_startDate)} ${local.to} ${AppUtils.getHumanReadableMonthhDt(_endDate)} ',
+                          '${AppUtils.getHumanReadableMonthDt(_startDate)} ${local.to} ${AppUtils.getHumanReadableMonthDt(_endDate)} ',
                           style: const TextStyle(
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),

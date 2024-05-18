@@ -141,7 +141,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${local.period} : ${AppUtils.getHumanReadableMonthhDt(_startDate)} ',
+                          '${local.period} : ${AppUtils.getHumanReadableMonthDt(_startDate)} ',
                           style: const TextStyle(
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),

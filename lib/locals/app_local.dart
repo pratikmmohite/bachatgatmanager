@@ -113,6 +113,7 @@ abstract class AppLocalization {
     "lmcr": "Monthly credit",
     "lcb": "Monthly Closing balance",
     "lcrdr": "Total",
+    "lMemberaName":"Member Name",
   };
 
   List<String> get months => [
@@ -257,6 +258,7 @@ abstract class AppLocalization {
   String get lmcr => getValue("lmcr");
   String get lcb => getValue("lcb");
   String get lcrdr => getValue("lcrdr");
+  String get lMemberName=>getValue("lMemberaName");
 }
 
 class EnAppLocalization extends AppLocalization {
@@ -372,6 +374,7 @@ class MrAppLocalization extends AppLocalization {
         "lmcr": "मासिक जमा",
         "lcb": "चालू महिन्यातील शिल्लक",
         "lcrdr": "एकूण ",
+        "lMemberaName":"सदस्याचे नाव",
       };
 
   @override

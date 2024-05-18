@@ -59,7 +59,7 @@ class AppUtils {
     return "${dt.day}-${AppConstants.cEnMonthsStr[dt.month - 1]}-${dt.year}";
   }
 
-  static String getHumanReadableMonthhDt(DateTime dt) {
+  static String getHumanReadableMonthDt(DateTime dt) {
     return "${AppConstants.cEnMonthsStr[dt.month - 1]} ${dt.year}";
   }
 

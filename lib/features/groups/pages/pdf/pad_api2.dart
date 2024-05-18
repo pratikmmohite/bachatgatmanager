@@ -1,22 +1,16 @@
-/*
- * Copyright (C) 2024-present Pratik Mohite, Inc - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Author: Pratik Mohite <dev.pratikm@gmail.com>
-*/
 import 'package:bachat_gat/common/common_index.dart';
 import 'package:bachat_gat/features/groups/models/models_index.dart';
 import 'package:bachat_gat/locals/app_local_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pdf/pdf.dart';
+import 'package:htmltopdfwidgets/htmltopdfwidgets.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../../dao/groups_dao.dart';
 import 'getFontLoad.dart';
 
-class PdfApi {
+class NewPdfApi {
   static Future<Uint8List> generatePdf(
       {required String memberId,
       required String groupId,
@@ -100,51 +94,92 @@ class PdfApi {
       },
     ).toList();
     print(data[0][0]);
-    pdf.addPage(
-      pw.Page(
-        build: (context) {
-          return pw.Column(
-            children: [
-              pw.Text(groupName,
-                  style: pw.TextStyle(
-                    fontSize: 20,
-                    fontWeight: pw.FontWeight.bold,
-                  )),
-              pw.SizedBox(height: 20),
-              pw.Column(
-                children: [
-                  pw.Text("${local.tfMemberName}: $memberName",
-                      style: pw.TextStyle(
-                        fontSize: 15,
-                        fontWeight: pw.FontWeight.normal,
-                        fontStyle: pw.FontStyle.normal,
-                      ))
-                ],
-              ),
-              pw.SizedBox(height: 15),
-              pw.TableHelper.fromTextArray(
-                headers: headers,
-                headerStyle: pw.TextStyle(
-                  fontWeight: pw.FontWeight.bold,
-                ),
-                data: data,
-                cellAlignment: pw.Alignment.centerLeft,
-                cellStyle: const pw.TextStyle(fontSize: 10),
-                // Setting equal width for each column
-                columnWidths: {
-                  for (int columnIndex = 0;
-                      columnIndex < headers.length;
-                      columnIndex++)
-                    columnIndex: const pw.FixedColumnWidth(
-                        40.0), // Adjust the width as per your requirement
-                },
-              ),
-            ],
-          );
-        },
-      ),
-    );
-    return pdf.save();
+    var body = '''
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+             h2,h1{
+                text-align: center;
+             } 
+             
+           
+        table {
+            margin: auto;
+            border-collapse: collapse;
+        }
+ 
+        td,th{
+            border: 1px solid black;
+            padding: 10px;
+            justify-content: center;
+            text-align: center;
+            align-items: center;
+        }
+
+    
+    </style>
+</head>
+    <body>
+         <h1 style="text-align:center; font-size:1px"> ${local.tfGroupName} : $groupName </h1>
+         <h2 style="text-align:center; font-size:1px;" > ${local.lMemberName}: $memberName </h2>
+         <div style=" justify-content:center;">
+           <table style="border: 1px solid black; text-align:center;font-size:2px;">
+             <thead style="border: 1px solid black;">
+                 <tr>
+                    <th>${local.lmonth}</th>
+                    <th>${local.lShare}</th>
+                    <th>${local.lPaidLoan}</th>
+                    <th>${local.lPaidInterest}</th>
+                    <th>${local.lPenalty}</th>
+                    <th>${local.lOthers}</th>
+                    <th>${local.lTotal}</th>
+                    <th>${local.lGivenLoan}</th>
+                    <th>${local.lRmLoan}</th>
+                 </tr>
+                           
+             </thead>
+             <tbody style="border: 1px solid black;">
+             
+           ''';
+
+    var tableData = '';
+
+    for (int i = 0; i < data.length; i++) {
+      tableData = '''
+           <tr>
+             <td>${data[i][0]}</td>
+             <td>${data[i][1]}</td>
+             <td>${data[i][2]}</td>
+             <td>${data[i][3]}</td>
+             <td>${data[i][4]}</td>
+             <td>${data[i][5]}</td>
+             <td>${data[i][6]}</td>
+             <td>${data[i][7]}</td>
+             <td>${data[i][8]}</td>
+          </tr>
+         ''';
+      body = body + tableData;
+    }
+
+    var foot = '''
+                    </tbody>   
+                   </table> 
+                   </div>
+                 </body>  
+      ''';
+
+    var finalBody = body + foot;
+
+    print(finalBody);
+
+    final widgets = await HTMLToPdf().convert(body);
+    pdf.addPage(pw.MultiPage(
+        pageFormat: PdfPageFormat.a4, build: (context) => widgets));
+    return await pdf.save();
   }
 
   static Future<void> previewPDF(Uint8List bytes, String filename) async {
