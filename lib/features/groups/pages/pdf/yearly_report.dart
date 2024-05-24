@@ -264,14 +264,16 @@ class _YearlyReportState extends State<YearlyReport> {
                                     balanceSummary.expenditures;
                                 break;
                               case 11:
-                                label = local.lRmLoan;
-                                value = balanceSummary.remainingLoan
-                                    .toStringAsFixed(2);
-                              case 12:
                                 label = local.lcrdr;
                                 value = (balanceSummary.expenditures +
                                         bankBalance +
                                         balanceSummary.givenLoan)
+                                    .toStringAsFixed(2);
+                                break;
+
+                              case 12:
+                                label = local.lRmLoan;
+                                value = balanceSummary.remainingLoan
                                     .toStringAsFixed(2);
                                 break;
                             }
@@ -282,7 +284,7 @@ class _YearlyReportState extends State<YearlyReport> {
                                 Text(
                                   label,
                                   style: TextStyle(
-                                    color: (index == 7 || index == 12)
+                                    color: (index == 7 || index == 11)
                                         ? Colors.red
                                         : Colors.black,
                                   ),
@@ -291,7 +293,7 @@ class _YearlyReportState extends State<YearlyReport> {
                                 Text(
                                   value,
                                   style: TextStyle(
-                                    color: (index == 7 || index == 12)
+                                    color: (index == 7 || index == 11)
                                         ? Colors.red
                                         : Colors.black,
                                   ),
