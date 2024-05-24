@@ -99,7 +99,7 @@ class PdfApi {
         ];
       },
     ).toList();
-
+    print(data[0][0]);
     pdf.addPage(
       pw.Page(
         build: (context) {
@@ -113,7 +113,7 @@ class PdfApi {
               pw.SizedBox(height: 20),
               pw.Column(
                 children: [
-                  pw.Text("Member Name: $memberName",
+                  pw.Text("${local.tfMemberName}: $memberName",
                       style: pw.TextStyle(
                         fontSize: 15,
                         fontWeight: pw.FontWeight.normal,

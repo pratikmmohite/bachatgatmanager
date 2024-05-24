@@ -116,6 +116,7 @@ class GroupsDao {
         "paidLoanAmount = ($trxQuery), "
         "paidInterestAmount = ($trxQuery) "
         "where id = ?";
+
     List<String> pars = [
       AppConstants.ttLoan,
       AppConstants.sLoan,
@@ -125,7 +126,15 @@ class GroupsDao {
       loanId,
       loanId
     ];
+
     var row = await dbService.write(query, pars);
+
+    var updateStatus = "update $loanTableName set "
+        " status = case when paidLoanAmount >= loanAmount then '${AppConstants.lsComplete}' else '${AppConstants.lsActive}' end "
+        " where id= ? ";
+
+    var row1 = await dbService.write(updateStatus, [loanId]);
+
     return row;
   }
 
@@ -150,16 +159,17 @@ class GroupsDao {
 
   Future<int> updateLoanPaid(Loan loan) async {
     String updateQuery = "update loans set "
-        "paidLoanAmount = paidLoanAmount + ?, "
+        "note = ?, "
         "paidInterestAmount = paidInterestAmount + ?, "
-        "status = case when paidLoanAmount>=loanAmount then ${AppConstants.lsComplete} else ${AppConstants.lsActive} end"
-        // "status = iif(paidLoanAmount >= loanAmount, '${AppConstants.lsComplete}', '${AppConstants.lsActive}') "
+        "status = case when paidLoanAmount+?>=loanAmount then ${AppConstants.lsComplete} else ${AppConstants.lsActive} end "
         "where id = ?";
+
     var row = await dbService.write(
       updateQuery,
       [
         loan.paidLoanAmount,
         loan.paidInterestAmount,
+        loan.paidLoanAmount,
         loan.id,
       ],
     );
